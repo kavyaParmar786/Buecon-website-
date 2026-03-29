@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUECON — 3D Showroom Experience</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body { overflow: hidden; background: #000; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-logo">BUECON</div>
+    <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:0.2em;color:var(--neon-blue);text-transform:uppercase;margin-bottom:8px;">3D SHOWROOM</div>
+    <div class="loading-bar-track">
+      <div class="loading-bar-fill" id="loadingBar"></div>
+    </div>
+    <div class="loading-text" id="loadingStatus">Initializing renderer…</div>
+  </div>
+
+  <!-- Pointer Lock Overlay -->
+  <div class="lock-overlay hidden" id="lockOverlay">
+    <div class="lock-icon">🔓</div>
+    <div class="lock-title">ENTER SHOWROOM</div>
+    <div class="lock-hint">Click anywhere to begin</div>
+    <p class="lock-tip">
+      Use <strong style="color:var(--neon-cyan)">WASD</strong> to walk ·
+      <strong style="color:var(--neon-cyan)">Mouse</strong> to look ·
+      <strong style="color:var(--neon-cyan)">Click</strong> products to focus ·
+      <strong style="color:var(--neon-cyan)">ESC</strong> to pause
+    </p>
+  </div>
+
+  <!-- 3D Canvas -->
+  <div id="experience-container">
+    <canvas id="experience-canvas"></canvas>
+  </div>
+
+  <!-- HUD Top Left -->
+  <div class="exp-hud hud-top">
+    <div class="hud-logo">BUECON</div>
+    <div class="hud-mode">3D SHOWROOM</div>
+  </div>
+
+  <!-- Back Button -->
+  <a href="index.html" class="hud-back" id="backBtn">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Exit Showroom
+  </a>
+
+  <!-- Crosshair -->
+  <div class="crosshair"></div>
+
+  <!-- WASD Key HUD -->
+  <div class="hud-controls" style="flex-direction:column;align-items:center;gap:6px;">
+    <div style="display:flex;gap:6px;justify-content:center;">
+      <div style="width:40px"></div>
+      <div class="hud-key" id="hud-key-W">W</div>
+      <div style="width:40px"></div>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <div class="hud-key" id="hud-key-A">A</div>
+      <div class="hud-key" id="hud-key-S">S</div>
+      <div class="hud-key" id="hud-key-D">D</div>
+    </div>
+  </div>
+
+  <!-- Product Info Overlay -->
+  <div class="product-info-overlay" id="productInfoOverlay">
+    <div class="pio-name">Salt Series</div>
+    <div class="pio-hint">Click to Explore · BUECON Collection</div>
+  </div>
+
+  <!-- Product Legend -->
+  <div style="position:fixed;top:80px;right:24px;background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(20px);border-radius:16px;padding:16px 20px;z-index:50;pointer-events:none;min-width:160px;">
+    <div style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--neon-cyan);margin-bottom:12px;">Collections</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#00d4ff;box-shadow:0 0 6px #00d4ff;flex-shrink:0"></div>
+        <span style="font-family:var(--font-body);font-size:0.8rem;color:var(--text-secondary)">Salt Series</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#b44fff;box-shadow:0 0 6px #b44fff;flex-shrink:0"></div>
+        <span style="font-family:var(--font-body);font-size:0.8rem;color:var(--text-secondary)">Super Series</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#00fff7;box-shadow:0 0 6px #00fff7;flex-shrink:0"></div>
+        <span style="font-family:var(--font-body);font-size:0.8rem;color:var(--text-secondary)">Spirit Series</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#ff2d78;box-shadow:0 0 6px #ff2d78;flex-shrink:0"></div>
+        <span style="font-family:var(--font-body);font-size:0.8rem;color:var(--text-secondary)">400 Series</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('backBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.body.style.transition = 'opacity 0.4s ease';
+      document.body.style.opacity = '0';
+      setTimeout(() => window.location.href = 'index.html', 400);
+    });
+  </script>
+
+  <script type="module" src="main.js"></script>
+
+</body>
+</html>

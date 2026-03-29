@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BUECON — Premium Bathroom Showroom</title>
+  <meta name="description" content="BUECON — Futuristic premium bathroom systems. Explore our interactive 3D showroom." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Background Canvas -->
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div class="bg-orb bg-orb-4"></div>
+  </div>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-noise" aria-hidden="true"></div>
+
+  <!-- Page Transition -->
+  <div class="page-transition" id="pageTransition"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="mainNav">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-logo">BUECON</a>
+        <ul class="nav-links">
+          <li><a href="#products">Products</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="viewer.html">Viewer</a></li>
+          <li><a href="experience.html" class="nav-cta">Enter Showroom →</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          Now featuring interactive 3D showroom
+        </div>
+
+        <h1 class="hero-title">
+          <span class="line-1">REDEFINE</span>
+          <span class="line-2">BUECON</span>
+        </h1>
+
+        <p class="hero-desc">
+          Premium bathroom systems engineered for the future. Experience our
+          curated collections in an immersive 3D walkthrough — where luxury
+          meets innovation.
+        </p>
+
+        <div class="hero-actions">
+          <a href="experience.html" class="btn-primary" id="heroEnter">
+            Enter Experience
+            <svg class="btn-arrow" viewBox="0 0 20 20" fill="none">
+              <path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a href="#products" class="btn-ghost">View Collections</a>
+        </div>
+      </div>
+
+      <!-- Floating Stats -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hero-visual-inner">
+          <div class="floating-card float-1">
+            <div class="fc-label">Collections</div>
+            <div class="fc-value">4 Series</div>
+          </div>
+          <div class="floating-card float-2">
+            <div class="fc-label">Finishes</div>
+            <div class="fc-value">12+</div>
+          </div>
+          <div class="floating-card float-3">
+            <div class="fc-label">Experience</div>
+            <div class="fc-value">3D Live</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── STATS ─── -->
+  <div class="container">
+    <div class="stats-bar reveal">
+      <div class="stat-item">
+        <span class="stat-number">200+</span>
+        <span class="stat-label">Products</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">4</span>
+        <span class="stat-label">Series</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">50K+</span>
+        <span class="stat-label">Installations</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">98%</span>
+        <span class="stat-label">Satisfaction</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── PRODUCTS ─── -->
+  <section class="section products" id="products">
+    <div class="container">
+      <div class="products-header reveal">
+        <div class="section-tag">— Our Collections</div>
+        <h2 class="section-title">Crafted for <span class="accent">Excellence</span></h2>
+        <p class="section-desc">Four distinct series — each designed with a unique philosophy, delivering uncompromising quality for every vision.</p>
+      </div>
+
+      <div class="products-grid">
+
+        <div class="product-card reveal reveal-delay-1">
+          <div class="product-image-wrap">
+            <span class="product-3d-icon">🚿</span>
+            <span class="product-badge">Premium</span>
+          </div>
+          <div class="product-body">
+            <div class="product-series">BUECON — Series I</div>
+            <div class="product-name">Salt Series</div>
+            <p class="product-desc">Pure minimalism in matte white and chrome. A serene bathroom collection inspired by natural salt crystals — clean lines, infinite calm.</p>
+            <div class="product-footer">
+              <div class="product-specs">
+                <span class="spec-tag">Matte</span>
+                <span class="spec-tag">Chrome</span>
+              </div>
+              <a href="experience.html" class="product-cta">→</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card reveal reveal-delay-2">
+          <div class="product-image-wrap">
+            <span class="product-3d-icon">🛁</span>
+            <span class="product-badge">Flagship</span>
+          </div>
+          <div class="product-body">
+            <div class="product-series">BUECON — Series II</div>
+            <div class="product-name">Super Series</div>
+            <p class="product-desc">The pinnacle of engineering — integrated smart tech, thermal-touch surfaces, and precision craftsmanship for the discerning modern home.</p>
+            <div class="product-footer">
+              <div class="product-specs">
+                <span class="spec-tag">Smart</span>
+                <span class="spec-tag">Thermal</span>
+              </div>
+              <a href="experience.html" class="product-cta">→</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card reveal reveal-delay-3">
+          <div class="product-image-wrap">
+            <span class="product-3d-icon">🪥</span>
+            <span class="product-badge">Exclusive</span>
+          </div>
+          <div class="product-body">
+            <div class="product-series">BUECON — Series III</div>
+            <div class="product-name">Spirit Series</div>
+            <p class="product-desc">Designed for spiritual sanctuary. Warm wood tones, ambient lighting integration, and zen-inspired geometry — a complete sensory experience.</p>
+            <div class="product-footer">
+              <div class="product-specs">
+                <span class="spec-tag">Wood</span>
+                <span class="spec-tag">Zen</span>
+              </div>
+              <a href="experience.html" class="product-cta">→</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card reveal reveal-delay-1">
+          <div class="product-image-wrap">
+            <span class="product-3d-icon">🪞</span>
+            <span class="product-badge">New</span>
+          </div>
+          <div class="product-body">
+            <div class="product-series">BUECON — Series IV</div>
+            <div class="product-name">400 Series</div>
+            <p class="product-desc">Bold geometry meets industrial precision. Matte black hardware, angular forms, and statement pieces for the avant-garde aesthetic.</p>
+            <div class="product-footer">
+              <div class="product-specs">
+                <span class="spec-tag">Black</span>
+                <span class="spec-tag">Bold</span>
+              </div>
+              <a href="experience.html" class="product-cta">→</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EXPERIENCE CTA ─── -->
+  <section class="experience-cta section" id="about">
+    <div class="container">
+      <div class="experience-cta-box reveal">
+        <div class="section-tag" style="display:inline-flex;margin-bottom:20px;">— Immersive 3D Showroom</div>
+        <h2 class="cta-title">
+          Walk Through Your
+          <span style="background:linear-gradient(135deg,var(--neon-blue),var(--neon-purple),var(--neon-cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Future Bathroom</span>
+        </h2>
+        <p class="cta-sub">Our real-time 3D showroom lets you explore every detail — walk up to each product, see finishes, and get inspired.</p>
+        <a href="experience.html" class="btn-primary" style="display:inline-flex;margin-top:8px;">
+          Launch Experience
+          <svg class="btn-arrow" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10h12M10 4l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">BUECON</div>
+        <div class="footer-copy">© 2025 BUECON. All rights reserved. Premium Bathroom Systems.</div>
+        <div style="display:flex;gap:16px;">
+          <a href="#" style="color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-mono);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-secondary)'">Privacy</a>
+          <a href="#" style="color:var(--text-secondary);font-size:0.8rem;font-family:var(--font-mono);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='var(--neon-blue)'" onmouseout="this.style.color='var(--text-secondary)'">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    function transitionTo(url) {
+      const pt = document.getElementById('pageTransition');
+      pt.classList.add('active');
+      setTimeout(() => window.location.href = url, 400);
+    }
+
+    document.querySelectorAll('a[href="experience.html"]').forEach(a => {
+      a.addEventListener('click', e => { e.preventDefault(); transitionTo('experience.html'); });
+    });
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  </script>
+
+</body>
+</html>
