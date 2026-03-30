@@ -1,0 +1,175 @@
+/* ═══════════════════════════════════════════
+   BUECON — AI Assistant Bubble
+   ═══════════════════════════════════════════ */
+
+.assistant-bubble {
+  position: fixed;
+  bottom: 36px;
+  right: 36px;
+  z-index: var(--z-overlay);
+}
+
+.assistant-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--navy-deep);
+  cursor: pointer;
+  box-shadow: 0 8px 32px rgba(197, 164, 109, 0.35);
+  transition: transform var(--dur-mid) var(--ease-out), box-shadow var(--dur-mid);
+  position: relative;
+  z-index: 1;
+}
+
+.assistant-icon:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 12px 40px rgba(197, 164, 109, 0.5);
+}
+
+/* Pulsing ring */
+.assistant-icon::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(197, 164, 109, 0.4);
+  animation: assistantPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes assistantPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50%       { transform: scale(1.15); opacity: 0; }
+}
+
+/* ── Tooltip ── */
+.assistant-tooltip {
+  position: absolute;
+  right: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--steel);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  font-size: var(--fs-xs);
+  color: var(--silver);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-mid);
+}
+.assistant-tooltip::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid var(--steel);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+.assistant-bubble:hover .assistant-tooltip { opacity: 1; }
+
+/* ── Panel ── */
+.assistant-panel {
+  position: absolute;
+  bottom: 64px;
+  right: 0;
+  width: 280px;
+  padding: 24px 20px;
+  transform: translateY(12px) scale(0.96);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: transform 0.35s var(--ease-out), opacity 0.35s, visibility 0.35s;
+  transform-origin: bottom right;
+}
+
+.assistant-panel.open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+.assistant-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(197, 164, 109, 0.12);
+}
+
+.assistant-dot {
+  width: 7px;
+  height: 7px;
+  background: #4CAF50;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.6);
+}
+
+.assistant-header p {
+  font-size: var(--fs-sm);
+  color: var(--white);
+  font-weight: 500;
+  flex: 1;
+}
+
+.assistant-close {
+  color: var(--silver-dim);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color var(--dur-mid);
+  background: none;
+  border: none;
+}
+.assistant-close:hover { color: var(--white); }
+
+.assistant-question {
+  font-size: var(--fs-sm);
+  color: var(--silver-dim);
+  margin-bottom: 14px;
+}
+
+/* ── Style Filter Buttons ── */
+.style-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.style-btn {
+  font-size: var(--fs-xs);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--silver-dim);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.style-btn.active,
+.style-btn:hover {
+  color: var(--gold);
+  border-color: rgba(197, 164, 109, 0.4);
+  background: var(--gold-pale);
+}
+
+.assistant-result {
+  font-size: var(--fs-xs);
+  color: var(--gold-dim);
+  letter-spacing: 0.08em;
+}

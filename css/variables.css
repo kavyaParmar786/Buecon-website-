@@ -1,0 +1,76 @@
+/* ═══════════════════════════════════════════
+   BUECON — Design Tokens & CSS Variables
+   ═══════════════════════════════════════════ */
+
+:root {
+  /* ── Colors ── */
+  --navy:           #0B1C2C;
+  --navy-deep:      #060F18;
+  --steel:          #1F2A36;
+  --steel-mid:      #28374A;
+  --gold:           #C5A46D;
+  --gold-light:     #D4B87A;
+  --gold-dim:       #8C7348;
+  --gold-pale:      rgba(197, 164, 109, 0.12);
+  --silver:         #BFC7D5;
+  --silver-dim:     #7A8A9C;
+  --white:          #FFFFFF;
+  --white-dim:      rgba(255, 255, 255, 0.06);
+  --white-soft:     rgba(255, 255, 255, 0.85);
+
+  /* ── Glassmorphism ── */
+  --glass-bg:       rgba(255, 255, 255, 0.04);
+  --glass-bg-hover: rgba(255, 255, 255, 0.07);
+  --glass-border:   rgba(197, 164, 109, 0.18);
+  --glass-border-h: rgba(197, 164, 109, 0.35);
+  --glass-blur:     blur(20px);
+  --glass-blur-sm:  blur(12px);
+
+  /* ── Typography ── */
+  --font-serif:     'Playfair Display', Georgia, serif;
+  --font-sans:      'Poppins', system-ui, sans-serif;
+
+  /* ── Font Sizes ── */
+  --fs-xs:   0.75rem;
+  --fs-sm:   0.875rem;
+  --fs-base: 1rem;
+  --fs-md:   1.125rem;
+  --fs-lg:   1.375rem;
+  --fs-xl:   1.75rem;
+  --fs-2xl:  2.25rem;
+  --fs-3xl:  3rem;
+  --fs-4xl:  4rem;
+  --fs-5xl:  5.5rem;
+  --fs-6xl:  7.5rem;
+
+  /* ── Spacing ── */
+  --sp-xs:   0.5rem;
+  --sp-sm:   1rem;
+  --sp-md:   2rem;
+  --sp-lg:   4rem;
+  --sp-xl:   6rem;
+  --sp-2xl:  10rem;
+
+  /* ── Borders ── */
+  --radius-sm:   6px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
+  --radius-xl:   32px;
+  --radius-full: 9999px;
+
+  /* ── Transitions ── */
+  --ease-smooth:  cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:  cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast:     0.2s;
+  --dur-mid:      0.45s;
+  --dur-slow:     0.8s;
+  --dur-xslow:    1.2s;
+
+  /* ── Z-Index Layers ── */
+  --z-base:      1;
+  --z-overlay:   10;
+  --z-nav:       100;
+  --z-focus:     200;
+  --z-loader:    999;
+}
