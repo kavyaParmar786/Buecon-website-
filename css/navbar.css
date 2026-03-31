@@ -159,3 +159,8 @@
   #navbar { padding: 20px 24px; }
   #navbar.scrolled { padding: 14px 24px; }
 }
+
+.nav-links a.active {
+  color: var(--gold);
+  font-weight: 500;
+}
