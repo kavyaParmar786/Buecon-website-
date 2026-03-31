@@ -111,6 +111,7 @@ section {
   transition: all var(--dur-mid) var(--ease-out);
   position: relative;
   overflow: hidden;
+  z-index: 0; /* Add this */
 }
 .btn-primary::before {
   content: '';
@@ -119,11 +120,13 @@ section {
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   opacity: 0;
   transition: opacity var(--dur-mid);
+  z-index: -1; /* Add this - keeps overlay behind text */
 }
 .btn-primary:hover::before { opacity: 1; }
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 40px rgba(197, 164, 109, 0.35);
+  color: #000000; /* Add this - makes text BLACK on hover */
 }
 
 .btn-ghost {
