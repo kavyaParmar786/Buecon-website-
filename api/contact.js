@@ -1,42 +1,26 @@
 /* ═══════════════════════════════════════════
-   BUECON — Contact API (Node.js + Nodemailer)
-   
+   BUECON — Contact API
+   Vercel Serverless Function (Node.js)
+
    SETUP:
-   1. npm install express nodemailer cors dotenv
-   2. Create .env file with credentials
-   3. node api/contact.js
+   1. In Vercel dashboard → Settings → Environment Variables
+      Add: EMAIL_USER = kavyaparmar7866@gmail.com
+      Add: EMAIL_PASS = your_gmail_app_password
+   2. Deploy — this endpoint auto-activates at /api/contact
    ═══════════════════════════════════════════ */
 
-/* .env file should contain:
-   PORT=3001
-   EMAIL_USER=kavyaparmar7866@gmail.com
-   EMAIL_PASS=your_gmail_app_password
-   EMAIL_TO=kavyaparmar7866@gmail.com
-*/
-
-const express    = require('express');
 const nodemailer = require('nodemailer');
-const cors       = require('cors');
-require('dotenv').config();
 
-const app  = express();
-const PORT = process.env.PORT || 3001;
+module.exports = async function handler(req, res) {
+  /* CORS */
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-app.use(cors());
-app.use(express.json());
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-/* ── Nodemailer transporter ── */
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,   /* Use Gmail App Password, not account password */
-  },
-});
-
-/* ── POST /api/contact ── */
-app.post('/api/contact', async (req, res) => {
-  const { name, email, phone, interest, message } = req.body;
+  const { name, email, phone, interest, message } = req.body || {};
 
   /* Validate */
   if (!name?.trim() || !email?.trim() || !message?.trim()) {
@@ -46,37 +30,43 @@ app.post('/api/contact', async (req, res) => {
     return res.status(422).json({ error: 'Invalid email' });
   }
 
-  /* Mail options */
+  /* Nodemailer via Gmail */
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
   const mailOptions = {
     from:    `"BUECON Website" <${process.env.EMAIL_USER}>`,
     to:      process.env.EMAIL_TO || 'kavyaparmar7866@gmail.com',
     replyTo: email,
     subject: `BUECON Enquiry — ${name}`,
     html: `
-      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#333">
-        <h2 style="color:#C5A46D;font-family:serif">New BUECON Enquiry</h2>
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0B1C2C;color:#BFC7D5;padding:32px;border-radius:12px">
+        <h2 style="color:#C5A46D;font-family:Georgia,serif;margin-bottom:24px">New BUECON Enquiry</h2>
         <table style="width:100%;border-collapse:collapse">
-          <tr><td style="padding:8px 0;color:#666;width:120px">Name</td><td style="padding:8px 0"><strong>${name}</strong></td></tr>
-          <tr><td style="padding:8px 0;color:#666">Email</td><td style="padding:8px 0"><a href="mailto:${email}">${email}</a></td></tr>
-          <tr><td style="padding:8px 0;color:#666">Phone</td><td style="padding:8px 0">${phone || '—'}</td></tr>
-          <tr><td style="padding:8px 0;color:#666">Interest</td><td style="padding:8px 0">${interest || '—'}</td></tr>
+          <tr><td style="padding:8px 0;color:#7A8A9C;width:100px">Name</td><td style="padding:8px 0;color:#fff"><strong>${name}</strong></td></tr>
+          <tr><td style="padding:8px 0;color:#7A8A9C">Email</td><td style="padding:8px 0"><a href="mailto:${email}" style="color:#C5A46D">${email}</a></td></tr>
+          <tr><td style="padding:8px 0;color:#7A8A9C">Phone</td><td style="padding:8px 0;color:#BFC7D5">${phone || '—'}</td></tr>
+          <tr><td style="padding:8px 0;color:#7A8A9C">Interest</td><td style="padding:8px 0;color:#BFC7D5">${interest || '—'}</td></tr>
         </table>
-        <hr style="border:1px solid #eee;margin:20px 0"/>
-        <h4 style="color:#666;margin-bottom:8px">Message</h4>
-        <p style="line-height:1.7">${message.replace(/\n/g,'<br>')}</p>
-        <hr style="border:1px solid #eee;margin:20px 0"/>
-        <p style="color:#999;font-size:0.8rem">Sent via BUECON website contact form</p>
+        <div style="border-top:1px solid rgba(197,164,109,0.2);margin:24px 0;padding-top:20px">
+          <p style="color:#7A8A9C;font-size:0.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.1em">Message</p>
+          <p style="line-height:1.7;color:#BFC7D5">${message.replace(/\n/g, '<br>')}</p>
+        </div>
+        <p style="color:#3A4A5A;font-size:0.75rem;margin-top:24px">Sent via BUECON website · buecon.in</p>
       </div>
     `,
   };
 
   try {
     await transporter.sendMail(mailOptions);
-    res.json({ success: true });
+    return res.status(200).json({ success: true });
   } catch (err) {
-    console.error('Mail error:', err);
-    res.status(500).json({ error: 'Failed to send email' });
+    console.error('BUECON mail error:', err.message);
+    return res.status(500).json({ error: 'Failed to send email. Check EMAIL_USER and EMAIL_PASS env vars.' });
   }
-});
-
-app.listen(PORT, () => console.log(`BUECON API running on port ${PORT}`));
+};
