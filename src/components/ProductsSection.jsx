@@ -5,7 +5,7 @@
    ═══════════════════════════════════════════ */
 
 import ProductCard from './ProductCard';
-import { products } from '@/data/products';
+import products from "../data/products";
 import styles from './ProductsSection.module.css';
 
 export default function ProductsSection() {
