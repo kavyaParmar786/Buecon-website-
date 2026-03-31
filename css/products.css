@@ -205,3 +205,169 @@
   }
   .product-card { padding: 32px 24px; }
 }
+
+/* ═══════════════════════════════════════════
+   PRODUCTS — UPGRADE: Image/3D Viewer Toggle
+   ═══════════════════════════════════════════ */
+
+/* AI rec badge at top of card */
+.card-ai-rec-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--gold-dim);
+  background: var(--gold-pale);
+  border: 1px solid rgba(197, 164, 109, 0.2);
+  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  z-index: 2;
+}
+
+/* ── Media Area ── */
+.card-media {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(197, 164, 109, 0.08);
+}
+
+.card-img-view,
+.card-3d-view {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s var(--ease-smooth), visibility 0.45s;
+}
+
+.card-img-view.active,
+.card-3d-view.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ── Image placeholder (until real img added) ── */
+.card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(197,164,109,0.06), rgba(31,42,54,0.4));
+}
+
+.card-product-icon {
+  font-size: 3rem;
+  color: var(--gold);
+  opacity: 0.5;
+  display: block;
+}
+
+.card-img-label {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+}
+
+.card-img-hint {
+  font-size: 0.68rem;
+  color: var(--silver-dim);
+  opacity: 0.5;
+  text-align: center;
+  max-width: 180px;
+  line-height: 1.4;
+}
+
+.card-img-view img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── 3D Canvas ── */
+.mini-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  cursor: grab;
+}
+.mini-canvas:active { cursor: grabbing; }
+
+.viewer-3d-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(11, 28, 44, 0.8);
+  border: 1px solid rgba(197, 164, 109, 0.25);
+  border-radius: 4px;
+  padding: 3px 8px;
+  pointer-events: none;
+}
+
+.viewer-controls-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: rgba(191, 199, 213, 0.4);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ── Toggle buttons ── */
+.card-view-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(197, 164, 109, 0.12);
+  border-radius: var(--radius-full);
+  color: var(--silver-dim);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-smooth);
+}
+
+.toggle-btn.active {
+  background: rgba(197, 164, 109, 0.12);
+  border-color: rgba(197, 164, 109, 0.35);
+  color: var(--gold);
+}
+
+.toggle-btn:hover:not(.active) {
+  border-color: rgba(197, 164, 109, 0.2);
+  color: var(--silver);
+}
+
+/* ── Card info wrapper ── */
+.card-info { }
+
+/* Ensure card has enough height now */
+.product-card { padding-top: 40px; }

@@ -20,6 +20,10 @@
     renderFooter();
 
     /* 3. Init WebGL hero scene */
+    /* 3. Init per-product 3D viewers */
+    if (window.ProductViewer) ProductViewer.init();
+
+    /* 4. Init WebGL hero scene */
     WebGLScene.init('webgl-canvas');
 
     /* 4. Init focus mode (product click overlay) */

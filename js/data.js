@@ -152,8 +152,8 @@ const BUECON = {
 
   contact: {
     address: 'Rajkot, Gujarat, India — 360001',
-    phone: '+91 98765 43210',
-    email: 'hello@buecon.in',
+    phone: '9825591898',
+    email: 'kavyaparmar7866@gmail.com',
     hours: 'Mon – Sat, 9:00 AM – 6:00 PM IST',
     map: 'https://maps.google.com/?q=Rajkot,Gujarat,India',
   },

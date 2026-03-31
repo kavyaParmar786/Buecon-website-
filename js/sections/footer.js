@@ -77,3 +77,22 @@ function renderFooter() {
     </div>
   `;
 }
+
+/* Patch: inject admin link into footer after it renders */
+(function patchFooterAdmin() {
+  const orig = window.renderFooter;
+  window.renderFooter = function() {
+    orig();
+    const footerBottom = document.querySelector('.footer-bottom');
+    if (footerBottom && !document.getElementById('admin-footer-link')) {
+      const adminLink = document.createElement('a');
+      adminLink.id   = 'admin-footer-link';
+      adminLink.href = 'admin/index.html';
+      adminLink.style.cssText = 'font-size:0.7rem;color:rgba(122,138,156,0.3);transition:color 0.2s;';
+      adminLink.textContent = 'Admin';
+      adminLink.onmouseenter = () => adminLink.style.color = 'var(--gold)';
+      adminLink.onmouseleave = () => adminLink.style.color = 'rgba(122,138,156,0.3)';
+      footerBottom.appendChild(adminLink);
+    }
+  };
+})();

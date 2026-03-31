@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BUECON Admin Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/variables.css"/>
+  <link rel="stylesheet" href="../css/reset.css"/>
+  <link rel="stylesheet" href="admin.css"/>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-logo">
+      <span class="logo-b">B</span>UECON
+      <span class="admin-badge">Admin</span>
+    </div>
+
+    <nav class="admin-nav">
+      <button class="admin-nav-btn active" data-panel="dashboard" onclick="AdminPanel.showPanel('dashboard',this)">
+        <span class="nav-icon">◉</span> Dashboard
+      </button>
+      <button class="admin-nav-btn" data-panel="products" onclick="AdminPanel.showPanel('products',this)">
+        <span class="nav-icon">◈</span> Products
+      </button>
+      <button class="admin-nav-btn" data-panel="content" onclick="AdminPanel.showPanel('content',this)">
+        <span class="nav-icon">✦</span> Content
+      </button>
+      <button class="admin-nav-btn" data-panel="settings" onclick="AdminPanel.showPanel('settings',this)">
+        <span class="nav-icon">⊙</span> Settings
+      </button>
+    </nav>
+
+    <div class="admin-sidebar-footer">
+      <a href="../index.html" class="admin-back-link">← Back to Site</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+
+    <!-- Top bar -->
+    <header class="admin-topbar">
+      <h1 class="admin-page-title" id="adminPageTitle">Dashboard</h1>
+      <div class="admin-topbar-right">
+        <span class="admin-status-dot"></span>
+        <span class="admin-status-text">System Active</span>
+      </div>
+    </header>
+
+    <!-- ── DASHBOARD PANEL ── -->
+    <div class="admin-panel active" id="panel-dashboard">
+      <div class="dash-stats">
+        <div class="dash-stat glass-card">
+          <span class="stat-icon">◈</span>
+          <div>
+            <p class="stat-val" id="stat-products">4</p>
+            <p class="stat-lbl">Products</p>
+          </div>
+        </div>
+        <div class="dash-stat glass-card">
+          <span class="stat-icon">✦</span>
+          <div>
+            <p class="stat-val">3</p>
+            <p class="stat-lbl">Collections</p>
+          </div>
+        </div>
+        <div class="dash-stat glass-card">
+          <span class="stat-icon">◎</span>
+          <div>
+            <p class="stat-val">7</p>
+            <p class="stat-lbl">Sections</p>
+          </div>
+        </div>
+        <div class="dash-stat glass-card">
+          <span class="stat-icon">◉</span>
+          <div>
+            <p class="stat-val" id="stat-msgs">—</p>
+            <p class="stat-lbl">Messages</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-card glass-card">
+          <h3 class="dash-card-title">Quick Actions</h3>
+          <div class="quick-actions">
+            <button class="qa-btn" onclick="AdminPanel.showPanel('products', document.querySelector('[data-panel=products]')); setTimeout(()=>document.getElementById('addProductBtn').click(),100)">
+              + Add Product
+            </button>
+            <button class="qa-btn" onclick="AdminPanel.showPanel('content', document.querySelector('[data-panel=content]'))">
+              ✎ Edit Content
+            </button>
+            <button class="qa-btn" onclick="window.open('../index.html')">
+              ↗ View Site
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-card glass-card">
+          <h3 class="dash-card-title">Setup Status</h3>
+          <div class="setup-list">
+            <div class="setup-item">
+              <span class="setup-check ok">✓</span>
+              <span>Site structure</span>
+            </div>
+            <div class="setup-item">
+              <span class="setup-check ok">✓</span>
+              <span>WebGL scene</span>
+            </div>
+            <div class="setup-item">
+              <span class="setup-check warn">!</span>
+              <span>Contact API — configure api/.env</span>
+            </div>
+            <div class="setup-item">
+              <span class="setup-check warn">!</span>
+              <span>Product images — add to assets/images/</span>
+            </div>
+            <div class="setup-item">
+              <span class="setup-check warn">!</span>
+              <span>3D models — add .glb to assets/models/</span>
+            </div>
+            <div class="setup-item">
+              <span class="setup-check warn">!</span>
+              <span>Database — connect Supabase in settings</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PRODUCTS PANEL ── -->
+    <div class="admin-panel" id="panel-products">
+      <div class="panel-toolbar">
+        <h2 class="panel-subtitle">Product Management</h2>
+        <button class="btn-admin-primary" id="addProductBtn" onclick="AdminPanel.openProductModal()">+ Add Product</button>
+      </div>
+
+      <div class="products-admin-grid" id="productsAdminGrid">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- ── CONTENT PANEL ── -->
+    <div class="admin-panel" id="panel-content">
+      <div class="panel-toolbar">
+        <h2 class="panel-subtitle">Content Management</h2>
+        <button class="btn-admin-primary" onclick="AdminPanel.saveContent()">Save Changes</button>
+      </div>
+
+      <div class="content-form glass-card">
+        <div class="form-group">
+          <label class="admin-label">Hero Headline</label>
+          <input class="admin-input" id="content-headline" value="Designed to Speak. Built to Last."/>
+        </div>
+        <div class="form-group">
+          <label class="admin-label">Hero Subline</label>
+          <input class="admin-input" id="content-subline" value="Hardware that transforms spaces into experiences. Minimal. Refined. Enduring."/>
+        </div>
+        <div class="form-group">
+          <label class="admin-label">About Text</label>
+          <textarea class="admin-textarea" id="content-about" rows="4">Founded in 2016 in Rajkot, Gujarat, BUECON was born from a singular conviction — that the hardware you live with every day should be as beautiful as the space it inhabits.</textarea>
+        </div>
+        <div class="form-group">
+          <label class="admin-label">Contact Phone</label>
+          <input class="admin-input" id="content-phone" value="9825591898"/>
+        </div>
+        <div class="form-group">
+          <label class="admin-label">Contact Email</label>
+          <input class="admin-input" id="content-email" value="kavyaparmar7866@gmail.com"/>
+        </div>
+      </div>
+
+      <div class="admin-info-box">
+        <strong>💡 Note:</strong> Content changes are saved to localStorage for now.
+        To persist changes, connect a database (Supabase recommended) in Settings.
+      </div>
+    </div>
+
+    <!-- ── SETTINGS PANEL ── -->
+    <div class="admin-panel" id="panel-settings">
+      <h2 class="panel-subtitle">Database & API Settings</h2>
+
+      <div class="settings-grid">
+        <div class="glass-card settings-card">
+          <h3 class="settings-card-title">Supabase (Recommended)</h3>
+          <p class="settings-desc">Connect to Supabase for live product & content management.</p>
+          <div class="form-group">
+            <label class="admin-label">Supabase URL</label>
+            <input class="admin-input" id="sb-url" placeholder="https://xxx.supabase.co"/>
+          </div>
+          <div class="form-group">
+            <label class="admin-label">Anon Key</label>
+            <input class="admin-input" id="sb-key" type="password" placeholder="eyJhb…"/>
+          </div>
+          <button class="btn-admin-primary" onclick="AdminPanel.testSupabase()">Test Connection</button>
+          <span class="settings-status" id="sb-status"></span>
+        </div>
+
+        <div class="glass-card settings-card">
+          <h3 class="settings-card-title">Email (Nodemailer)</h3>
+          <p class="settings-desc">Configure SMTP for the contact form.</p>
+          <div class="form-group">
+            <label class="admin-label">Gmail Address</label>
+            <input class="admin-input" id="smtp-user" placeholder="kavyaparmar7866@gmail.com"/>
+          </div>
+          <div class="form-group">
+            <label class="admin-label">App Password</label>
+            <input class="admin-input" id="smtp-pass" type="password" placeholder="Gmail App Password"/>
+          </div>
+          <div class="admin-info-box" style="margin-top:12px">
+            Save these values in <code>api/.env</code> as EMAIL_USER and EMAIL_PASS
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── PRODUCT MODAL ── -->
+  <div class="admin-modal-bg" id="productModalBg">
+    <div class="admin-modal glass-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Product</h3>
+        <button class="modal-close" onclick="AdminPanel.closeProductModal()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="admin-label">Series Name</label>
+          <input class="admin-input" id="mp-series" placeholder="e.g. Salt Series"/>
+        </div>
+        <div class="form-row2">
+          <div class="form-group">
+            <label class="admin-label">Name</label>
+            <input class="admin-input" id="mp-name" placeholder="e.g. Salt"/>
+          </div>
+          <div class="form-group">
+            <label class="admin-label">Icon (symbol)</label>
+            <input class="admin-input" id="mp-icon" placeholder="e.g. ◈" style="width:80px"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="admin-label">Tagline</label>
+          <input class="admin-input" id="mp-tagline" placeholder="e.g. Pure Form, Pure Function"/>
+        </div>
+        <div class="form-group">
+          <label class="admin-label">Description</label>
+          <textarea class="admin-textarea" id="mp-desc" rows="3" placeholder="Product description…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="admin-label">Style Tags (comma separated)</label>
+          <input class="admin-input" id="mp-style" placeholder="modern, minimal, luxury"/>
+        </div>
+        <div class="form-group">
+          <label class="admin-label">Features (one per line)</label>
+          <textarea class="admin-textarea" id="mp-features" rows="4" placeholder="Feature 1&#10;Feature 2&#10;Feature 3"></textarea>
+        </div>
+
+        <div class="upload-row">
+          <div class="upload-box" id="imgUploadBox">
+            <span class="upload-icon">◫</span>
+            <p>Product Image</p>
+            <span class="upload-hint">.jpg .png .webp</span>
+            <input type="file" accept="image/*" id="mp-image" onchange="AdminPanel.previewImg(this)"/>
+          </div>
+          <div class="upload-box" id="modelUploadBox">
+            <span class="upload-icon">◈</span>
+            <p>3D Model</p>
+            <span class="upload-hint">.glb .gltf</span>
+            <input type="file" accept=".glb,.gltf" id="mp-model" onchange="AdminPanel.handleModel(this)"/>
+          </div>
+        </div>
+
+        <img id="mp-img-preview" src="" alt="" style="display:none;max-height:100px;border-radius:8px;margin-top:8px"/>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-admin-ghost" onclick="AdminPanel.closeProductModal()">Cancel</button>
+        <button class="btn-admin-primary" onclick="AdminPanel.saveProduct()">Save Product</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="admin-toast" id="adminToast"></div>
+
+  <script src="../js/data.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

@@ -1,145 +1,142 @@
-# BUECON — Premium Bathroom Hardware Website
+# BUECON — Premium Bathroom Hardware Website (v2 — Upgraded)
 
 > Designed to Speak. Built to Last.
-
-A cinematic, WebGL-powered luxury website for BUECON, a premium bathroom hardware brand based in Rajkot, Gujarat, India (est. 2016).
-
----
 
 ## 📁 Project Structure
 
 ```
 buecon/
-├── index.html                  ← Main HTML shell
-│
+├── index.html                     ← Main site
+├── admin/
+│   ├── index.html                 ← Admin panel (/admin)
+│   ├── admin.css                  ← Admin styles
+│   └── admin.js                   ← Admin logic (CRUD, localStorage)
+├── api/
+│   ├── contact.php                ← PHP mailer (shared hosting)
+│   ├── contact.js                 ← Node.js + Nodemailer API
+│   └── .env.example               ← Copy to .env and fill credentials
+├── assets/
+│   ├── images/                    ← Add product images here: salt.jpg, super.jpg, etc.
+│   └── models/                    ← Add 3D models here: salt.glb, super.glb, etc.
 ├── css/
-│   ├── variables.css           ← All design tokens (colors, fonts, spacing)
-│   ├── reset.css               ← CSS reset
-│   ├── base.css                ← Body, typography, buttons, utilities
-│   ├── loader.css              ← Intro loader animation
-│   ├── navbar.css              ← Sticky navbar + mobile menu
-│   ├── hero.css                ← Full-screen hero section
-│   ├── about.css               ← About / brand story section
-│   ├── products.css            ← Product series grid & cards
-│   ├── why.css                 ← Why BUECON section
-│   ├── mission.css             ← Mission & Vision split panels
-│   ├── contact.css             ← Contact form + info
-│   ├── footer.css              ← Footer layout
-│   ├── focus-mode.css          ← Cinematic product overlay
-│   └── assistant.css           ← AI style advisor bubble
-│
+│   ├── variables.css
+│   ├── reset.css
+│   ├── base.css                   ← Cursor, buttons, glass panels, utilities
+│   ├── loader.css
+│   ├── navbar.css
+│   ├── hero.css
+│   ├── about.css
+│   ├── products.css               ← Now includes image/3D viewer toggle styles
+│   ├── why.css
+│   ├── mission.css
+│   ├── contact.css
+│   ├── footer.css
+│   ├── focus-mode.css
+│   └── assistant.css
 ├── js/
-│   ├── data.js                 ← All brand content & product data
-│   ├── webgl-scene.js          ← Three.js hero scene (floating hardware)
-│   ├── focus-mode.js           ← Cinematic product click interaction
-│   ├── animations.js           ← GSAP ScrollTrigger, cursor, magnetic btns
-│   ├── loader.js               ← Loader timing controller
-│   ├── assistant.js            ← AI style advisor panel
-│   ├── main.js                 ← App entry point / boot sequence
-│   │
-│   └── sections/               ← Each section renders its own HTML
+│   ├── data.js                    ← All brand/product content + real contact info
+│   ├── webgl-scene.js             ← UPGRADED: big objects, cinematic lighting, hover
+│   ├── product-viewer.js          ← NEW: per-card 3D viewer with drag + zoom
+│   ├── focus-mode.js              ← Cinematic product overlay
+│   ├── animations.js              ← GSAP scroll, cursor, magnetic
+│   ├── loader.js
+│   ├── assistant.js               ← AI style filter
+│   ├── main.js
+│   └── sections/
 │       ├── about.js
-│       ├── products.js
+│       ├── products.js            ← UPGRADED: image/3D toggle per card
 │       ├── why.js
 │       ├── mission.js
-│       ├── contact.js
+│       ├── contact.js             ← UPGRADED: validation + loading + fallback mailto
 │       └── footer.js
 ```
 
 ---
 
-## 🚀 How to Run
-
-This is a **pure HTML/CSS/JS** site — no build step needed.
-
-1. Unzip the folder
-2. Open `index.html` in a browser directly, **or**
-3. Serve with any static server for best results:
+## 🚀 Run the Site
 
 ```bash
-# Using VS Code Live Server (recommended)
-# Right-click index.html → Open with Live Server
-
-# Or using Node.js
+# Static — no install
 npx serve .
+# then open http://localhost:3000
 
-# Or using Python
-python -m http.server 8080
+# Admin panel
+# http://localhost:3000/admin/
 ```
-
-> ⚠️ **Note:** WebGL works best over a local server (file:// may block some features in certain browsers).
 
 ---
 
-## 🎨 Tech Stack
+## 📧 Contact Form Setup
 
-| Layer         | Technology                  |
-|---------------|-----------------------------|
-| Structure     | HTML5                       |
-| Styling       | CSS3 (custom properties)    |
-| 3D / WebGL    | Three.js r128               |
-| Animations    | GSAP 3 + ScrollTrigger      |
-| Fonts         | Playfair Display + Poppins  |
+### Option A — PHP (shared hosting / cPanel)
+Upload files to your hosting. `api/contact.php` will handle submissions automatically.
 
-All libraries are loaded via CDN — no npm install required.
+### Option B — Node.js
+```bash
+cd api
+cp .env.example .env
+# Edit .env with your Gmail App Password
+npm install express nodemailer cors dotenv
+node contact.js
+# API runs on port 3001
+```
+
+**Gmail App Password:** Google Account → Security → 2FA → App Passwords → Generate
 
 ---
 
-## 🧩 Key Features
+## 🖼️ Adding Real Product Images
 
-- **WebGL Hero** — 6 floating hardware objects (faucet, handle, towel ring, soap dispenser, knob, bracket) with metallic PBR materials, mouse parallax, and scroll-driven camera
-- **Cinematic Loader** — Minimal logo animation before site entry
-- **Focus Mode** — Click any product card to enter a cinematic overlay with a dedicated 3D scene, spotlight lighting, and product detail panel
-- **AI Style Advisor** — Floating bubble that filters products by style (Modern / Minimal / Luxury)
-- **GSAP Scroll Animations** — Every section reveals with staggered, physics-feel animations
-- **Magnetic Buttons** — Hero CTA buttons follow the cursor with a gentle pull
-- **Custom Cursor** — Gold dot + ring cursor with hover reactions
-- **Responsive** — Full mobile support with hamburger menu
+Place images in `assets/images/` named:
+- `salt.jpg`
+- `super.jpg`
+- `spirit.jpg`
+- `400.jpg`
+
+Then in `js/sections/products.js`, uncomment the `<img>` tag inside each card.
 
 ---
 
-## 🎨 Customisation
+## 📦 Adding 3D Models (.glb)
 
-### Update Brand Content
-All text, product data, and brand details live in one place:
-```
-js/data.js
-```
+1. Place your `.glb` files in `assets/models/`
+2. In `js/product-viewer.js`, replace `buildProductMesh()` with a GLTF loader:
 
-### Change Colors
-All color tokens are in:
-```
-css/variables.css
-```
-
-### Add/Remove Products
-Edit the `products` array in `js/data.js`, then update `js/sections/products.js` if you need layout changes.
-
-### Disable WebGL (fallback only)
-In `js/main.js`, comment out:
 ```js
-WebGLScene.init('webgl-canvas');
+const loader = new THREE.GLTFLoader();
+loader.load('assets/models/' + productId + '.glb', (gltf) => {
+  v.obj = gltf.scene;
+  v.scene.add(v.obj);
+});
 ```
-The site will fall back to a premium static gradient.
 
----
-
-## 📦 CDN Dependencies
-
+You'll need to add GLTFLoader CDN:
 ```html
-<!-- Three.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
-<!-- GSAP Core -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-
-<!-- GSAP ScrollTrigger -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/loaders/GLTFLoader.js"></script>
 ```
 
 ---
 
-## 🏷️ Brand
+## 🛠️ Admin Panel — /admin/
 
-**BUECON** — Rajkot, Gujarat, India · Est. 2016  
-*Hardware that transforms spaces into experiences.*
+| Feature | Status |
+|---|---|
+| Product listing | ✅ |
+| Add / Edit / Delete product | ✅ |
+| Image upload UI | ✅ (manual save to assets/) |
+| 3D model upload UI | ✅ (manual save to assets/) |
+| Content editing | ✅ (localStorage) |
+| Supabase connection test | ✅ |
+| Live database sync | Connect Supabase in Settings |
+
+---
+
+## 🎨 Key Upgrades in v2
+
+| Feature | What Changed |
+|---|---|
+| WebGL scene | Objects 1.4–1.65× larger, closer camera (z=5.5), dramatic 3-point + glow lighting |
+| Product cards | Image / 3D toggle per card, drag-rotate, scroll-to-zoom |
+| Contact form | Real validation, loading state, mailto fallback, real contact info |
+| Admin panel | Full CRUD at /admin, product management, content editor, Supabase settings |
+| Contact info | Phone: 9825591898 · Email: kavyaparmar7866@gmail.com |
