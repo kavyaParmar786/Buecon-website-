@@ -260,7 +260,17 @@
           <textarea class="admin-textarea" id="mp-features" rows="4" placeholder="Feature 1&#10;Feature 2&#10;Feature 3"></textarea>
         </div>
 
-        <div class="upload-row">
+        <div class="form-group">
+            <label class="admin-label">Image URL (Supabase Storage)</label>
+            <input class="admin-input" id="mp-imgurl" placeholder="https://qjpomdhpvheudpduywjj.supabase.co/storage/v1/object/public/..."/>
+          </div>
+
+          <div class="form-group">
+            <label class="admin-label">AI Insight Text</label>
+            <input class="admin-input" id="mp-insight" placeholder="e.g. Perfect for modern interiors"/>
+          </div>
+
+          <div class="upload-row">
           <div class="upload-box" id="imgUploadBox">
             <span class="upload-icon">◫</span>
             <p>Product Image</p>
@@ -288,6 +298,7 @@
   <!-- Toast -->
   <div class="admin-toast" id="adminToast"></div>
 
+  <script src="../js/supabase-client.js"></script>
   <script src="../js/data.js"></script>
   <script src="admin.js"></script>
 </body>

@@ -1,17 +1,19 @@
 /* ═══════════════════════════════════════════
    BUECON — Main Entry Point
-   Boots all modules in correct order
+   Loads Supabase data FIRST, then boots UI
    ═══════════════════════════════════════════ */
 
 (function () {
   'use strict';
 
-  /* ── Boot sequence ── */
-  function boot() {
-    /* 1. Start loader first */
+  async function boot() {
+    /* 1. Loader starts immediately */
     Loader.init();
 
-    /* 2. Render all section HTML */
+    /* 2. Fetch live data from Supabase (with fallback) */
+    await loadBueconData();
+
+    /* 3. Render all section HTML (now with live data) */
     renderAbout();
     renderProducts();
     renderWhy();
@@ -19,60 +21,32 @@
     renderContact();
     renderFooter();
 
-    /* 3. Init WebGL hero scene */
-    /* 3. Init per-product 3D viewers */
+    /* 4. Init 3D product viewers */
     if (window.ProductViewer) ProductViewer.init();
 
-    /* 4. Init WebGL hero scene */
+    /* 5. Init WebGL hero scene */
     WebGLScene.init('webgl-canvas');
 
-    /* 4. Init focus mode (product click overlay) */
+    /* 6. Init focus mode */
     FocusMode.init();
 
-    /* 5. Init animations (after sections rendered) */
+    /* 7. Init animations */
     Animations.init();
 
-    /* 6. Init AI assistant */
+    /* 8. Init AI assistant */
     Assistant.init();
 
-    /* 7. Contact form handler */
+    /* 9. Contact form */
     initContactForm();
 
-    /* 8. Smooth scroll for anchor links */
+    /* 10. Smooth scroll */
     initSmoothScroll();
   }
 
-  /* ── Contact form ── */
   function initContactForm() {
-    const form = document.getElementById('contactForm');
-    if (!form) return;
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const btn = form.querySelector('.form-submit');
-      if (btn) {
-        btn.textContent = 'Sending…';
-        btn.disabled    = true;
-      }
-
-      /* Simulate async send */
-      setTimeout(() => {
-        form.innerHTML = `
-          <div class="form-success" style="display:block;text-align:center;padding:40px 20px">
-            <div style="font-size:2rem;margin-bottom:16px">✦</div>
-            <p style="font-family:var(--font-serif);font-size:1.4rem;color:var(--white);margin-bottom:8px">
-              Thank you
-            </p>
-            <p style="color:var(--silver-dim);font-size:0.9rem">
-              We'll be in touch within 24 hours.
-            </p>
-          </div>`;
-      }, 1500);
-    });
+    /* Handled by sections/contact.js — just wire submit */
   }
 
-  /* ── Smooth scroll anchors ── */
   function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', (e) => {
@@ -84,11 +58,9 @@
     });
   }
 
-  /* ── Start on DOM ready ── */
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
   } else {
     boot();
   }
-
 })();
