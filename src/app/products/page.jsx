@@ -3,8 +3,7 @@
    Route: yoursite.com/products
    ═══════════════════════════════════════════ */
 
-import ProductsSection from "@/components/ProductsSection";
-
+import ProductsSection from "../../components/ProductsSection";
 export const metadata = {
   title: 'Products — BUECON Bathroom Hardware',
   description: 'Explore the Salt, Super, Spirit and 400 series.',
