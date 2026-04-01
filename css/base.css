@@ -1,8 +1,7 @@
 /* ═══════════════════════════════════════════
-   BUECON — Base Styles, Typography & Utilities
+   BUECON — Base Styles — FIXED
    ═══════════════════════════════════════════ */
 
-/* ── Body ── */
 body {
   background-color: var(--navy);
   color: var(--silver);
@@ -12,38 +11,40 @@ body {
   cursor: none;
 }
 
+/* ── BUECON Logo Font ── */
+.nav-logo, .footer-logo, .loader-logo, .admin-logo {
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+}
+
 /* ── Custom Cursor ── */
 .cursor {
   position: fixed;
-  width: 12px;
-  height: 12px;
+  width: 12px; height: 12px;
   background: var(--gold);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
-  transition: transform 0.1s, width 0.3s var(--ease-out), height 0.3s var(--ease-out), opacity 0.3s;
+  transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), opacity 0.3s;
   mix-blend-mode: difference;
 }
 .cursor-ring {
   position: fixed;
-  width: 36px;
-  height: 36px;
-  border: 1px solid rgba(197, 164, 109, 0.5);
+  width: 36px; height: 36px;
+  border: 1px solid rgba(197,164,109,0.5);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
   transform: translate(-50%, -50%);
-  transition: transform 0.15s var(--ease-smooth), width 0.4s var(--ease-out), height 0.4s var(--ease-out), opacity 0.3s;
+  transition: width 0.4s var(--ease-out), height 0.4s var(--ease-out), opacity 0.3s;
 }
-.cursor.hovered { width: 6px; height: 6px; }
+.cursor.hovered  { width: 6px; height: 6px; }
 .cursor-ring.hovered { width: 56px; height: 56px; opacity: 0.5; }
 
 /* ── Section Shared ── */
-section {
-  position: relative;
-  width: 100%;
-}
+section { position: relative; width: 100%; }
 
 .container {
   max-width: 1280px;
@@ -51,10 +52,8 @@ section {
   padding: 0 var(--sp-md);
 }
 
-/* ── Section Label ── */
 .section-label {
   display: inline-block;
-  font-family: var(--font-sans);
   font-size: var(--fs-xs);
   font-weight: 500;
   letter-spacing: 0.25em;
@@ -63,7 +62,6 @@ section {
   margin-bottom: var(--sp-sm);
 }
 
-/* ── Section Title ── */
 .section-title {
   font-family: var(--font-serif);
   font-size: clamp(2rem, 4vw, 3.2rem);
@@ -72,13 +70,8 @@ section {
   line-height: 1.15;
   margin-bottom: var(--sp-sm);
 }
+.section-title .italic { font-style: italic; color: var(--gold); }
 
-.section-title .italic {
-  font-style: italic;
-  color: var(--gold);
-}
-
-/* ── Section Subtitle ── */
 .section-sub {
   font-size: var(--fs-base);
   color: var(--silver-dim);
@@ -86,22 +79,23 @@ section {
   line-height: 1.8;
 }
 
-/* ── Divider ── */
 .gold-divider {
-  width: 48px;
-  height: 1px;
+  width: 48px; height: 1px;
   background: linear-gradient(90deg, var(--gold), transparent);
   margin: var(--sp-md) 0;
 }
 
-/* ── Buttons ── */
+/* ══════════════════════════════
+   BUTTONS — FIXED HOVER STATES
+   Text becomes dark/black on hover
+══════════════════════════════ */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 14px 32px;
   background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-  color: var(--navy-deep);
+  color: var(--navy-deep) !important;
   font-family: var(--font-sans);
   font-size: var(--fs-sm);
   font-weight: 600;
@@ -111,23 +105,26 @@ section {
   transition: all var(--dur-mid) var(--ease-out);
   position: relative;
   overflow: hidden;
-  z-index: 0; /* Add this */
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
 }
+.btn-primary * { color: var(--navy-deep) !important; }
 .btn-primary::before {
   content: '';
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: linear-gradient(135deg, var(--gold-light), var(--gold));
   opacity: 0;
   transition: opacity var(--dur-mid);
-  z-index: -1; /* Add this - keeps overlay behind text */
+}
+.btn-primary:hover {
+  color: #000 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(197,164,109,0.35);
 }
 .btn-primary:hover::before { opacity: 1; }
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(197, 164, 109, 0.35);
-  color: #000000; /* Add this - makes text BLACK on hover */
-}
+.btn-primary:hover * { color: #000 !important; }
+.btn-primary span { position: relative; z-index: 1; color: var(--navy-deep) !important; }
 
 .btn-ghost {
   display: inline-flex;
@@ -142,17 +139,90 @@ section {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(191, 199, 213, 0.25);
+  border: 1px solid rgba(191,199,213,0.25);
   transition: all var(--dur-mid) var(--ease-out);
+  cursor: pointer;
+  text-decoration: none;
 }
 .btn-ghost:hover {
   border-color: var(--gold);
-  color: var(--gold);
+  color: #000 !important;
+  background: var(--gold);
   transform: translateY(-2px);
-  background: var(--gold-pale);
 }
 
-/* ── Glass Panel ── */
+/* Nav CTA hover fix */
+.nav-cta {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 10px 22px;
+  border: 1px solid rgba(197,164,109,0.4);
+  border-radius: var(--radius-full);
+  transition: all var(--dur-mid) var(--ease-out);
+  text-decoration: none;
+}
+.nav-cta:hover {
+  background: var(--gold);
+  color: #000 !important;
+  border-color: var(--gold);
+}
+
+/* Toggle buttons in product cards */
+.toggle-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(197,164,109,0.12);
+  border-radius: var(--radius-full);
+  color: var(--silver-dim);
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.toggle-btn:hover {
+  background: var(--gold);
+  color: #000 !important;
+  border-color: var(--gold);
+}
+.toggle-btn.active {
+  background: rgba(197,164,109,0.12);
+  border-color: rgba(197,164,109,0.35);
+  color: var(--gold);
+}
+.toggle-btn.active:hover {
+  background: var(--gold);
+  color: #000 !important;
+}
+
+/* Style filter buttons */
+.style-btn {
+  font-size: var(--fs-xs);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  color: var(--silver-dim);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.style-btn:hover, .style-btn.active {
+  color: #000 !important;
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+/* Glass Panel */
 .glass-panel {
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
@@ -160,60 +230,24 @@ section {
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
 }
-.glass-panel:hover {
-  border-color: var(--glass-border-h);
-}
 
-/* ── Scroll Reveal Utility ── */
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
-}
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
-
-/* ── Gold accent line ── */
-.accent-line {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(180deg, var(--gold), transparent);
-  border-radius: 2px;
-}
-
-/* ── Grain Overlay ── */
+/* Grain Overlay */
 body::after {
   content: '';
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
   z-index: 9997;
   opacity: 0.35;
 }
 
-/* ── Magnetic button wrapper ── */
-.magnetic {
-  display: inline-block;
-  position: relative;
-}
+.magnetic { display: inline-block; position: relative; }
 
-/* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--navy-deep); }
 ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
 
-/* ── Responsive ── */
 @media (max-width: 768px) {
   body { cursor: auto; }
   .cursor, .cursor-ring { display: none; }
