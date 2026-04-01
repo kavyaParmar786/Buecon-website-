@@ -1,8 +1,9 @@
 /* ═══════════════════════════════════════════
    BUECON — Data Layer
-   Loads products + content from Supabase.
-   Falls back to hardcoded defaults if DB
-   is unreachable (offline / first load).
+   Priority order:
+   1. Supabase (if connected)
+   2. Admin panel localStorage
+   3. Hardcoded defaults
    ═══════════════════════════════════════════ */
 
 /* ── Hardcoded fallback data ── */
@@ -101,42 +102,92 @@ const BUECON_DEFAULTS = {
   },
 };
 
-/* ── Live BUECON object (gets populated below) ── */
+/* ── Live BUECON object ── */
 const BUECON = { ...BUECON_DEFAULTS };
 
-/* ── Load from Supabase ── */
-async function loadBueconData() {
+/* ══════════════════════════════════════════
+   HELPER: Normalize a product row
+   (style & features may be arrays or strings)
+   ══════════════════════════════════════════ */
+function normalizeProduct(p) {
+  return {
+    ...p,
+    style:    Array.isArray(p.style)    ? p.style    : (p.style    || '').split(',').map(s => s.trim()).filter(Boolean),
+    features: Array.isArray(p.features) ? p.features : (p.features || '').split('\n').map(s => s.trim()).filter(Boolean),
+  };
+}
+
+/* ══════════════════════════════════════════
+   HELPER: Load products from Admin localStorage
+   The Admin panel stores products under key
+   'buecon_products' as a JSON array.
+   ══════════════════════════════════════════ */
+function loadFromLocalStorage() {
   try {
-    /* Load products */
+    const raw = localStorage.getItem('buecon_products');
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.map(normalizeProduct);
+    }
+  } catch(e) {
+    console.warn('BUECON: localStorage parse error', e.message);
+  }
+  return null;
+}
+
+/* ══════════════════════════════════════════
+   MAIN: Load data — Supabase → localStorage → defaults
+   ══════════════════════════════════════════ */
+async function loadBueconData() {
+  let loadedFromSupabase = false;
+
+  /* ── 1. Try Supabase ── */
+  try {
     const products = await SB.get('products', '?order=created_at.asc');
     if (products && products.length > 0) {
-      /* Normalize: style + features may come as postgres arrays or JSON strings */
-      BUECON.products = products.map(p => ({
-        ...p,
-        style:    Array.isArray(p.style)    ? p.style    : (p.style    || '').split(',').map(s => s.trim()).filter(Boolean),
-        features: Array.isArray(p.features) ? p.features : (p.features || '').split('\n').map(s => s.trim()).filter(Boolean),
-      }));
+      BUECON.products = products.map(normalizeProduct);
+      loadedFromSupabase = true;
+      console.log(`BUECON: loaded ${BUECON.products.length} products from Supabase ✓`);
     }
 
-    /* Load content */
     const content = await SB.get('content');
     if (content && content.length > 0) {
       const map = {};
       content.forEach(row => { map[row.key] = row.value; });
-
-      /* Patch brand + contact from content table */
-      if (map.hero_headline)   BUECON.brand.tagline       = map.hero_headline;
-      if (map.hero_subline)    BUECON.brand.subline        = map.hero_subline;
-      if (map.about_text)      BUECON.brand.about          = map.about_text;
-      if (map.contact_phone)   BUECON.contact.phone        = map.contact_phone;
-      if (map.contact_email)   BUECON.contact.email        = map.contact_email;
-
-      /* Store full map for other uses */
+      if (map.hero_headline)   BUECON.brand.tagline  = map.hero_headline;
+      if (map.hero_subline)    BUECON.brand.subline   = map.hero_subline;
+      if (map.about_text)      BUECON.brand.about     = map.about_text;
+      if (map.contact_phone)   BUECON.contact.phone   = map.contact_phone;
+      if (map.contact_email)   BUECON.contact.email   = map.contact_email;
       BUECON.contentMap = map;
     }
-
-    console.log(`BUECON: loaded ${BUECON.products.length} products from Supabase ✓`);
   } catch (err) {
-    console.warn('BUECON: Supabase load failed, using defaults.', err.message);
+    console.warn('BUECON: Supabase unavailable —', err.message);
+  }
+
+  /* ── 2. Fall back to Admin localStorage if Supabase gave nothing ── */
+  if (!loadedFromSupabase) {
+    const localProducts = loadFromLocalStorage();
+    if (localProducts) {
+      BUECON.products = localProducts;
+      console.log(`BUECON: loaded ${BUECON.products.length} products from Admin localStorage ✓`);
+    } else {
+      console.log('BUECON: using hardcoded defaults ✓');
+    }
+
+    /* Also load content fields saved by Admin localStorage */
+    try {
+      const contentRaw = localStorage.getItem('buecon_content');
+      if (contentRaw) {
+        const map = JSON.parse(contentRaw);
+        if (map.hero_headline)  BUECON.brand.tagline  = map.hero_headline;
+        if (map.hero_subline)   BUECON.brand.subline   = map.hero_subline;
+        if (map.about_text)     BUECON.brand.about     = map.about_text;
+        if (map.contact_phone)  BUECON.contact.phone   = map.contact_phone;
+        if (map.contact_email)  BUECON.contact.email   = map.contact_email;
+        BUECON.contentMap = map;
+      }
+    } catch(e) { /* ignore */ }
   }
 }
