@@ -4,19 +4,33 @@
    Falls back to procedural mesh if no GLB
    ═══════════════════════════════════════════ */
 
+/* ══════════════════════════════════════════
+   KEY FIX: Load GLTFLoader from CDN if not
+   already present. This runs once on page load.
+   ══════════════════════════════════════════ */
+(function loadGLTFLoader() {
+  if (window.THREE && window.THREE.GLTFLoader) return; /* already loaded */
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js';
+  script.onload  = () => console.log('BUECON: GLTFLoader ready ✓');
+  script.onerror = () => console.warn('BUECON: GLTFLoader CDN failed — 3D will use fallback mesh');
+  document.head.appendChild(script);
+})();
+
 const ProductViewer = (() => {
   const viewers = {};
 
   function init() {
     BUECON.products.forEach(p => {
       if (!viewers[p.id]) {
+        const mediaEl = document.querySelector(`[data-product-id="${p.id}"] .card-media`);
         viewers[p.id] = {
           active: false, built: false,
           drag: { down:false, x:0, y:0, rotX:0, rotY:0 },
-          glbPath: document.getElementById('3d-'+p.id)
-            ? document.querySelector(`[data-product-id="${p.id}"] .card-media`)?.dataset.glb
-              || `public/models/${p.id}.glb`
-            : `public/models/${p.id}.glb`,
+          /* Use model_url from product data if set, otherwise default path */
+          glbPath: (p.model_url && p.model_url.trim())
+            ? p.model_url.trim()
+            : (mediaEl?.dataset.glb || `public/models/${p.id}.glb`),
         };
       }
     });
@@ -52,7 +66,10 @@ const ProductViewer = (() => {
   function buildViewer(id) {
     const v = viewers[id];
     const canvas = document.getElementById('canvas-' + id);
-    if (!canvas || !window.THREE) return;
+    if (!canvas || !window.THREE) {
+      console.warn('BUECON: THREE.js not loaded yet for', id);
+      return;
+    }
 
     const w = canvas.offsetWidth  || 340;
     const h = canvas.offsetHeight || 260;
@@ -76,30 +93,43 @@ const ProductViewer = (() => {
     const pt = new THREE.PointLight(0xC5A46D, 4, 10);
     pt.position.set(1, 2, 3); v.scene.add(pt);
 
-    /* Try loading GLB first, fallback to procedural mesh */
-    const glbUrl = v.glbPath || `public/models/${id}.glb`;
+    bindDrag(id, canvas);
+
+    /* ══════════════════════════════════════
+       KEY FIX: Attempt to load GLB.
+       GLTFLoader may still be loading from CDN —
+       we poll briefly then fall back if needed.
+       ══════════════════════════════════════ */
+    tryLoadGLB(id, v, 0);
+  }
+
+  /* Poll up to ~2 seconds for GLTFLoader to become available */
+  function tryLoadGLB(id, v, attempt) {
+    const glbUrl = v.glbPath;
 
     if (window.THREE && window.THREE.GLTFLoader) {
       const loader = new THREE.GLTFLoader();
       loader.load(
         glbUrl,
         (gltf) => {
+          /* ── GLB loaded successfully ── */
           v.obj = gltf.scene;
-          /* Center and scale model */
-          const box = new THREE.Box3().setFromObject(v.obj);
+          const box    = new THREE.Box3().setFromObject(v.obj);
           const center = box.getCenter(new THREE.Vector3());
           const size   = box.getSize(new THREE.Vector3());
-          const maxDim = Math.max(size.x, size.y, size.z);
+          const maxDim = Math.max(size.x, size.y, size.z) || 1;
           v.obj.position.sub(center);
           v.obj.scale.setScalar(2.0 / maxDim);
           v.scene.add(v.obj);
           v.built  = true;
           v.active = true;
           renderLoop(id);
+          console.log(`BUECON: GLB loaded for ${id} ✓`);
         },
         undefined,
-        () => {
-          /* GLB failed — use procedural fallback */
+        (err) => {
+          /* ── GLB not found or failed — use procedural fallback ── */
+          console.warn(`BUECON: GLB not found for ${id} (${glbUrl}), using fallback mesh.`);
           v.obj = buildFallbackMesh(id);
           v.scene.add(v.obj);
           v.built  = true;
@@ -107,18 +137,21 @@ const ProductViewer = (() => {
           renderLoop(id);
         }
       );
+    } else if (attempt < 20) {
+      /* GLTFLoader not yet available — wait 100ms and retry */
+      setTimeout(() => tryLoadGLB(id, v, attempt + 1), 100);
     } else {
-      /* No GLTFLoader — use procedural */
+      /* Gave up waiting — use fallback */
+      console.warn(`BUECON: GLTFLoader never loaded for ${id}, using fallback mesh.`);
       v.obj = buildFallbackMesh(id);
       v.scene.add(v.obj);
       v.built  = true;
       v.active = true;
       renderLoop(id);
     }
-
-    bindDrag(id, canvas);
   }
 
+  /* ── Procedural fallback meshes (unchanged from original) ── */
   function buildFallbackMesh(id) {
     const g = new THREE.Group();
     const chrome = new THREE.MeshStandardMaterial({ color:0xD8E0EA, roughness:0.05, metalness:1.0 });
@@ -129,7 +162,6 @@ const ProductViewer = (() => {
 
     switch(id) {
       case 'salt':
-        /* Towel rack — horizontal rails */
         [-0.3,0,0.3].forEach(y => {
           am(new THREE.CylinderGeometry(0.04,0.04,2.2,20), mat, m=>{m.rotation.z=Math.PI/2;m.position.y=y;});
         });
@@ -137,19 +169,16 @@ const ProductViewer = (() => {
         am(new THREE.BoxGeometry(0.12,0.12,0.12), mat, m=>m.position.set(-0.5,0,-0.5));
         break;
       case 'super':
-        /* Towel rod */
         am(new THREE.CylinderGeometry(0.06,0.06,2.0,24), mat, m=>m.rotation.z=Math.PI/2);
         am(new THREE.CylinderGeometry(0.14,0.14,0.06,24), mat, m=>{m.rotation.z=Math.PI/2;m.position.x=1.0;});
         am(new THREE.CylinderGeometry(0.14,0.14,0.06,24), mat, m=>{m.rotation.z=Math.PI/2;m.position.x=-1.0;});
         break;
       case 'spirit':
-        /* Towel ring */
         am(new THREE.TorusGeometry(0.65,0.07,20,80), mat);
         am(new THREE.CylinderGeometry(0.07,0.07,0.25,18), mat, m=>{m.rotation.x=Math.PI/2;m.position.set(0,0,-0.65);});
         am(new THREE.CylinderGeometry(0.16,0.16,0.04,24), mat, m=>{m.rotation.x=Math.PI/2;m.position.set(0,0,-0.82);});
         break;
       case 'soft':
-        /* Double soap dish */
         [-0.55,0.55].forEach(x=>{
           am(new THREE.CylinderGeometry(0.28,0.3,0.07,32), mat, m=>m.position.set(x,0,0));
           am(new THREE.TorusGeometry(0.27,0.025,12,36), mat, m=>{m.rotation.x=Math.PI/2;m.position.set(x,0.04,0);});
@@ -158,14 +187,12 @@ const ProductViewer = (() => {
         am(new THREE.SphereGeometry(0.09,16,16), mat, m=>{m.position.y=0.12;});
         break;
       case 'smart':
-        /* Paper holder with lid */
         am(new THREE.BoxGeometry(0.9,0.7,0.5), mat);
         am(new THREE.BoxGeometry(0.92,0.06,0.52), mat, m=>m.position.y=0.38);
         am(new THREE.CylinderGeometry(0.18,0.18,0.08,24), mat, m=>{m.rotation.x=Math.PI/2;m.position.set(0,0.2,0.3);});
         am(new THREE.CylinderGeometry(0.12,0.12,0.22,18), mat, m=>{m.rotation.z=Math.PI/2;m.position.set(0,0.0,0.26);});
         break;
       default:
-        /* Handle */
         am(new THREE.BoxGeometry(0.16,1.2,0.16), mat);
         am(new THREE.CylinderGeometry(0.22,0.22,0.065,24), mat, m=>m.position.y=-0.65);
         am(new THREE.CylinderGeometry(0.12,0.12,0.15,22), mat, m=>{m.rotation.x=Math.PI/2;m.position.y=0.7;});
