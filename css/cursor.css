@@ -1,32 +1,36 @@
-/* ═══════════════════════════════════════════
-   BUECON — Golden Glow Cursor
-   System cursor + gold radial glow follower
-   ═══════════════════════════════════════════ */
+/* Golden Glow Cursor */
 
 *, body { cursor: auto !important; }
-a, button, [role="button"], .product-card,
-.nav-logo, .nav-links a, .nav-cta,
-.toggle-btn, .style-btn, .btn-primary,
-.btn-ghost, .intro-nav-card, .why-card,
-.assistant-icon { cursor: pointer !important; }
+
+a, button, [role="button"] {
+  cursor: pointer !important;
+}
 
 #cursor-glow {
   position: fixed;
-  width: 32px; height: 32px;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: radial-gradient(circle,
-    rgba(197,164,109,0.6) 0%,
-    rgba(197,164,109,0.2) 45%,
-    transparent 70%
-  );
   pointer-events: none;
   z-index: 99999;
+
+  background: radial-gradient(circle,
+    rgba(197,164,109,0.6) 0%,
+    rgba(197,164,109,0.25) 40%,
+    rgba(197,164,109,0.1) 60%,
+    transparent 75%
+  );
+
   transform: translate(-50%, -50%);
-  transition: width 0.2s ease, height 0.2s ease, opacity 0.25s;
   mix-blend-mode: screen;
-  opacity: 0.85;
+  opacity: 0.9;
+  will-change: transform;
 }
+
 #cursor-glow.hover {
-  width: 52px; height: 52px;
+  width: 55px;
+  height: 55px;
   opacity: 1;
 }
