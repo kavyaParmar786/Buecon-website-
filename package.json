@@ -2,21 +2,10 @@
   "name": "buecon-website",
   "version": "2.0.0",
   "private": true,
-  "scripts": {
-    "dev":   "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
   "dependencies": {
-    "next":                  "14.2.0",
-    "react":                 "^18",
-    "react-dom":             "^18",
-    "@react-three/fiber":    "^8.16.0",
-    "@react-three/drei":     "^9.105.0",
-    "three":                 "^0.165.0",
-    "nodemailer":            "^6.9.7"
+    "nodemailer": "^6.9.7"
   },
-  "devDependencies": {
-    "@types/three": "^0.165.0"
+  "engines": {
+    "node": "20.x"
   }
 }
