@@ -1,6 +1,8 @@
 /* ═══════════════════════════════════════════
    BUECON — Admin Panel
-   Fully persistent via Supabase
+   Saves to Supabase when connected,
+   ALWAYS mirrors to localStorage so the
+   frontend shows products immediately.
    ═══════════════════════════════════════════ */
 
 const AdminPanel = (() => {
@@ -36,16 +38,53 @@ const AdminPanel = (() => {
     if(el) el.textContent = titles[name] || name;
   }
 
-  /* ── PRODUCTS LOAD ── */
+  /* ══════════════════════════════════════════
+     PRODUCTS LOAD
+     Try Supabase first → fall back to localStorage
+     ══════════════════════════════════════════ */
   async function loadProducts() {
     try {
       const data = await SB.get('products', '?order=created_at.asc');
-      products = data || [];
-      toast(`${products.length} products loaded from Supabase ✓`);
+      if (data && data.length > 0) {
+        products = data;
+        /* Mirror Supabase data into localStorage for the frontend */
+        syncProductsToLocalStorage();
+        toast(`${products.length} products loaded from Supabase ✓`);
+        return;
+      }
     } catch(e) {
-      console.warn('Supabase load failed, using defaults:', e.message);
-      products = JSON.parse(JSON.stringify(window.BUECON_DEFAULTS?.products || []));
-      toast('Using local defaults — check Supabase connection', 'warn');
+      console.warn('Supabase load failed:', e.message);
+    }
+
+    /* Try localStorage (previously saved by Admin) */
+    try {
+      const raw = localStorage.getItem('buecon_products');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          products = parsed;
+          toast(`${products.length} products loaded from local storage ✓`);
+          return;
+        }
+      }
+    } catch(e) { /* ignore */ }
+
+    /* Final fallback: hardcoded defaults */
+    products = JSON.parse(JSON.stringify(window.BUECON_DEFAULTS?.products || []));
+    syncProductsToLocalStorage();
+    toast('Using default products — connect Supabase to go live', 'warn');
+  }
+
+  /* ══════════════════════════════════════════
+     KEY FIX: Always mirror products to localStorage
+     This is what the frontend reads when Supabase
+     is not connected.
+     ══════════════════════════════════════════ */
+  function syncProductsToLocalStorage() {
+    try {
+      localStorage.setItem('buecon_products', JSON.stringify(products));
+    } catch(e) {
+      console.warn('localStorage sync failed:', e.message);
     }
   }
 
@@ -111,7 +150,10 @@ const AdminPanel = (() => {
     editingId = null;
   }
 
-  /* ── SAVE PRODUCT → SUPABASE ── */
+  /* ══════════════════════════════════════════
+     SAVE PRODUCT
+     Tries Supabase, ALWAYS saves to localStorage
+     ══════════════════════════════════════════ */
   async function saveProduct() {
     const series   = document.getElementById('mp-series').value.trim();
     const name     = document.getElementById('mp-name').value.trim();
@@ -128,56 +170,96 @@ const AdminPanel = (() => {
       insight:     document.getElementById('mp-insight').value.trim()||'Perfect for modern interiors',
       badge:       `✨ ${name}`,
       image_url:   document.getElementById('mp-imgurl').value.trim(),
+      model_url:   '',
     };
 
     const btn = document.querySelector('.modal-footer .btn-admin-primary');
     if(btn){btn.textContent='Saving…';btn.disabled=true;}
 
+    /* Always update local array first */
+    const idx = products.findIndex(p=>p.id===payload.id);
+    if(idx>-1) products[idx]=payload; else products.push(payload);
+
+    /* KEY FIX: Always save to localStorage — frontend reads this */
+    syncProductsToLocalStorage();
+
+    /* Try Supabase too (non-blocking) */
+    let savedToSupabase = false;
     try {
       await SB.upsert('products', payload);
-      const idx = products.findIndex(p=>p.id===payload.id);
-      if(idx>-1) products[idx]=payload; else products.push(payload);
-      toast(editingId ? 'Product updated ✓' : 'Product added ✓ — live on site now');
-      renderProductGrid();
-      updateStats();
-      closeProductModal();
+      savedToSupabase = true;
     } catch(e) {
-      toast('Save failed: '+e.message, 'warn');
-    } finally {
-      if(btn){btn.textContent='Save Product';btn.disabled=false;}
+      console.warn('Supabase save failed (saved to localStorage instead):', e.message);
     }
+
+    toast(savedToSupabase
+      ? (editingId ? 'Product updated ✓' : 'Product added ✓ — live on site now')
+      : 'Saved locally ✓ — visible on site. Connect Supabase to persist permanently.'
+    );
+
+    renderProductGrid();
+    updateStats();
+    closeProductModal();
+
+    if(btn){btn.textContent='Save Product';btn.disabled=false;}
   }
 
-  /* ── DELETE ── */
+  /* ══════════════════════════════════════════
+     DELETE PRODUCT
+     ══════════════════════════════════════════ */
   async function deleteProduct(id) {
-    if(!confirm('Delete this product from the database permanently?')) return;
+    if(!confirm('Delete this product permanently?')) return;
+
+    products = products.filter(p=>p.id!==id);
+    syncProductsToLocalStorage(); /* KEY FIX */
+
     try {
       await SB.delete('products','id',id);
-      products = products.filter(p=>p.id!==id);
-      renderProductGrid();
-      updateStats();
-      toast('Product deleted.');
-    } catch(e) { toast('Delete failed: '+e.message,'warn'); }
+      toast('Product deleted from Supabase.');
+    } catch(e) {
+      toast('Deleted locally. Supabase unreachable — reconnect to sync.', 'warn');
+    }
+
+    renderProductGrid();
+    updateStats();
   }
 
-  /* ── CONTENT ── */
+  /* ══════════════════════════════════════════
+     CONTENT
+     Also mirrors to localStorage as 'buecon_content'
+     ══════════════════════════════════════════ */
   async function loadContentFields() {
+    /* Try localStorage first for instant load */
+    try {
+      const raw = localStorage.getItem('buecon_content');
+      if (raw) {
+        const map = JSON.parse(raw);
+        applyContentMap(map);
+      }
+    } catch(e) { /* ignore */ }
+
+    /* Then try Supabase to get latest */
     try {
       const rows = await SB.get('content');
       if(!rows||!rows.length) return;
       const map = {};
       rows.forEach(r=>{ map[r.key]=r.value; });
-      const fieldMap = {
-        'content-headline': map.hero_headline,
-        'content-subline':  map.hero_subline,
-        'content-about':    map.about_text,
-        'content-phone':    map.contact_phone,
-        'content-email':    map.contact_email,
-      };
-      Object.entries(fieldMap).forEach(([fid,val])=>{
-        const el=document.getElementById(fid); if(el&&val!==undefined) el.value=val;
-      });
-    } catch(e) { console.warn('Content load failed:',e.message); }
+      applyContentMap(map);
+      localStorage.setItem('buecon_content', JSON.stringify(map));
+    } catch(e) { console.warn('Content load from Supabase failed:', e.message); }
+  }
+
+  function applyContentMap(map) {
+    const fieldMap = {
+      'content-headline': map.hero_headline,
+      'content-subline':  map.hero_subline,
+      'content-about':    map.about_text,
+      'content-phone':    map.contact_phone,
+      'content-email':    map.contact_email,
+    };
+    Object.entries(fieldMap).forEach(([fid,val])=>{
+      const el=document.getElementById(fid); if(el&&val!==undefined) el.value=val;
+    });
   }
 
   async function saveContent() {
@@ -188,14 +270,30 @@ const AdminPanel = (() => {
       'contact_phone': document.getElementById('content-phone')?.value,
       'contact_email': document.getElementById('content-email')?.value,
     };
+
+    /* KEY FIX: Always save to localStorage */
+    try {
+      localStorage.setItem('buecon_content', JSON.stringify(fieldMap));
+    } catch(e) { console.warn('localStorage content save failed:', e.message); }
+
     const btn = document.querySelector('#panel-content .btn-admin-primary');
     if(btn){btn.textContent='Saving…';btn.disabled=true;}
+
+    let savedToSupabase = false;
     try {
       const rows = Object.entries(fieldMap).map(([key,value])=>({key,value:value||'',updated_at:new Date().toISOString()}));
       await SB.upsert('content', rows);
-      toast('Content saved ✓ — live on site immediately');
-    } catch(e) { toast('Save failed: '+e.message,'warn'); }
-    finally { if(btn){btn.textContent='Save Changes';btn.disabled=false;} }
+      savedToSupabase = true;
+    } catch(e) {
+      console.warn('Supabase content save failed:', e.message);
+    }
+
+    toast(savedToSupabase
+      ? 'Content saved ✓ — live on site immediately'
+      : 'Saved locally ✓ — visible on site. Connect Supabase to persist permanently.'
+    );
+
+    if(btn){btn.textContent='Save Changes';btn.disabled=false;}
   }
 
   function updateStats() {
@@ -225,7 +323,7 @@ const AdminPanel = (() => {
       toast('Supabase connected ✓');
     } catch {
       if(status){status.textContent='✕ Failed';status.style.color='#E05B5B';}
-      toast('Connection failed','warn');
+      toast('Connection failed — products still save locally','warn');
     }
   }
 
