@@ -213,7 +213,7 @@ function buildProductGrid(products) {
           <div class="product-card-info">
             <h4 class="product-card-name">${p.name}</h4>
             <p class="product-card-desc">${p.desc}</p>
-            <a href="#contact" class="product-card-link">Enquire →</a>
+            <a href="contact.html" class="product-card-link" onclick="if(document.getElementById('contact')){event.preventDefault();document.getElementById('contact').scrollIntoView({behavior:'smooth'});}">Enquire →</a>
           </div>
         </div>`).join('')}
     </div>`;
