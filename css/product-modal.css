@@ -1,0 +1,222 @@
+/* ═══════════════════════════════════════════
+   BUECON — Product Modal / Lightbox
+   Add this to the bottom of css/products.css
+   ═══════════════════════════════════════════ */
+
+/* Card cursor */
+.product-card-new {
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.product-card-new:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(180,140,60,0.2);
+}
+
+/* ── Modal wrapper ── */
+#product-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#product-modal.pm-open {
+  display: flex;
+}
+
+/* Backdrop */
+.pm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: pmFadeIn 0.3s ease forwards;
+}
+#product-modal.pm-closing .pm-backdrop {
+  animation: pmFadeOut 0.35s ease forwards;
+}
+
+/* Modal card */
+.pm-card {
+  position: relative;
+  z-index: 1;
+  background: #0f1318;
+  border: 1px solid rgba(180, 140, 60, 0.25);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 860px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 0 0 1px rgba(180,140,60,0.1);
+  animation: pmSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+#product-modal.pm-closing .pm-card {
+  animation: pmSlideDown 0.3s ease forwards;
+}
+
+/* Close button */
+.pm-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+.pm-close:hover {
+  background: rgba(180,140,60,0.15);
+  border-color: rgba(180,140,60,0.4);
+  color: #b48c3c;
+}
+
+/* Inner layout — side by side on desktop */
+.pm-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Image side */
+.pm-img-wrap {
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  min-height: 360px;
+}
+.pm-img {
+  width: 100%;
+  height: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  display: block;
+}
+.pm-img-placeholder {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+  font-size: 48px;
+  gap: 12px;
+  width: 100%;
+  height: 300px;
+}
+
+/* Info side */
+.pm-info {
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.pm-series-label {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #b48c3c;
+  font-weight: 600;
+}
+
+.pm-name {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.pm-divider {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #b48c3c, transparent);
+  border-radius: 2px;
+}
+
+.pm-desc {
+  font-size: 14px;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.65);
+  margin: 0;
+  flex: 1;
+}
+
+.pm-code {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+}
+
+.pm-enquire {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, #b48c3c, #d4a853);
+  color: #0a0c0f;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s;
+  text-align: center;
+}
+.pm-enquire:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ── Responsive: stack on mobile ── */
+@media (max-width: 640px) {
+  .pm-inner {
+    grid-template-columns: 1fr;
+  }
+  .pm-img-wrap {
+    min-height: 240px;
+    padding: 24px;
+  }
+  .pm-info {
+    padding: 28px 24px;
+  }
+  .pm-name {
+    font-size: 22px;
+  }
+}
+
+/* ── Animations ── */
+@keyframes pmFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pmFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes pmSlideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+@keyframes pmSlideDown {
+  from { opacity: 1; transform: translateY(0)    scale(1); }
+  to   { opacity: 0; transform: translateY(30px) scale(0.97); }
+}
