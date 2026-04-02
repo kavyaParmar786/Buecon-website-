@@ -1,142 +1,129 @@
 /* ═══════════════════════════════════════════
-   BUECON — WebGL Scene — UPGRADED
-   Big cinematic floating hardware objects
-   Dramatic metallic PBR + glow + depth fog
-   Mouse parallax + hover reaction + scroll drift
+   BUECON — WebGL Hero Scene
+   Loads real .glb models from public/models/
+   Cinematic floating, mouse parallax, scroll
    ═══════════════════════════════════════════ */
 
 const WebGLScene = (() => {
   let scene, camera, renderer, animFrameId;
   let objects = [];
-  let glowMeshes = [];
-  let mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+  let mouse   = { x:0, y:0, tx:0, ty:0 };
   let scrollY = 0;
   let isActive = false;
-  let raycaster, pointer;
-  let hoveredObj = null;
+  let raycaster, pointer, hoveredObj = null;
+
+  const MODELS = [
+    /* 3 hero — big, close */
+    { file:'public/models/towel_rack.glb',      pos:[-1.0, 0.2, 0.4], scale:1.8, rot:[0.05,-0.3,0.02], floatSpeed:0.18, floatAmp:0.20, floatOffset:0.0,  rotSpeed:0.0015 },
+    { file:'public/models/liquid_dispensor.glb', pos:[ 2.2,-0.1, 0.2], scale:1.6, rot:[0.0, -0.8,0.0],  floatSpeed:0.16, floatAmp:0.22, floatOffset:1.8,  rotSpeed:0.0018 },
+    { file:'public/models/soap_dish.glb',        pos:[ 1.4, 1.9,-0.3], scale:1.4, rot:[0.8,  0.3,0.1],  floatSpeed:0.22, floatAmp:0.16, floatOffset:3.2,  rotSpeed:0.0014 },
+    /* 3 supporting — deeper */
+    { file:'public/models/napkin_holder.glb',    pos:[-2.6,-1.3,-0.8], scale:1.1, rot:[0.2,  0.6,0.05], floatSpeed:0.26, floatAmp:0.24, floatOffset:5.0,  rotSpeed:0.0022 },
+    { file:'public/models/robe_hook_.glb',       pos:[-1.8, 2.1,-1.2], scale:1.0, rot:[0.4,  0.2,0.0],  floatSpeed:0.20, floatAmp:0.18, floatOffset:2.5,  rotSpeed:0.0026 },
+    { file:'public/models/tumbler_holder.glb',   pos:[ 3.0,-1.8,-1.4], scale:1.05,rot:[0.1, -0.4,0.1],  floatSpeed:0.24, floatAmp:0.20, floatOffset:4.3,  rotSpeed:0.0020 },
+  ];
 
   function init(canvasId) {
     const canvas = document.getElementById(canvasId);
     if (!canvas || !window.THREE) return fallback();
-
     try {
-      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+      renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false, powerPreference:'high-performance' });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMapping         = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.4;
-    } catch (e) { return fallback(); }
+    } catch(e) { return fallback(); }
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x060F18, 0.022);
+    scene.fog        = new THREE.FogExp2(0x060F18, 0.020);
     scene.background = new THREE.Color(0x060F18);
 
-    camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera = new THREE.PerspectiveCamera(48, window.innerWidth/window.innerHeight, 0.1, 100);
     camera.position.set(0, 0, 5.5);
 
     raycaster = new THREE.Raycaster();
-    pointer = new THREE.Vector2();
+    pointer   = new THREE.Vector2();
 
     buildLights();
-    buildObjects();
+    loadModels();
     bindEvents();
     isActive = true;
     animate();
   }
 
   function buildLights() {
-    scene.add(new THREE.AmbientLight(0x0A1828, 2.0));
-    const key = new THREE.DirectionalLight(0xFFE8B0, 4.5);
-    key.position.set(6, 8, 5);
-    scene.add(key);
-    const fill = new THREE.DirectionalLight(0x8BA8C8, 1.8);
-    fill.position.set(-7, -1, 4);
-    scene.add(fill);
-    const rim = new THREE.DirectionalLight(0x1A3A6A, 2.2);
-    rim.position.set(1, -8, -5);
-    scene.add(rim);
-    const ptGold = new THREE.PointLight(0xC5A46D, 3.5, 12);
-    ptGold.position.set(1.5, 1, 4);
-    scene.add(ptGold);
-    const ptSilver = new THREE.PointLight(0x8AACCC, 2.0, 10);
-    ptSilver.position.set(-3, -1, 3);
-    scene.add(ptSilver);
+    scene.add(new THREE.AmbientLight(0x0A1828, 2.5));
+    const key = new THREE.DirectionalLight(0xFFE8B0, 4.0); key.position.set(6,8,5); scene.add(key);
+    const fill= new THREE.DirectionalLight(0x8BA8C8, 1.8); fill.position.set(-7,-1,4); scene.add(fill);
+    const rim = new THREE.DirectionalLight(0x1A3A6A, 2.0); rim.position.set(1,-8,-5); scene.add(rim);
+    const ptG = new THREE.PointLight(0xC5A46D, 3.5, 14); ptG.position.set(1.5,1,4); scene.add(ptG);
+    const ptC = new THREE.PointLight(0x8AACCC, 2.0, 10); ptC.position.set(-3,-1,3); scene.add(ptC);
   }
 
-  function chromeMat() { return new THREE.MeshStandardMaterial({ color: 0xD8E0EA, roughness: 0.05, metalness: 1.0, envMapIntensity: 1.8 }); }
-  function goldMat()   { return new THREE.MeshStandardMaterial({ color: 0xC8A45A, roughness: 0.18, metalness: 0.95, envMapIntensity: 1.5 }); }
-  function brushedMat(){ return new THREE.MeshStandardMaterial({ color: 0xA0AABB, roughness: 0.38, metalness: 0.88, envMapIntensity: 1.2 }); }
-  function matteGold() { return new THREE.MeshStandardMaterial({ color: 0xB8923C, roughness: 0.52, metalness: 0.78, envMapIntensity: 0.9 }); }
-
-  function am(g, geo, mat, fn) {
-    const m = new THREE.Mesh(geo, mat);
-    if (fn) fn(m);
-    g.add(m);
-    return m;
+  function loadModels() {
+    const Loader = window.THREE.GLTFLoader;
+    if (!Loader) {
+      console.warn('GLTFLoader missing — add CDN to page'); 
+      MODELS.forEach((cfg,i) => addFallback(cfg,i));
+      return;
+    }
+    const loader = new Loader();
+    MODELS.forEach((cfg, i) => {
+      loader.load(cfg.file,
+        gltf => {
+          const group = new THREE.Group();
+          const model = gltf.scene;
+          /* Normalize size */
+          const box    = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          const size   = box.getSize(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z);
+          model.position.sub(center);
+          model.scale.setScalar(cfg.scale / maxDim);
+          /* Metallic boost */
+          model.traverse(child => {
+            if (!child.isMesh) return;
+            const mats = Array.isArray(child.material) ? child.material : [child.material];
+            mats.forEach(mat => {
+              if (!mat.isMeshStandardMaterial) return;
+              mat.metalness       = Math.max(mat.metalness, 0.88);
+              mat.roughness       = Math.min(mat.roughness, 0.22);
+              mat.envMapIntensity = 1.5;
+            });
+          });
+          group.add(model);
+          setupObj(group, cfg);
+        },
+        undefined,
+        err => { console.warn('GLB load failed:', cfg.file); addFallback(cfg, i); }
+      );
+    });
   }
 
-  function buildFaucet(g, mat) {
-    am(g, new THREE.CylinderGeometry(0.075, 0.095, 1.6, 32), mat, m => { m.rotation.z = Math.PI/2.1; m.position.set(0.35,0.25,0); });
-    am(g, new THREE.TorusGeometry(0.22, 0.075, 16, 32, Math.PI/2), mat, m => { m.position.set(-0.18,0,0); m.rotation.z = Math.PI; });
-    am(g, new THREE.CylinderGeometry(0.075, 0.095, 0.65, 24), mat, m => m.position.set(-0.18,-0.5,0));
-    am(g, new THREE.CylinderGeometry(0.14, 0.11, 0.22, 28), mat, m => m.position.set(1.0,0.25,0));
-    am(g, new THREE.CylinderGeometry(0.22, 0.24, 0.055, 28), mat, m => m.position.set(-0.18,-0.84,0));
-    am(g, new THREE.TorusGeometry(0.19, 0.022, 12, 36), mat, m => { m.rotation.x = Math.PI/2; m.position.set(-0.18,-0.78,0); });
+  function setupObj(group, cfg) {
+    group.position.set(...cfg.pos);
+    group.rotation.set(...cfg.rot);
+    group.userData = {
+      floatSpeed: cfg.floatSpeed, floatAmp: cfg.floatAmp,
+      floatOffset: cfg.floatOffset, rotSpeed: cfg.rotSpeed,
+      basePos: {x:cfg.pos[0], y:cfg.pos[1], z:cfg.pos[2]},
+      baseScale: cfg.scale,
+    };
+    scene.add(group);
+    objects.push(group);
   }
 
-  function buildDispenser(g, mat) {
-    am(g, new THREE.CylinderGeometry(0.21, 0.25, 1.15, 32), mat, () => {});
-    am(g, new THREE.TorusGeometry(0.22, 0.025, 12, 36), mat, m => { m.rotation.x = Math.PI/2; m.position.y = 0.58; });
-    am(g, new THREE.CylinderGeometry(0.045, 0.055, 0.55, 18), mat, m => m.position.y = 0.96);
-    am(g, new THREE.CylinderGeometry(0.085, 0.085, 0.055, 18), mat, m => m.position.y = 1.25);
-    am(g, new THREE.SphereGeometry(0.13, 24, 24, 0, Math.PI*2, 0, Math.PI/2), mat, m => m.position.y = 1.29);
-    am(g, new THREE.CylinderGeometry(0.26, 0.26, 0.04, 28), mat, m => m.position.y = -0.595);
-  }
-
-  function buildRing(g, mat) {
-    am(g, new THREE.TorusGeometry(0.58, 0.065, 20, 80), mat, () => {});
-    am(g, new THREE.CylinderGeometry(0.055, 0.065, 0.28, 18), mat, m => { m.rotation.x = Math.PI/2; m.position.set(0,0,-0.58); });
-    am(g, new THREE.CylinderGeometry(0.14, 0.14, 0.035, 24), mat, m => { m.rotation.x = Math.PI/2; m.position.set(0,0,-0.72); });
-  }
-
-  function buildHandle(g, mat) {
-    am(g, new THREE.BoxGeometry(0.16, 1.25, 0.16), mat, () => {});
-    am(g, new THREE.CylinderGeometry(0.11, 0.11, 0.14, 22), mat, m => { m.rotation.x = Math.PI/2; m.position.y = 0.7; });
-    am(g, new THREE.CylinderGeometry(0.21, 0.21, 0.065, 24), mat, m => m.position.y = -0.66);
-  }
-
-  function buildKnob(g, mat) {
-    am(g, new THREE.SphereGeometry(0.42, 36, 36), mat, () => {});
-    am(g, new THREE.CylinderGeometry(0.075, 0.095, 0.48, 18), mat, m => m.position.y = -0.46);
-    am(g, new THREE.CylinderGeometry(0.21, 0.21, 0.055, 24), mat, m => m.position.y = -0.73);
-  }
-
-  function buildBracket(g, mat) {
-    am(g, new THREE.BoxGeometry(1.1, 0.09, 0.09), mat, () => {});
-    am(g, new THREE.BoxGeometry(0.09, 0.65, 0.09), mat, m => m.position.set(-0.5,-0.37,0));
-    am(g, new THREE.CylinderGeometry(0.08, 0.08, 0.09, 18), mat, m => { m.rotation.z = Math.PI/2; m.position.set(0.55,0,0); });
-  }
-
-  function makeObj(buildFn, mat, pos, scale, rot, speed, amp, offset, rotS) {
-    const g = new THREE.Group();
-    buildFn(g, mat);
-    g.position.set(...pos);
-    g.scale.setScalar(scale);
-    g.rotation.set(...rot);
-    g.userData = { floatSpeed:speed, floatAmp:amp, floatOffset:offset, rotSpeed:rotS, basePos:{x:pos[0],y:pos[1],z:pos[2]}, baseScale:scale };
-    scene.add(g); objects.push(g);
-    return g;
-  }
-
-  function buildObjects() {
-    /* HERO — big, close, dominant */
-    makeObj(buildFaucet,   chromeMat(), [-0.9,  0.1,  0.5], 1.65, [0.1,-0.3,0.05],  0.20, 0.18, 0.0, 0.0018);
-    makeObj(buildDispenser, goldMat(),  [ 2.4, -0.2,  0.2], 1.45, [0.05,-0.8,-0.05],0.17, 0.22, 1.8, 0.0022);
-    makeObj(buildRing,    brushedMat(), [ 1.6,  1.8, -0.4], 1.25, [1.1, 0.4, 0.2],  0.24, 0.15, 3.2, 0.0016);
-    /* Supporting — mid-depth */
-    makeObj(buildHandle,  matteGold(),  [-2.8, -1.4, -0.8], 0.95, [0.3, 0.6, 0.1],  0.29, 0.25, 5.1, 0.0028);
-    makeObj(buildKnob,    chromeMat(),  [-2.0,  2.0, -1.2], 0.85, [0.5, 0.3, 0.0],  0.19, 0.20, 2.6, 0.0032);
-    makeObj(buildBracket, brushedMat(), [ 3.2, -2.0, -1.5], 0.90, [0.2,-0.4, 0.15], 0.23, 0.18, 4.4, 0.0020);
+  const FALLBACKS = [
+    cfg => { const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:0xD0D8E4,roughness:0.08,metalness:1.0}); [-0.3,0,0.3].forEach(y=>{const c=new THREE.Mesh(new THREE.CylinderGeometry(0.05,0.05,2.2,20),m);c.rotation.z=Math.PI/2;c.position.y=y;g.add(c);}); return g; },
+    cfg => { const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:0xC8A45A,roughness:0.18,metalness:0.95}); g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.26,1.2,32),m)); return g; },
+    cfg => { const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:0xD0D8E4,roughness:0.08,metalness:1.0}); g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.3,0.07,32),m)); return g; },
+    cfg => { const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:0xA0AABB,roughness:0.38,metalness:0.88}); g.add(new THREE.Mesh(new THREE.BoxGeometry(1.1,0.09,0.09),m)); return g; },
+    cfg => { const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:0xD0D8E4,roughness:0.08,metalness:1.0}); const h=new THREE.Mesh(new THREE.SphereGeometry(0.3,24,24),m);h.position.y=0.2;g.add(h); return g; },
+    cfg => { const g=new THREE.Group(),m=new THREE.MeshStandardMaterial({color:0xC8A45A,roughness:0.18,metalness:0.95}); g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.26,0.9,28),m)); return g; },
+  ];
+  function addFallback(cfg, i) {
+    const group = (FALLBACKS[i]||FALLBACKS[0])(cfg);
+    setupObj(group, cfg);
   }
 
   function animate() {
@@ -146,74 +133,66 @@ const WebGLScene = (() => {
 
     mouse.tx += (mouse.x - mouse.tx) * 0.032;
     mouse.ty += (mouse.y - mouse.ty) * 0.032;
-
-    camera.position.x += (mouse.tx * 0.6  - camera.position.x) * 0.04;
-    camera.position.y += (-mouse.ty * 0.38 - camera.position.y) * 0.04;
-    camera.lookAt(0, 0, 0);
-
-    const targetZ = 5.5 + scrollY * 0.0016;
-    camera.position.z += (targetZ - camera.position.z) * 0.04;
+    camera.position.x += (mouse.tx * 0.55  - camera.position.x) * 0.04;
+    camera.position.y += (-mouse.ty * 0.35 - camera.position.y) * 0.04;
+    camera.lookAt(0,0,0);
+    camera.position.z += ((5.5 + scrollY*0.0016) - camera.position.z) * 0.04;
 
     objects.forEach(obj => {
       const d = obj.userData;
-      const ft = t * d.floatSpeed + d.floatOffset;
-      obj.position.y = d.basePos.y + Math.sin(ft) * d.floatAmp;
-      obj.position.x = d.basePos.x + Math.cos(ft * 0.55) * (d.floatAmp * 0.22);
+      const ft = t*d.floatSpeed + d.floatOffset;
+      obj.position.y = d.basePos.y + Math.sin(ft)*d.floatAmp;
+      obj.position.x = d.basePos.x + Math.cos(ft*0.55)*(d.floatAmp*0.22);
       obj.rotation.y += d.rotSpeed;
-      obj.rotation.x += d.rotSpeed * 0.3;
-
-      const isHov = obj === hoveredObj;
-      const ts = isHov ? d.baseScale * 1.055 : d.baseScale;
-      obj.scale.x += (ts - obj.scale.x) * 0.07;
-      obj.scale.y = obj.scale.z = obj.scale.x;
+      obj.rotation.x += d.rotSpeed*0.28;
+      const ts = (obj===hoveredObj) ? d.baseScale*1.06 : d.baseScale;
+      const cs = obj.scale.x;
+      if (Math.abs(cs-ts) > 0.001) obj.scale.setScalar(cs + (ts-cs)*0.08);
     });
-
     renderer.render(scene, camera);
   }
 
   function bindEvents() {
     window.addEventListener('mousemove', e => {
-      mouse.x = (e.clientX / window.innerWidth  - 0.5) * 2;
-      mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
+      mouse.x = (e.clientX/window.innerWidth  - 0.5)*2;
+      mouse.y = (e.clientY/window.innerHeight - 0.5)*2;
       if (!raycaster) return;
-      pointer.x =  (e.clientX / window.innerWidth)  * 2 - 1;
-      pointer.y = -(e.clientY / window.innerHeight)  * 2 + 1;
+      pointer.x =  (e.clientX/window.innerWidth )*2-1;
+      pointer.y = -(e.clientY/window.innerHeight)*2+1;
       raycaster.setFromCamera(pointer, camera);
-      const meshes = [];
-      objects.forEach(o => o.traverse(c => { if (c.isMesh) meshes.push(c); }));
+      const meshes=[];
+      objects.forEach(o=>o.traverse(c=>{if(c.isMesh)meshes.push(c);}));
       const hits = raycaster.intersectObjects(meshes);
       if (hits.length) {
-        let par = hits[0].object;
-        while (par.parent && !objects.includes(par)) par = par.parent;
-        hoveredObj = objects.includes(par) ? par : null;
-      } else { hoveredObj = null; }
+        let par=hits[0].object;
+        while(par.parent && !objects.includes(par)) par=par.parent;
+        hoveredObj = objects.includes(par)?par:null;
+      } else hoveredObj=null;
     });
-
-    window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
-    window.addEventListener('resize', () => {
-      if (!camera || !renderer) return;
-      camera.aspect = window.innerWidth / window.innerHeight;
+    window.addEventListener('scroll', ()=>{scrollY=window.scrollY;},{passive:true});
+    window.addEventListener('resize', ()=>{
+      if(!camera||!renderer) return;
+      camera.aspect=window.innerWidth/window.innerHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(window.innerWidth,window.innerHeight);
     });
   }
 
   function fallback() {
-    const c = document.getElementById('webgl-canvas');
-    if (c) c.style.display = 'none';
-    const fb = document.querySelector('.hero-fallback');
-    if (fb) fb.style.opacity = '1';
+    const c=document.getElementById('webgl-canvas'); if(c) c.style.display='none';
+    const fb=document.querySelector('.hero-fallback'); if(fb) fb.style.opacity='1';
   }
 
   function destroy() {
-    isActive = false;
-    if (animFrameId) cancelAnimationFrame(animFrameId);
-    objects.forEach(o => o.traverse(c => {
-      if (c.geometry) c.geometry.dispose();
-      if (c.material) c.material.dispose();
+    isActive=false;
+    if(animFrameId) cancelAnimationFrame(animFrameId);
+    objects.forEach(o=>o.traverse(c=>{
+      if(c.geometry) c.geometry.dispose();
+      const mats=Array.isArray(c.material)?c.material:[c.material];
+      mats.forEach(m=>{if(m&&m.dispose)m.dispose();});
     }));
-    if (renderer) renderer.dispose();
+    if(renderer) renderer.dispose();
   }
 
-  return { init, destroy };
+  return {init, destroy};
 })();
