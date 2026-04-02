@@ -1,265 +1,331 @@
 /* ═══════════════════════════════════════════
    BUECON — Admin Panel
-   Saves to Supabase when connected,
-   ALWAYS mirrors to localStorage so the
-   frontend shows products immediately.
+   Full Supabase CRUD — products & content
    ═══════════════════════════════════════════ */
 
 const AdminPanel = (() => {
-  let products = [];
+  let products  = [];
   let editingId = null;
 
+  /* ══════════════════════
+     BOOT
+  ══════════════════════ */
+  /* ══════════════════════
+     BOOT
+  ══════════════════════ */
   async function init() {
-    setLoading(true);
-    try {
-      await loadProducts();
-      await loadContentFields();
-      renderProductGrid();
-      updateStats();
-    } catch(e) {
-      toast('Init error: ' + e.message, 'warn');
-    }
-    setLoading(false);
+    data = loadData();
+    renderCategoryTabs();
+    updateStats();
   }
 
-  function setLoading(on) {
-    document.body.style.opacity = on ? '0.7' : '1';
+  const LS_KEY = 'buecon_products_v2';
+  let data = null;
+  let editCtx = null;      // { catId, subCatId|null, prodId }
+  let activeCatId  = null;
+  let activeSubId  = null;
+
+  function loadData() {
+    try {
+      const saved = localStorage.getItem(LS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    if (window.PRODUCTS_DEFAULTS) return JSON.parse(JSON.stringify(window.PRODUCTS_DEFAULTS));
+    return { categories: [] };
+  }
+
+  function saveData() {
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+    updateStats();
+    toast('Saved ✓ — changes are live on the website now.');
+  }
+
+  function showLoading(on) {
+    document.body.style.opacity = on ? '0.6' : '1';
     document.body.style.pointerEvents = on ? 'none' : '';
   }
 
-  /* ── PANEL NAV ── */
-  function showPanel(name, btn) {
-    document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('panel-' + name)?.classList.add('active');
-    if(btn) btn.classList.add('active');
-    const titles = {dashboard:'Dashboard',products:'Products',content:'Content',settings:'Settings'};
-    const el = document.getElementById('adminPageTitle');
-    if(el) el.textContent = titles[name] || name;
+  /* ══════════════════════
+     CATEGORY TABS
+  ══════════════════════ */
+  function renderCategoryTabs() {
+    const tabsEl = document.getElementById('prodCatTabs');
+    if (!tabsEl || !data) return;
+
+    tabsEl.innerHTML = data.categories.map((cat, i) => `
+      <button class="prod-cat-tab ${i===0?'active':''}"
+        onclick="AdminPanel.selectCategory('${cat.id}',this)">
+        ${cat.icon || '◈'} ${cat.name}
+      </button>`).join('');
+
+    // Auto-select first
+    if (data.categories.length) selectCategory(data.categories[0].id, tabsEl.querySelector('.prod-cat-tab'));
   }
 
-  /* ══════════════════════════════════════════
-     PRODUCTS LOAD
-     Try Supabase first → fall back to localStorage
-     ══════════════════════════════════════════ */
-  async function loadProducts() {
-    try {
-      const data = await SB.get('products', '?order=created_at.asc');
-      if (data && data.length > 0) {
-        products = data;
-        /* Mirror Supabase data into localStorage for the frontend */
-        syncProductsToLocalStorage();
-        toast(`${products.length} products loaded from Supabase ✓`);
-        return;
-      }
-    } catch(e) {
-      console.warn('Supabase load failed:', e.message);
+  function selectCategory(catId, btn) {
+    activeCatId = catId;
+    activeSubId = null;
+
+    document.querySelectorAll('.prod-cat-tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+
+    const cat = data.categories.find(c => c.id === catId);
+    if (!cat) return;
+
+    const subEl = document.getElementById('prodSubcatTabs');
+    if (cat.hasSubCategories && cat.subCategories?.length) {
+      subEl.style.display = 'flex';
+      subEl.innerHTML = cat.subCategories.map((sub, i) => `
+        <button class="prod-subcat-tab ${i===0?'active':''}"
+          onclick="AdminPanel.selectSubCategory('${sub.id}',this)">
+          ${sub.name}
+        </button>`).join('');
+      activeSubId = cat.subCategories[0].id;
+    } else {
+      subEl.style.display = 'none';
+      subEl.innerHTML = '';
     }
-
-    /* Try localStorage (previously saved by Admin) */
-    try {
-      const raw = localStorage.getItem('buecon_products');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          products = parsed;
-          toast(`${products.length} products loaded from local storage ✓`);
-          return;
-        }
-      }
-    } catch(e) { /* ignore */ }
-
-    /* Final fallback: hardcoded defaults */
-    products = JSON.parse(JSON.stringify(window.BUECON_DEFAULTS?.products || []));
-    syncProductsToLocalStorage();
-    toast('Using default products — connect Supabase to go live', 'warn');
+    renderProductGrid();
   }
 
-  /* ══════════════════════════════════════════
-     KEY FIX: Always mirror products to localStorage
-     This is what the frontend reads when Supabase
-     is not connected.
-     ══════════════════════════════════════════ */
-  function syncProductsToLocalStorage() {
-    try {
-      localStorage.setItem('buecon_products', JSON.stringify(products));
-    } catch(e) {
-      console.warn('localStorage sync failed:', e.message);
-    }
+  function selectSubCategory(subId, btn) {
+    activeSubId = subId;
+    document.querySelectorAll('.prod-subcat-tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderProductGrid();
   }
 
-  /* ── RENDER GRID ── */
+  /* ══════════════════════
+     PRODUCT GRID
+  ══════════════════════ */
   function renderProductGrid() {
     const grid = document.getElementById('productsAdminGrid');
-    if (!grid) return;
-    if (products.length === 0) {
-      grid.innerHTML = `<div class="glass-card" style="padding:32px;text-align:center;color:var(--silver-dim);grid-column:1/-1;">No products yet. Click "+ Add Product".</div>`;
+    if (!grid || !data) return;
+
+    const cat = data.categories.find(c => c.id === activeCatId);
+    if (!cat) { grid.innerHTML = ''; return; }
+
+    let products = [];
+    if (cat.hasSubCategories && activeSubId) {
+      const sub = cat.subCategories.find(s => s.id === activeSubId);
+      products = sub?.products || [];
+    } else {
+      products = cat.products || [];
+    }
+
+    if (!products.length) {
+      grid.innerHTML = `<div class="glass-card" style="padding:32px;text-align:center;color:var(--silver-dim);grid-column:1/-1">No products. Click "+ Add Product" to add one.</div>`;
       return;
     }
+
     grid.innerHTML = products.map(p => `
-      <div class="glass-card product-admin-card">
-        ${p.image_url
-          ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:12px"/>`
-          : `<div style="font-size:2.5rem;color:var(--gold);opacity:0.4;text-align:center;padding:16px 0;">${p.icon||'◈'}</div>`
-        }
-        <p class="pac-series">${p.series||''}</p>
-        <h3 class="pac-name">${p.icon||''} ${p.name}</h3>
-        <div class="pac-style">
-          ${(Array.isArray(p.style)?p.style:[]).map(s=>`<span class="pac-style-tag">${s}</span>`).join('')}
+      <div class="glass-card product-admin-card" id="pac-${p.id}">
+        <div class="pac-img-wrap">
+          ${p.image
+            ? `<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+               <div class="pac-img-fallback" style="display:none">◈</div>`
+            : `<div class="pac-img-fallback">◈</div>`}
         </div>
-        <p style="font-size:0.8rem;color:var(--silver-dim);line-height:1.5;margin-bottom:16px">
-          ${(p.description||'').slice(0,90)}…
-        </p>
+        <h3 class="pac-name">${p.name}</h3>
+        <p class="pac-desc">${(p.desc||'').slice(0,80)}${p.desc&&p.desc.length>80?'…':''}</p>
+        <div class="pac-status ${p.image?'has-img':'no-img'}">
+          ${p.image ? '✓ Image set' : '⚠ No image'}
+        </div>
         <div class="pac-actions">
           <button class="pac-btn edit" onclick="AdminPanel.openProductModal('${p.id}')">✎ Edit</button>
-          <button class="pac-btn delete" onclick="AdminPanel.deleteProduct('${p.id}')">✕ Delete</button>
+          <button class="pac-btn delete" onclick="AdminPanel.deleteProduct('${p.id}')">✕</button>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  /* ── MODAL ── */
-  function openProductModal(id) {
-    editingId = id || null;
-    document.getElementById('modalTitle').textContent = id ? 'Edit Product' : 'Add Product';
-    const fields = ['mp-series','mp-name','mp-icon','mp-tagline','mp-desc','mp-style','mp-features','mp-insight','mp-imgurl'];
-    if (id) {
-      const p = products.find(x => x.id === id);
-      if (!p) return;
-      document.getElementById('mp-series').value   = p.series||'';
-      document.getElementById('mp-name').value     = p.name||'';
-      document.getElementById('mp-icon').value     = p.icon||'';
-      document.getElementById('mp-tagline').value  = p.tagline||'';
-      document.getElementById('mp-desc').value     = p.description||'';
-      document.getElementById('mp-style').value    = (Array.isArray(p.style)?p.style:[]).join(', ');
-      document.getElementById('mp-features').value = (Array.isArray(p.features)?p.features:[]).join('\n');
-      document.getElementById('mp-insight').value  = p.insight||'';
-      document.getElementById('mp-imgurl').value   = p.image_url||'';
-      const prev = document.getElementById('mp-img-preview');
-      if(prev && p.image_url){prev.src=p.image_url;prev.style.display='block';}
-      else if(prev) prev.style.display='none';
+  /* ══════════════════════
+     MODAL — Open / Close
+  ══════════════════════ */
+  function openProductModal(productId) {
+    const modal = document.getElementById('productModalBg');
+    const titleEl = document.getElementById('modalTitle');
+
+    if (productId) {
+      // Edit existing
+      editCtx = findProduct(productId);
+      if (!editCtx) return;
+      const p = editCtx.product;
+      titleEl.textContent = 'Edit Product';
+      document.getElementById('mp-product-id').value = p.id;
+      document.getElementById('mp-name').value = p.name || '';
+      document.getElementById('mp-desc').value = p.desc || '';
+      document.getElementById('mp-imgurl').value = p.image || '';
+      document.getElementById('mp-file-name').textContent = '';
+      updateImgPreview(p.image || '');
+      // breadcrumb
+      setBreadcrumb(editCtx);
     } else {
-      fields.forEach(fid => { const el=document.getElementById(fid); if(el) el.value=''; });
-      const prev=document.getElementById('mp-img-preview'); if(prev) prev.style.display='none';
+      // Add new — add to current active cat/subcat
+      editCtx = null;
+      titleEl.textContent = 'Add Product';
+      ['mp-product-id','mp-name','mp-desc','mp-imgurl'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = '';
+      });
+      document.getElementById('mp-file-name').textContent = '';
+      updateImgPreview('');
+      // breadcrumb for new
+      const cat = data.categories.find(c => c.id === activeCatId);
+      const sub = activeSubId ? cat?.subCategories?.find(s => s.id === activeSubId) : null;
+      document.getElementById('mpBreadcrumb').innerHTML =
+        `Adding to: <strong>${cat?.name||''}${sub?' › '+sub.name:''}</strong>`;
     }
-    document.getElementById('productModalBg').classList.add('open');
+
+    modal.classList.add('open');
   }
 
   function closeProductModal() {
     document.getElementById('productModalBg')?.classList.remove('open');
-    editingId = null;
+    editCtx = null;
   }
 
-  /* ══════════════════════════════════════════
-     SAVE PRODUCT
-     Tries Supabase, ALWAYS saves to localStorage
-     ══════════════════════════════════════════ */
-  async function saveProduct() {
-    const series   = document.getElementById('mp-series').value.trim();
-    const name     = document.getElementById('mp-name').value.trim();
-    if (!series||!name) { toast('Series and Name are required.','warn'); return; }
-
-    const payload = {
-      id:          editingId || name.toLowerCase().replace(/\s+/g,'-'),
-      series, name,
-      icon:        document.getElementById('mp-icon').value.trim()||'◈',
-      tagline:     document.getElementById('mp-tagline').value.trim(),
-      description: document.getElementById('mp-desc').value.trim(),
-      style:       document.getElementById('mp-style').value.trim().split(',').map(s=>s.trim()).filter(Boolean),
-      features:    document.getElementById('mp-features').value.trim().split('\n').map(f=>f.trim()).filter(Boolean),
-      insight:     document.getElementById('mp-insight').value.trim()||'Perfect for modern interiors',
-      badge:       `✨ ${name}`,
-      image_url:   document.getElementById('mp-imgurl').value.trim(),
-      model_url:   '',
-    };
-
-    const btn = document.querySelector('.modal-footer .btn-admin-primary');
-    if(btn){btn.textContent='Saving…';btn.disabled=true;}
-
-    /* Always update local array first */
-    const idx = products.findIndex(p=>p.id===payload.id);
-    if(idx>-1) products[idx]=payload; else products.push(payload);
-
-    /* KEY FIX: Always save to localStorage — frontend reads this */
-    syncProductsToLocalStorage();
-
-    /* Try Supabase too (non-blocking) */
-    let savedToSupabase = false;
-    try {
-      await SB.upsert('products', payload);
-      savedToSupabase = true;
-    } catch(e) {
-      console.warn('Supabase save failed (saved to localStorage instead):', e.message);
-    }
-
-    toast(savedToSupabase
-      ? (editingId ? 'Product updated ✓' : 'Product added ✓ — live on site now')
-      : 'Saved locally ✓ — visible on site. Connect Supabase to persist permanently.'
-    );
-
-    renderProductGrid();
-    updateStats();
-    closeProductModal();
-
-    if(btn){btn.textContent='Save Product';btn.disabled=false;}
+  function setBreadcrumb(ctx) {
+    const parts = [ctx.cat.name];
+    if (ctx.sub) parts.push(ctx.sub.name);
+    parts.push(ctx.product.name);
+    document.getElementById('mpBreadcrumb').innerHTML =
+      'Editing: ' + parts.map((p,i) => `<strong>${p}</strong>`).join(' › ');
   }
 
-  /* ══════════════════════════════════════════
-     DELETE PRODUCT
-     ══════════════════════════════════════════ */
-  async function deleteProduct(id) {
-    if(!confirm('Delete this product permanently?')) return;
-
-    products = products.filter(p=>p.id!==id);
-    syncProductsToLocalStorage(); /* KEY FIX */
-
-    try {
-      await SB.delete('products','id',id);
-      toast('Product deleted from Supabase.');
-    } catch(e) {
-      toast('Deleted locally. Supabase unreachable — reconnect to sync.', 'warn');
-    }
-
-    renderProductGrid();
-    updateStats();
-  }
-
-  /* ══════════════════════════════════════════
-     CONTENT
-     Also mirrors to localStorage as 'buecon_content'
-     ══════════════════════════════════════════ */
-  async function loadContentFields() {
-    /* Try localStorage first for instant load */
-    try {
-      const raw = localStorage.getItem('buecon_content');
-      if (raw) {
-        const map = JSON.parse(raw);
-        applyContentMap(map);
+  function findProduct(productId) {
+    for (const cat of data.categories) {
+      if (cat.hasSubCategories) {
+        for (const sub of cat.subCategories) {
+          const p = sub.products.find(x => x.id === productId);
+          if (p) return { cat, sub, product: p };
+        }
+      } else {
+        const p = (cat.products||[]).find(x => x.id === productId);
+        if (p) return { cat, sub: null, product: p };
       }
-    } catch(e) { /* ignore */ }
+    }
+    return null;
+  }
 
-    /* Then try Supabase to get latest */
+  /* ══════════════════════
+     MODAL — Image Preview
+  ══════════════════════ */
+  function previewImgUrl(url) {
+    updateImgPreview(url.trim());
+  }
+
+  function updateImgPreview(url) {
+    const img  = document.getElementById('mp-img-preview');
+    const ph   = document.getElementById('mpImgPlaceholder');
+    if (!img || !ph) return;
+    if (url) {
+      img.src = url;
+      img.style.display = 'block';
+      ph.style.display = 'none';
+      img.onerror = () => { img.style.display='none'; ph.style.display='flex'; };
+    } else {
+      img.style.display = 'none';
+      ph.style.display = 'flex';
+    }
+  }
+
+  function handleFileUpload(input) {
+    if (!input.files?.[0]) return;
+    const file = input.files[0];
+    // Show filename
+    document.getElementById('mp-file-name').textContent = file.name;
+    // Preview using object URL
+    const url = URL.createObjectURL(file);
+    updateImgPreview(url);
+    // Store object URL in the imgurl field (note: this only works for current session)
+    document.getElementById('mp-imgurl').value = url;
+    toast('Image preview loaded. Note: for permanent storage, upload to your hosting and paste the URL instead.', 'warn');
+  }
+
+  /* ══════════════════════
+     SAVE PRODUCT
+  ══════════════════════ */
+  function saveProduct() {
+    const name  = document.getElementById('mp-name').value.trim();
+    const desc  = document.getElementById('mp-desc').value.trim();
+    const image = document.getElementById('mp-imgurl').value.trim();
+
+    if (!name) { toast('Product name is required.', 'warn'); return; }
+
+    const saveBtn = document.getElementById('mpSaveBtn');
+    if (saveBtn) { saveBtn.textContent = 'Saving…'; saveBtn.disabled = true; }
+
+    try {
+      if (editCtx) {
+        // Update existing
+        editCtx.product.name  = name;
+        editCtx.product.desc  = desc;
+        editCtx.product.image = image;
+      } else {
+        // Add new product to current active cat/subcat
+        const cat = data.categories.find(c => c.id === activeCatId);
+        if (!cat) { toast('No category selected.', 'warn'); return; }
+        const newId = activeCatId + '-' + (activeSubId ? activeSubId+'-' : '') + Date.now();
+        const newProduct = { id: newId, name, desc, image };
+        if (cat.hasSubCategories && activeSubId) {
+          const sub = cat.subCategories.find(s => s.id === activeSubId);
+          if (sub) sub.products.push(newProduct);
+        } else {
+          if (!cat.products) cat.products = [];
+          cat.products.push(newProduct);
+        }
+      }
+
+      saveData();
+      renderProductGrid();
+      closeProductModal();
+    } finally {
+      if (saveBtn) { saveBtn.textContent = 'Save Changes'; saveBtn.disabled = false; }
+    }
+  }
+
+  /* ══════════════════════
+     DELETE PRODUCT
+  ══════════════════════ */
+  function deleteProduct(productId) {
+    if (!confirm('Delete this product? This cannot be undone.')) return;
+    const ctx = findProduct(productId);
+    if (!ctx) return;
+    if (ctx.sub) {
+      ctx.sub.products = ctx.sub.products.filter(p => p.id !== productId);
+    } else {
+      ctx.cat.products = (ctx.cat.products||[]).filter(p => p.id !== productId);
+    }
+    saveData();
+    renderProductGrid();
+    toast('Product deleted.');
+  }
+
+    /* ══════════════════════
+     CONTENT — Load & Save
+  ══════════════════════ */
+  async function loadContentFields() {
     try {
       const rows = await SB.get('content');
-      if(!rows||!rows.length) return;
+      if (!rows || rows.length === 0) return;
       const map = {};
-      rows.forEach(r=>{ map[r.key]=r.value; });
-      applyContentMap(map);
-      localStorage.setItem('buecon_content', JSON.stringify(map));
-    } catch(e) { console.warn('Content load from Supabase failed:', e.message); }
-  }
+      rows.forEach(r => { map[r.key] = r.value; });
 
-  function applyContentMap(map) {
-    const fieldMap = {
-      'content-headline': map.hero_headline,
-      'content-subline':  map.hero_subline,
-      'content-about':    map.about_text,
-      'content-phone':    map.contact_phone,
-      'content-email':    map.contact_email,
-    };
-    Object.entries(fieldMap).forEach(([fid,val])=>{
-      const el=document.getElementById(fid); if(el&&val!==undefined) el.value=val;
-    });
+      const fieldMap = {
+        'content-headline': map.hero_headline,
+        'content-subline':  map.hero_subline,
+        'content-about':    map.about_text,
+        'content-phone':    map.contact_phone,
+        'content-email':    map.contact_email,
+      };
+
+      Object.entries(fieldMap).forEach(([fid, val]) => {
+        const el = document.getElementById(fid);
+        if (el && val !== undefined) el.value = val;
+      });
+    } catch (err) {
+      console.warn('Could not load content:', err.message);
+    }
   }
 
   async function saveContent() {
@@ -271,72 +337,80 @@ const AdminPanel = (() => {
       'contact_email': document.getElementById('content-email')?.value,
     };
 
-    /* KEY FIX: Always save to localStorage */
-    try {
-      localStorage.setItem('buecon_content', JSON.stringify(fieldMap));
-    } catch(e) { console.warn('localStorage content save failed:', e.message); }
+    const saveBtn = document.querySelector('#panel-content .btn-admin-primary');
+    if (saveBtn) { saveBtn.textContent = 'Saving…'; saveBtn.disabled = true; }
 
-    const btn = document.querySelector('#panel-content .btn-admin-primary');
-    if(btn){btn.textContent='Saving…';btn.disabled=true;}
-
-    let savedToSupabase = false;
     try {
-      const rows = Object.entries(fieldMap).map(([key,value])=>({key,value:value||'',updated_at:new Date().toISOString()}));
+      const rows = Object.entries(fieldMap).map(([key, value]) => ({
+        key, value: value || '', updated_at: new Date().toISOString(),
+      }));
       await SB.upsert('content', rows);
-      savedToSupabase = true;
-    } catch(e) {
-      console.warn('Supabase content save failed:', e.message);
+      toast('Content saved ✓ — Live on site immediately.');
+    } catch (err) {
+      toast('Save failed: ' + err.message, 'warn');
+    } finally {
+      if (saveBtn) { saveBtn.textContent = 'Save Changes'; saveBtn.disabled = false; }
     }
-
-    toast(savedToSupabase
-      ? 'Content saved ✓ — live on site immediately'
-      : 'Saved locally ✓ — visible on site. Connect Supabase to persist permanently.'
-    );
-
-    if(btn){btn.textContent='Save Changes';btn.disabled=false;}
   }
 
+  /* ══════════════════════
+     STATS
+  ══════════════════════ */
   function updateStats() {
-    const el=document.getElementById('stat-products'); if(el) el.textContent=products.length;
+    const el = document.getElementById('stat-products');
+    if (el) el.textContent = products.length;
   }
 
+  /* ══════════════════════
+     IMAGE PREVIEW
+  ══════════════════════ */
   function previewImg(input) {
-    const prev=document.getElementById('mp-img-preview');
-    if(!input.files?.[0]||!prev) return;
-    prev.src=URL.createObjectURL(input.files[0]); prev.style.display='block';
-    toast('Image selected. Upload to Supabase Storage and paste the URL below.');
+    const prev = document.getElementById('mp-img-preview');
+    if (!input.files?.[0] || !prev) return;
+    const url = URL.createObjectURL(input.files[0]);
+    prev.src = url;
+    prev.style.display = 'block';
+    toast('Image selected. For Supabase storage, upload via dashboard and paste the URL in the Image URL field.');
   }
 
   function handleModel(input) {
-    if(!input.files?.[0]) return;
-    const box=document.getElementById('modelUploadBox');
-    if(box) box.querySelector('p').textContent=input.files[0].name;
-    toast('Model selected. Upload to Supabase Storage and paste URL in product data.');
+    if (!input.files?.[0]) return;
+    const box = document.getElementById('modelUploadBox');
+    if (box) box.querySelector('p').textContent = input.files[0].name;
+    toast('3D model selected. Upload to Supabase Storage → paste public URL in code.');
   }
 
+  /* ══════════════════════
+     SUPABASE TEST
+  ══════════════════════ */
   async function testSupabase() {
-    const status=document.getElementById('sb-status');
-    if(status){status.textContent='Testing…';status.style.color='var(--silver-dim)';}
+    const status = document.getElementById('sb-status');
+    if (status) { status.textContent = 'Testing…'; status.style.color = 'var(--silver-dim)'; }
     try {
-      await SB.get('products','?limit=1');
-      if(status){status.textContent='✓ Connected';status.style.color='#4CAF50';}
-      toast('Supabase connected ✓');
+      await SB.get('products', '?limit=1');
+      if (status) { status.textContent = '✓ Connected'; status.style.color = '#4CAF50'; }
+      toast('Supabase connection active ✓');
     } catch {
-      if(status){status.textContent='✕ Failed';status.style.color='#E05B5B';}
-      toast('Connection failed — products still save locally','warn');
+      if (status) { status.textContent = '✕ Failed'; status.style.color = '#E05B5B'; }
+      toast('Connection failed. Check URL and key.', 'warn');
     }
   }
 
+  /* ══════════════════════
+     TOAST
+  ══════════════════════ */
   let toastTimer;
-  function toast(msg, type='ok') {
-    const t=document.getElementById('adminToast'); if(!t) return;
-    t.textContent=msg;
-    t.style.borderColor=type==='warn'?'rgba(255,193,7,0.4)':'rgba(197,164,109,0.3)';
+  function toast(msg, type = 'ok') {
+    const t = document.getElementById('adminToast');
+    if (!t) return;
+    t.textContent = msg;
+    t.style.borderColor = type === 'warn' ? 'rgba(255,193,7,0.4)' : 'rgba(197,164,109,0.3)';
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer=setTimeout(()=>t.classList.remove('show'),4000);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
   }
 
   document.addEventListener('DOMContentLoaded', init);
-  return {showPanel,openProductModal,closeProductModal,saveProduct,deleteProduct,previewImg,handleModel,saveContent,testSupabase};
+
+  return { showPanel, openProductModal, closeProductModal, saveProduct, deleteProduct, previewImgUrl, handleFileUpload, saveContent, testSupabase, selectCategory, selectSubCategory };
 })();
