@@ -216,7 +216,6 @@
     .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
     .empty-state p { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; }
 
-    /* Loading spinner */
     .loading-state { text-align: center; padding: 40px 20px; color: var(--dim); }
     .spinner {
       width: 32px; height: 32px; border: 2px solid rgba(197,164,109,0.15);
@@ -328,7 +327,6 @@
 </main>
 
 <script>
-/* ── Supabase Client (inlined) ── */
 const SUPABASE_URL  = 'https://qjpomdhpvheudpduywjj.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqcG9tZGhwdmhldWRwZHV5d2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MzQ5MDcsImV4cCI6MjA5MDUxMDkwN30.NnPn9Rywzm7kRmh-cwgo80knDq7j6EeD873QGroYa78';
 
@@ -339,39 +337,25 @@ const SB = {
     'Content-Type':  'application/json',
     'Prefer':        'return=representation',
   },
-  url(table, query = '') {
-    return `${SUPABASE_URL}/rest/v1/${table}${query}`;
-  },
+  url(table, query = '') { return `${SUPABASE_URL}/rest/v1/${table}${query}`; },
   async get(table, query = '') {
     const res = await fetch(SB.url(table, query), { headers: SB.headers });
     if (!res.ok) throw new Error(`SB.get ${table}: ${res.status}`);
     return res.json();
   },
-  async insert(table, data) {
-    const res = await fetch(SB.url(table), {
-      method: 'POST', headers: SB.headers, body: JSON.stringify(data),
-    });
-    if (!res.ok) throw new Error(`SB.insert ${table}: ${res.status}`);
-    return res.json();
-  },
 };
 </script>
+
 <script>
-/* ══════════════════════════════════
-   State
-══════════════════════════════════ */
 let allVisitors = [];
 let pageHits    = {};
 let lastCount   = 0;
 
-/* ══════════════════════════════════
-   Fetch from Supabase
-══════════════════════════════════ */
+/* ── Fetch ── */
 async function fetchVisitors() {
   try {
-    const data = await SB.get('visitors', '?order=timestamp.desc&limit=200');
-    return data || [];
-  } catch (e) {
+    return await SB.get('visitors', '?order=visited_at.desc&limit=200') || [];
+  } catch(e) {
     console.error('Admin: fetch visitors failed', e.message);
     return [];
   }
@@ -379,11 +363,11 @@ async function fetchVisitors() {
 
 async function fetchPageHits() {
   try {
-    const data = await SB.get('page_hits', '?order=count.desc');
+    const data = await SB.get('page_hits', '?order=count.desc') || [];
     const map = {};
-    (data || []).forEach(row => { map[row.page] = row.count; });
+    data.forEach(row => { map[row.page] = row.count; });
     return map;
-  } catch (e) {
+  } catch(e) {
     console.error('Admin: fetch page hits failed', e.message);
     return {};
   }
@@ -391,13 +375,10 @@ async function fetchPageHits() {
 
 async function deleteAllVisitors() {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/visitors?timestamp=gt.0`,
+    `${SUPABASE_URL}/rest/v1/visitors?id=gte.0`,
     { method: 'DELETE', headers: { ...SB.headers, 'Prefer': 'return=minimal' } }
   );
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error('Delete visitors failed: ' + res.status + ' — ' + txt);
-  }
+  if (!res.ok) throw new Error('Delete visitors failed: ' + res.status + ' — ' + await res.text());
 }
 
 async function deleteAllPageHits() {
@@ -405,15 +386,10 @@ async function deleteAllPageHits() {
     `${SUPABASE_URL}/rest/v1/page_hits?count=gte.0`,
     { method: 'DELETE', headers: { ...SB.headers, 'Prefer': 'return=minimal' } }
   );
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error('Delete page_hits failed: ' + res.status + ' — ' + txt);
-  }
+  if (!res.ok) throw new Error('Delete page_hits failed: ' + res.status + ' — ' + await res.text());
 }
 
-/* ══════════════════════════════════
-   Clock
-══════════════════════════════════ */
+/* ── Clock ── */
 function updateClock() {
   document.getElementById('clock').textContent =
     new Date().toLocaleTimeString('en-IN', { hour12: false });
@@ -421,9 +397,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-/* ══════════════════════════════════
-   Avatar colors
-══════════════════════════════════ */
+/* ── Avatar colors ── */
 const AVATAR_COLORS = [
   ['#1a2f4a','#7eb8f7'], ['#1a2a1a','#4caf7d'],
   ['#2e1a1a','#e05555'], ['#2a1f0e','#c5a46d'],
@@ -435,11 +409,9 @@ function avatarColor(name) {
   return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
 }
 
-/* ══════════════════════════════════
-   Time ago
-══════════════════════════════════ */
-function timeAgo(ts) {
-  const diff = Date.now() - ts;
+/* ── Time helpers — use visited_at (ISO string) ── */
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
   const s = Math.floor(diff / 1000);
   if (s < 60)  return s + 's ago';
   const m = Math.floor(s / 60);
@@ -449,34 +421,28 @@ function timeAgo(ts) {
   return Math.floor(hr / 24) + 'd ago';
 }
 
-function statusClass(ts) {
-  const diff = Date.now() - ts;
+function statusClass(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
   if (diff < 5 * 60 * 1000)  return 'active';
   if (diff < 30 * 60 * 1000) return 'recent';
   return 'old';
 }
 
-/* ══════════════════════════════════
-   Render feed
-══════════════════════════════════ */
+/* ── Render feed ── */
 function renderFeed(highlightFirst = false) {
-  const visitors = allVisitors; // already newest-first from Supabase
   const body = document.getElementById('feedBody');
-
-  if (!visitors.length) {
+  if (!allVisitors.length) {
     body.innerHTML = `<div class="empty-state"><div class="icon">◈</div><p>Waiting for visitors...</p></div>`;
     return;
   }
-
-  body.innerHTML = visitors.map((v, i) => {
+  body.innerHTML = allVisitors.map((v, i) => {
     const [bg, fg] = avatarColor(v.name || 'U');
-    const initials = (v.name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
-    const cls = i === 0 && highlightFirst ? 'feed-row new-entry' : 'feed-row';
-    const isMobile = v.device === 'Mobile';
-    const sc = statusClass(v.timestamp);
-
+    const initials  = (v.name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+    const cls       = i === 0 && highlightFirst ? 'feed-row new-entry' : 'feed-row';
+    const isMobile  = v.device === 'Mobile';
+    const sc        = statusClass(v.visited_at);
     return `
-      <div class="${cls}" style="animation-delay:${i * 0.04}s">
+      <div class="${cls}" style="animation-delay:${i*0.04}s">
         <div class="visitor-info">
           <div class="visitor-avatar" style="background:${bg};color:${fg}">${initials}</div>
           <div>
@@ -485,7 +451,7 @@ function renderFeed(highlightFirst = false) {
           </div>
         </div>
         <div class="cell highlight">${v.city || '—'}, ${v.country || '—'}</div>
-        <div class="cell">${timeAgo(v.timestamp)}</div>
+        <div class="cell">${timeAgo(v.visited_at)}</div>
         <div class="cell">
           <span class="device-badge ${isMobile ? 'mobile' : 'desktop'}">
             ${isMobile ? '📱' : '🖥'} ${v.device || 'Desktop'}
@@ -499,20 +465,16 @@ function renderFeed(highlightFirst = false) {
   }).join('');
 }
 
-/* ══════════════════════════════════
-   Render page bars
-══════════════════════════════════ */
+/* ── Render page bars ── */
 function renderPageBars() {
-  const el = document.getElementById('pageBars');
-  const entries = Object.entries(pageHits).sort((a, b) => b[1] - a[1]);
-
+  const el      = document.getElementById('pageBars');
+  const entries = Object.entries(pageHits).sort((a,b) => b[1]-a[1]);
   if (!entries.length) {
     el.innerHTML = `<div class="empty-state" style="padding:30px 0;"><div class="icon" style="font-size:28px;">▭</div><p>No page data yet</p></div>`;
     return;
   }
-
   const max = entries[0][1];
-  el.innerHTML = entries.slice(0, 6).map(([page, count]) => `
+  el.innerHTML = entries.slice(0,6).map(([page, count]) => `
     <div class="page-bar-item">
       <div class="page-bar-label">
         <span class="page-bar-name">${page}</span>
@@ -524,81 +486,63 @@ function renderPageBars() {
     </div>`).join('');
 }
 
-/* ══════════════════════════════════
-   Render activity log
-══════════════════════════════════ */
+/* ── Render activity log ── */
 function renderActivityLog() {
-  const visitors = allVisitors.slice(0, 8);
-  const el = document.getElementById('activityLog');
-
+  const el       = document.getElementById('activityLog');
+  const visitors = allVisitors.slice(0,8);
   if (!visitors.length) {
     el.innerHTML = `<div class="empty-state" style="padding:30px 0;"><div class="icon" style="font-size:28px;">◯</div><p>No activity yet</p></div>`;
     return;
   }
-
-  const icons = { 'Home':'🏠', 'Products':'◈', 'Contact':'✉', 'About':'◯', 'Reviews':'⭐', 'Why Us':'✦', 'Mission':'◎' };
-
-  el.innerHTML = visitors.map((v, i) => {
-    const icon = icons[v.page] || '◈';
-    return `
-      <div class="activity-item" style="animation-delay:${i*0.06}s">
-        <div class="activity-icon">${icon}</div>
-        <div>
-          <div class="activity-text"><strong>${v.name || 'Anonymous'}</strong> visited <strong>${v.page || '/'}</strong> from ${v.city || 'Unknown'}</div>
-          <div class="activity-time">${timeAgo(v.timestamp)} · ${v.device || 'Desktop'}</div>
-        </div>
-      </div>`;
-  }).join('');
+  const icons = { 'Home':'🏠','Products':'◈','Contact':'✉','About':'◯','Reviews':'⭐','Why Us':'✦','Mission':'◎' };
+  el.innerHTML = visitors.map((v,i) => `
+    <div class="activity-item" style="animation-delay:${i*0.06}s">
+      <div class="activity-icon">${icons[v.page] || '◈'}</div>
+      <div>
+        <div class="activity-text"><strong>${v.name||'Anonymous'}</strong> visited <strong>${v.page||'/'}</strong> from ${v.city||'Unknown'}</div>
+        <div class="activity-time">${timeAgo(v.visited_at)} · ${v.device||'Desktop'}</div>
+      </div>
+    </div>`).join('');
 }
 
-/* ══════════════════════════════════
-   Render stats
-══════════════════════════════════ */
+/* ── Render stats ── */
 function renderStats() {
   document.getElementById('stat-total').textContent = allVisitors.length;
 
-  const today = new Date().toDateString();
-  const todayCount = allVisitors.filter(v => new Date(v.timestamp).toDateString() === today).length;
-  document.getElementById('stat-today').textContent = todayCount;
+  const today      = new Date().toDateString();
+  const todayCount = allVisitors.filter(v => new Date(v.visited_at).toDateString() === today).length;
+  document.getElementById('stat-today').textContent     = todayCount;
   document.getElementById('stat-today-date').textContent =
     new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short' });
 
   const pageEntries = Object.entries(pageHits).sort((a,b) => b[1]-a[1]);
   if (pageEntries.length) {
-    document.getElementById('stat-top-page').textContent = pageEntries[0][0];
+    document.getElementById('stat-top-page').textContent       = pageEntries[0][0];
     document.getElementById('stat-top-page-count').textContent = pageEntries[0][1] + ' visits';
   }
 
-  const mobiles = allVisitors.filter(v => v.device === 'Mobile').length;
+  const mobiles  = allVisitors.filter(v => v.device === 'Mobile').length;
   const desktops = allVisitors.length - mobiles;
   if (allVisitors.length) {
     const topDevice = mobiles > desktops ? 'Mobile' : 'Desktop';
-    const pct = Math.round(Math.max(mobiles, desktops) / allVisitors.length * 100);
-    document.getElementById('stat-device').textContent = topDevice;
+    const pct       = Math.round(Math.max(mobiles,desktops) / allVisitors.length * 100);
+    document.getElementById('stat-device').textContent     = topDevice;
     document.getElementById('stat-device-pct').textContent = pct + '% of visitors';
   }
 }
 
-/* ══════════════════════════════════
-   Clear all data
-══════════════════════════════════ */
+/* ── Clear all ── */
 async function clearData() {
   if (!confirm('Clear ALL visitor data from Supabase? This cannot be undone.')) return;
   try {
     await deleteAllVisitors();
     await deleteAllPageHits();
-    allVisitors = [];
-    pageHits    = {};
-    lastCount   = 0;
+    allVisitors = []; pageHits = {}; lastCount = 0;
     renderAll();
-  } catch (e) {
-    alert('Error clearing data: ' + e.message);
-  }
+  } catch(e) { alert('Error clearing data: ' + e.message); }
 }
 
-/* ══════════════════════════════════
-   Render everything
-══════════════════════════════════ */
+/* ── Render all ── */
 function renderAll(highlightFirst = false) {
   renderFeed(highlightFirst);
   renderPageBars();
@@ -606,31 +550,19 @@ function renderAll(highlightFirst = false) {
   renderStats();
 }
 
-/* ══════════════════════════════════
-   Load + auto-poll every 10s
-══════════════════════════════════ */
+/* ── Load + poll every 10s ── */
 async function loadAndRender(highlightFirst = false) {
   const [visitors, hits] = await Promise.all([fetchVisitors(), fetchPageHits()]);
-  const isNew = visitors.length > lastCount;
-  allVisitors = visitors;
-  pageHits    = hits;
-  lastCount   = visitors.length;
+  const isNew  = visitors.length > lastCount;
+  allVisitors  = visitors;
+  pageHits     = hits;
+  lastCount    = visitors.length;
   renderAll(highlightFirst || isNew);
 }
 
-// Initial load
 loadAndRender();
-
-// Poll Supabase every 10 seconds for new visitors
-setInterval(() => {
-  loadAndRender();
-  // Also refresh time-agos every 5s without re-fetching
-}, 10000);
-
-// Refresh time-agos only every 5s (lightweight)
-setInterval(() => {
-  renderFeed(false);
-}, 5000);
+setInterval(loadAndRender, 10000);
+setInterval(() => renderFeed(false), 5000);
 </script>
 </body>
 </html>
