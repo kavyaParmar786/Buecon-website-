@@ -71,7 +71,7 @@ const PRODUCTS_DEFAULTS = {
             { id:'spirit-12', name:'Spirit Paper Holder',    desc:'Open paper holder. Pairs with the full Spirit bathroom suite. SS-1408', image:'public/images/spirit-paper-holder.png' },
             { id:'spirit-13', name:'Spirit Lid Paper',       desc:'Covered paper holder with flip lid. Spirit organic form language. SS-1408L', image:'public/images/spirit-lid-paper.png' },
           ]
-        },},
+        },
             { id:'400-2', name:'400 Wall Mixer',     desc:'Wall-mount mixer tap with 5-year comprehensive warranty. Available in 3 finishes.', image:'' },
             { id:'400-3', name:'400 Towel Ring',     desc:'Classic towel ring with chrome finish. Built on the same core principles as our premium lines.', image:'' },
             { id:'400-4', name:'400 Robe Hook',      desc:'Single robe hook, chrome-plated brass. Reliable and refined.', image:'' },
