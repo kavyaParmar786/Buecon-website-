@@ -46,11 +46,11 @@
   }
 
   function getSavedName() {
-    return localStorage.getItem('buecon_visitor_name') || null;
+    return localStorage.getItem('buecon_visitor_name_v2') || null;
   }
 
   function saveName(name) {
-    localStorage.setItem('buecon_visitor_name', name);
+    localStorage.setItem('buecon_visitor_name_v2', name);
   }
 
   function getLocation() {
