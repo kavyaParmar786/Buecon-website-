@@ -71,11 +71,7 @@ const PRODUCTS_DEFAULTS = {
             { id:'spirit-12', name:'Spirit Paper Holder',    desc:'Open paper holder. Pairs with the full Spirit bathroom suite. SS-1408', image:'public/images/spirit-paper-holder.png' },
             { id:'spirit-13', name:'Spirit Lid Paper',       desc:'Covered paper holder with flip lid. Spirit organic form language. SS-1408L', image:'public/images/spirit-lid-paper.png' },
           ]
-        },
-        {
-          id: '400', name: '400 Series', tagline: 'The Foundation of Excellence',
-          products: [
-            { id:'400-1', name:'400 Single Lever',   desc:'Chrome-plated brass single lever mixer. WRAS approved, universal installation system.', image:'' },
+        },},
             { id:'400-2', name:'400 Wall Mixer',     desc:'Wall-mount mixer tap with 5-year comprehensive warranty. Available in 3 finishes.', image:'' },
             { id:'400-3', name:'400 Towel Ring',     desc:'Classic towel ring with chrome finish. Built on the same core principles as our premium lines.', image:'' },
             { id:'400-4', name:'400 Robe Hook',      desc:'Single robe hook, chrome-plated brass. Reliable and refined.', image:'' },
@@ -241,7 +237,7 @@ function buildProductGrid(products) {
   return `
     <div class="products-grid-new">
       ${products.map(p => `
-        <div class="product-card-new" onclick="openProductModal(${JSON.stringify(JSON.stringify(p))})">
+        <div class="product-card-new" >
           <div class="product-card-img${!p.image?' no-img':''}">
             ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');this.style.display='none'"/>` : ''}
             <div class="product-img-placeholder"><span>◈</span><small>Image coming soon</small></div>
@@ -254,113 +250,3 @@ function buildProductGrid(products) {
     </div>`;
 }
 
-/* ══════════════════════════════════════════
-   PRODUCT MODAL
-   ══════════════════════════════════════════ */
-function ensureModal() {
-  if (document.getElementById('product-modal')) return;
-  const modal = document.createElement('div');
-  modal.id = 'product-modal';
-  modal.innerHTML = `
-    <div class="pm-backdrop" onclick="closeProductModal()"></div>
-    <div class="pm-card">
-      <button class="pm-close" onclick="closeProductModal()">✕</button>
-      <div class="pm-inner">
-        <div class="pm-img-wrap">
-          <img class="pm-img" src="" alt="" />
-          <div class="pm-img-placeholder"><span>◈</span></div>
-        </div>
-        <div class="pm-info">
-          <span class="pm-series-label"></span>
-          <h2 class="pm-name"></h2>
-          <div class="pm-divider"></div>
-          <p class="pm-desc"></p>
-          <div class="pm-code"></div>
-          <a class="pm-enquire" href="contact.html" onclick="closeProductModal();">
-            Enquire About This Product →
-          </a>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  // Close on Escape
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeProductModal(); });
-}
-
-function openProductModal(jsonStr) {
-  ensureModal();
-  const p = JSON.parse(jsonStr);
-  const modal = document.getElementById('product-modal');
-
-  // Populate
-  const img = modal.querySelector('.pm-img');
-  const placeholder = modal.querySelector('.pm-img-placeholder');
-
-  if (p.image) {
-    img.src = p.image;
-    img.alt = p.name;
-    img.style.display = 'block';
-    placeholder.style.display = 'none';
-    img.onerror = () => { img.style.display='none'; placeholder.style.display='flex'; };
-  } else {
-    img.style.display = 'none';
-    placeholder.style.display = 'flex';
-  }
-
-  // Extract series from name (e.g. "Salt Robe Hook" → "Salt Series")
-  const seriesMap = { salt:'Salt Series', super:'Super Series', spirit:'Spirit Series', soft:'Soft Series', smart:'Smart Series', '400':'400 Series' };
-  const seriesKey = Object.keys(seriesMap).find(k => p.id.startsWith(k)) || '';
-  modal.querySelector('.pm-series-label').textContent = seriesMap[seriesKey] || '';
-  modal.querySelector('.pm-name').textContent = p.name;
-  modal.querySelector('.pm-desc').textContent = p.desc;
-
-  // Extract product code from desc (e.g. "SS-1107")
-  const codeMatch = p.desc.match(/SS-\w+/);
-  const codeEl = modal.querySelector('.pm-code');
-  codeEl.textContent = codeMatch ? `Product Code: ${codeMatch[0]}` : '';
-
-  // Animate in
-  modal.classList.remove('pm-closing');
-  modal.classList.add('pm-open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeProductModal() {
-  const modal = document.getElementById('product-modal');
-  if (!modal) return;
-  modal.classList.add('pm-closing');
-  setTimeout(() => {
-    modal.classList.remove('pm-open', 'pm-closing');
-    document.body.style.overflow = '';
-  }, 350);
-}
-
-function toggleCategory(id) {
-  const body  = document.getElementById('body-' + id);
-  const item  = document.getElementById('cat-' + id);
-  const isOpen = item.classList.contains('open');
-  document.querySelectorAll('.category-item.open').forEach(el => {
-    el.classList.remove('open');
-    document.getElementById('body-' + el.id.replace('cat-','')).style.maxHeight = '0';
-  });
-  if (!isOpen) {
-    item.classList.add('open');
-    const inner = body.querySelector('.category-body-inner');
-    body.style.maxHeight = (inner.scrollHeight + 80) + 'px';
-    setTimeout(() => item.scrollIntoView({ behavior:'smooth', block:'nearest' }), 320);
-  }
-}
-
-function switchSubCategory(e, catId, subId) {
-  e.stopPropagation();
-  document.querySelectorAll(`#tabs-${catId} .subcategory-tab`).forEach(t => t.classList.remove('active'));
-  e.currentTarget.classList.add('active');
-  document.querySelectorAll(`#panels-${catId} .subcategory-panel`).forEach(p => p.classList.remove('active'));
-  const panel = document.getElementById(`panel-${catId}-${subId}`);
-  if (panel) panel.classList.add('active');
-  const body  = document.getElementById('body-' + catId);
-  const inner = body.querySelector('.category-body-inner');
-  setTimeout(() => { body.style.maxHeight = (inner.scrollHeight + 80) + 'px'; }, 50);
-}
