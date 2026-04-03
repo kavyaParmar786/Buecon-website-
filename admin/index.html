@@ -3,298 +3,797 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BUECON Admin Panel</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/variables.css"/>
-  <link rel="stylesheet" href="../css/reset.css"/>
-  <link rel="stylesheet" href="admin.css"/>
+  <title>BUECON — Command Center</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&family=Syne:wght@400;600;700;800&family=Playfair+Display:ital,wght@1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --gold: #c5a46d;
+      --gold-dim: rgba(197,164,109,0.15);
+      --gold-glow: rgba(197,164,109,0.4);
+      --navy: #07090f;
+      --navy-mid: #0d1220;
+      --navy-card: #111827;
+      --navy-border: rgba(197,164,109,0.12);
+      --white: #f0ece4;
+      --dim: rgba(240,236,228,0.4);
+      --red: #e05555;
+      --green: #4caf7d;
+      --mono: 'Syne Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Grid background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(197,164,109,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(197,164,109,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Scanline overlay ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.06) 2px,
+        rgba(0,0,0,0.06) 4px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 40px;
+      border-bottom: 1px solid var(--navy-border);
+      background: rgba(7,9,15,0.8);
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      font-family: var(--sans);
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+    }
+
+    .logo span {
+      color: rgba(197,164,109,0.4);
+      font-weight: 400;
+      font-size: 11px;
+      margin-left: 12px;
+      letter-spacing: 0.3em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--green);
+      letter-spacing: 0.1em;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .clock {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--dim);
+    }
+
+    /* ── Main layout ── */
+    main {
+      position: relative;
+      z-index: 1;
+      padding: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── Hero stat strip ── */
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 12px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .stat-card:hover::before { opacity: 1; }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--gold);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--dim);
+      margin-top: 6px;
+    }
+
+    /* ── Section title ── */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .section-title h2 {
+      font-size: 13px;
+      font-family: var(--mono);
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--navy-border);
+    }
+
+    /* ── Visitor feed ── */
+    .feed-wrap {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .feed-header {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1fr;
+      gap: 16px;
+      padding: 14px 24px;
+      background: rgba(197,164,109,0.05);
+      border-bottom: 1px solid var(--navy-border);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+
+    .feed-body {
+      max-height: 480px;
+      overflow-y: auto;
+    }
+
+    .feed-body::-webkit-scrollbar { width: 4px; }
+    .feed-body::-webkit-scrollbar-track { background: transparent; }
+    .feed-body::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+    .feed-row {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1.5fr 1fr 1fr;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(197,164,109,0.05);
+      align-items: center;
+      transition: background 0.2s;
+      animation: slideIn 0.4s ease both;
+    }
+
+    .feed-row:hover { background: rgba(197,164,109,0.04); }
+    .feed-row:last-child { border-bottom: none; }
+
+    .feed-row.new-entry {
+      animation: newEntry 0.5s ease both;
+    }
+
+    .visitor-info { display: flex; align-items: center; gap: 12px; }
+
+    .visitor-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+      border: 1px solid rgba(197,164,109,0.2);
+    }
+
+    .visitor-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .visitor-page {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--dim);
+      margin-top: 2px;
+    }
+
+    .cell {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--dim);
+    }
+
+    .cell.highlight { color: var(--white); }
+
+    .device-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-family: var(--mono);
+      font-size: 10px;
+      border: 1px solid;
+    }
+
+    .device-badge.mobile {
+      color: #7eb8f7;
+      border-color: rgba(126,184,247,0.2);
+      background: rgba(126,184,247,0.06);
+    }
+
+    .device-badge.desktop {
+      color: var(--gold);
+      border-color: rgba(197,164,109,0.2);
+      background: rgba(197,164,109,0.06);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .status-dot.active { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .status-dot.recent { background: var(--gold); }
+    .status-dot.old { background: #555; }
+
+    /* ── Activity heatmap ── */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .panel {
+      background: var(--navy-card);
+      border: 1px solid var(--navy-border);
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* Page popularity bars */
+    .page-bar-item {
+      margin-bottom: 14px;
+    }
+
+    .page-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .page-bar-name { color: var(--white); font-weight: 600; }
+    .page-bar-count { font-family: var(--mono); color: var(--dim); font-size: 11px; }
+
+    .page-bar-track {
+      height: 4px;
+      background: rgba(197,164,109,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .page-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), rgba(197,164,109,0.5));
+      border-radius: 2px;
+      transition: width 1s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    /* Recent activity log */
+    .activity-log { display: flex; flex-direction: column; gap: 10px; }
+
+    .activity-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(197,164,109,0.03);
+      border: 1px solid rgba(197,164,109,0.06);
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .activity-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      background: rgba(197,164,109,0.08);
+      border: 1px solid rgba(197,164,109,0.15);
+    }
+
+    .activity-text { font-size: 12px; color: var(--dim); line-height: 1.5; }
+    .activity-text strong { color: var(--white); }
+    .activity-time { font-family: var(--mono); font-size: 10px; color: rgba(240,236,228,0.25); margin-top: 3px; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--dim);
+    }
+
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-state p {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+    }
+
+    /* Clear btn */
+    .clear-btn {
+      background: none;
+      border: 1px solid rgba(224,85,85,0.3);
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: auto;
+    }
+
+    .clear-btn:hover {
+      background: rgba(224,85,85,0.1);
+      border-color: var(--red);
+    }
+
+    /* ── Animations ── */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes newEntry {
+      0%   { background: rgba(197,164,109,0.12); transform: translateX(-6px); }
+      100% { background: transparent; transform: translateX(0); }
+    }
+
+    /* Stagger stat cards */
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+    @media (max-width: 900px) {
+      main { padding: 20px; }
+      header { padding: 16px 20px; }
+      .stat-strip { grid-template-columns: repeat(2, 1fr); }
+      .feed-header, .feed-row { grid-template-columns: 1fr 1fr 1fr; }
+      .feed-header > *:nth-child(4),
+      .feed-header > *:nth-child(5),
+      .feed-row > *:nth-child(4),
+      .feed-row > *:nth-child(5) { display: none; }
+      .bottom-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <aside class="admin-sidebar" id="adminSidebar">
-    <div class="admin-logo">
-      <span class="logo-b">B</span>UECON
-      <span class="admin-badge">Admin</span>
+<header>
+  <div class="logo">BUECON <span>COMMAND CENTER</span></div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Stat strip -->
+  <div class="stat-strip">
+    <div class="stat-card">
+      <div class="stat-label">Total Visitors</div>
+      <div class="stat-value" id="stat-total">0</div>
+      <div class="stat-sub">All time</div>
     </div>
-
-    <nav class="admin-nav">
-      <button class="admin-nav-btn active" data-panel="dashboard" onclick="AdminPanel.showPanel('dashboard',this)">
-        <span class="nav-icon">◉</span> Dashboard
-      </button>
-      <button class="admin-nav-btn" data-panel="products" onclick="AdminPanel.showPanel('products',this)">
-        <span class="nav-icon">◈</span> Products
-      </button>
-      <button class="admin-nav-btn" data-panel="content" onclick="AdminPanel.showPanel('content',this)">
-        <span class="nav-icon">✦</span> Content
-      </button>
-      <button class="admin-nav-btn" data-panel="settings" onclick="AdminPanel.showPanel('settings',this)">
-        <span class="nav-icon">⊙</span> Settings
-      </button>
-    </nav>
-
-    <div class="admin-sidebar-footer">
-      <a href="../index.html" class="admin-back-link">← Back to Site</a>
+    <div class="stat-card">
+      <div class="stat-label">Today</div>
+      <div class="stat-value" id="stat-today">0</div>
+      <div class="stat-sub" id="stat-today-date">—</div>
     </div>
-  </aside>
-
-  <!-- Main -->
-  <main class="admin-main">
-
-    <!-- Top bar -->
-    <header class="admin-topbar">
-      <h1 class="admin-page-title" id="adminPageTitle">Dashboard</h1>
-      <div class="admin-topbar-right">
-        <span class="admin-status-dot"></span>
-        <span class="admin-status-text">System Active</span>
-      </div>
-    </header>
-
-    <!-- ── DASHBOARD PANEL ── -->
-    <div class="admin-panel active" id="panel-dashboard">
-      <div class="dash-stats">
-        <div class="dash-stat glass-card">
-          <span class="stat-icon">◈</span>
-          <div>
-            <p class="stat-val" id="stat-products">4</p>
-            <p class="stat-lbl">Products</p>
-          </div>
-        </div>
-        <div class="dash-stat glass-card">
-          <span class="stat-icon">✦</span>
-          <div>
-            <p class="stat-val">3</p>
-            <p class="stat-lbl">Collections</p>
-          </div>
-        </div>
-        <div class="dash-stat glass-card">
-          <span class="stat-icon">◎</span>
-          <div>
-            <p class="stat-val">7</p>
-            <p class="stat-lbl">Sections</p>
-          </div>
-        </div>
-        <div class="dash-stat glass-card">
-          <span class="stat-icon">◉</span>
-          <div>
-            <p class="stat-val" id="stat-msgs">—</p>
-            <p class="stat-lbl">Messages</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="dash-grid">
-        <div class="dash-card glass-card">
-          <h3 class="dash-card-title">Quick Actions</h3>
-          <div class="quick-actions">
-            <button class="qa-btn" onclick="AdminPanel.showPanel('products', document.querySelector('[data-panel=products]')); setTimeout(()=>document.getElementById('addProductBtn').click(),100)">
-              + Add Product
-            </button>
-            <button class="qa-btn" onclick="AdminPanel.showPanel('content', document.querySelector('[data-panel=content]'))">
-              ✎ Edit Content
-            </button>
-            <button class="qa-btn" onclick="window.open('../index.html')">
-              ↗ View Site
-            </button>
-          </div>
-        </div>
-
-        <div class="dash-card glass-card">
-          <h3 class="dash-card-title">Setup Status</h3>
-          <div class="setup-list">
-            <div class="setup-item">
-              <span class="setup-check ok">✓</span>
-              <span>Site structure</span>
-            </div>
-            <div class="setup-item">
-              <span class="setup-check ok">✓</span>
-              <span>WebGL scene</span>
-            </div>
-            <div class="setup-item">
-              <span class="setup-check warn">!</span>
-              <span>Contact API — configure api/.env</span>
-            </div>
-            <div class="setup-item">
-              <span class="setup-check warn">!</span>
-              <span>Product images — add to assets/images/</span>
-            </div>
-            <div class="setup-item">
-              <span class="setup-check warn">!</span>
-              <span>3D models — add .glb to assets/models/</span>
-            </div>
-            <div class="setup-item">
-              <span class="setup-check warn">!</span>
-              <span>Database — connect Supabase in settings</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="stat-card">
+      <div class="stat-label">Most Visited Page</div>
+      <div class="stat-value" style="font-size:22px;" id="stat-top-page">—</div>
+      <div class="stat-sub" id="stat-top-page-count">no data yet</div>
     </div>
-
-    <!-- ── PRODUCTS PANEL ── -->
-    <div class="admin-panel" id="panel-products">
-      <div class="panel-toolbar">
-        <h2 class="panel-subtitle">Product Management</h2>
-        <button class="btn-admin-primary" id="addProductBtn" onclick="AdminPanel.openProductModal()">+ Add Product</button>
-      </div>
-      <!-- Category tabs -->
-      <div class="prod-cat-tabs" id="prodCatTabs"></div>
-      <!-- Sub-category filter -->
-      <div class="prod-subcat-tabs" id="prodSubcatTabs" style="display:none"></div>
-      <!-- Product grid -->
-      <div class="products-admin-grid" id="productsAdminGrid"></div>
-      <div class="admin-info-box" style="margin-top:20px">
-        💡 <strong>How to add images:</strong> paste any public image URL (Google Drive direct link, Imgur, your hosting, or Supabase Storage) into the <em>Image URL</em> field when editing a product. The image appears live on the website immediately after saving.
-      </div>
+    <div class="stat-card">
+      <div class="stat-label">Top Device</div>
+      <div class="stat-value" style="font-size:22px;" id="stat-device">—</div>
+      <div class="stat-sub" id="stat-device-pct">no data yet</div>
     </div>
+  </div>
 
-    <!-- ── CONTENT PANEL ── -->
-    <div class="admin-panel" id="panel-content">
-      <div class="panel-toolbar">
-        <h2 class="panel-subtitle">Content Management</h2>
-        <button class="btn-admin-primary" onclick="AdminPanel.saveContent()">Save Changes</button>
-      </div>
+  <!-- Visitor feed -->
+  <div class="section-title">
+    <h2>Visitor Feed</h2>
+    <button class="clear-btn" onclick="clearData()">CLEAR ALL DATA</button>
+  </div>
 
-      <div class="content-form glass-card">
-        <div class="form-group">
-          <label class="admin-label">Hero Headline</label>
-          <input class="admin-input" id="content-headline" value="Designed to Speak. Built to Last."/>
-        </div>
-        <div class="form-group">
-          <label class="admin-label">Hero Subline</label>
-          <input class="admin-input" id="content-subline" value="Hardware that transforms spaces into experiences. Minimal. Refined. Enduring."/>
-        </div>
-        <div class="form-group">
-          <label class="admin-label">About Text</label>
-          <textarea class="admin-textarea" id="content-about" rows="4">Founded in 2016 in Rajkot, Gujarat, BUECON was born from a singular conviction — that the hardware you live with every day should be as beautiful as the space it inhabits.</textarea>
-        </div>
-        <div class="form-group">
-          <label class="admin-label">Contact Phone</label>
-          <input class="admin-input" id="content-phone" value="9825591898"/>
-        </div>
-        <div class="form-group">
-          <label class="admin-label">Contact Email</label>
-          <input class="admin-input" id="content-email" value="kavyaparmar7866@gmail.com"/>
-        </div>
-      </div>
-
-      <div class="admin-info-box">
-        <strong>💡 Note:</strong> Content changes are saved to localStorage for now.
-        To persist changes, connect a database (Supabase recommended) in Settings.
-      </div>
+  <div class="feed-wrap">
+    <div class="feed-header">
+      <div>Visitor</div>
+      <div>Location</div>
+      <div>Time</div>
+      <div>Device</div>
+      <div>Status</div>
     </div>
-
-    <!-- ── SETTINGS PANEL ── -->
-    <div class="admin-panel" id="panel-settings">
-      <h2 class="panel-subtitle">Database & API Settings</h2>
-
-      <div class="settings-grid">
-        <div class="glass-card settings-card">
-          <h3 class="settings-card-title">Supabase (Recommended)</h3>
-          <p class="settings-desc">Connect to Supabase for live product & content management.</p>
-          <div class="form-group">
-            <label class="admin-label">Supabase URL</label>
-            <input class="admin-input" id="sb-url" placeholder="https://xxx.supabase.co"/>
-          </div>
-          <div class="form-group">
-            <label class="admin-label">Anon Key</label>
-            <input class="admin-input" id="sb-key" type="password" placeholder="eyJhb…"/>
-          </div>
-          <button class="btn-admin-primary" onclick="AdminPanel.testSupabase()">Test Connection</button>
-          <span class="settings-status" id="sb-status"></span>
-        </div>
-
-        <div class="glass-card settings-card">
-          <h3 class="settings-card-title">Email (Nodemailer)</h3>
-          <p class="settings-desc">Configure SMTP for the contact form.</p>
-          <div class="form-group">
-            <label class="admin-label">Gmail Address</label>
-            <input class="admin-input" id="smtp-user" placeholder="kavyaparmar7866@gmail.com"/>
-          </div>
-          <div class="form-group">
-            <label class="admin-label">App Password</label>
-            <input class="admin-input" id="smtp-pass" type="password" placeholder="Gmail App Password"/>
-          </div>
-          <div class="admin-info-box" style="margin-top:12px">
-            Save these values in <code>api/.env</code> as EMAIL_USER and EMAIL_PASS
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </main>
-
-  <!-- ── PRODUCT MODAL ── -->
-  <div class="admin-modal-bg" id="productModalBg">
-    <div class="admin-modal glass-card">
-      <div class="modal-header">
-        <h3 id="modalTitle">Edit Product</h3>
-        <button class="modal-close" onclick="AdminPanel.closeProductModal()">✕</button>
-      </div>
-
-      <div class="modal-body">
-
-        <!-- hidden context -->
-        <input type="hidden" id="mp-cat-id"/>
-        <input type="hidden" id="mp-subcat-id"/>
-        <input type="hidden" id="mp-product-id"/>
-
-        <!-- breadcrumb -->
-        <div class="mp-breadcrumb" id="mpBreadcrumb"></div>
-
-        <div class="form-row2">
-          <div class="form-group" style="flex:2">
-            <label class="admin-label">Product Name <span style="color:#e05b5b">*</span></label>
-            <input class="admin-input" id="mp-name" placeholder="e.g. Salt Single Lever"/>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="admin-label">Description <span style="color:#e05b5b">*</span></label>
-          <textarea class="admin-textarea" id="mp-desc" rows="3" placeholder="Describe this product — materials, finish, key features…"></textarea>
-        </div>
-
-        <!-- Image section -->
-        <div class="mp-img-section">
-          <label class="admin-label">Product Image</label>
-          <div class="mp-img-row">
-            <div class="mp-img-preview-box" id="mpImgPreviewBox">
-              <img id="mp-img-preview" src="" alt="" style="display:none"/>
-              <div class="mp-img-placeholder" id="mpImgPlaceholder">
-                <span>◫</span><p>No image yet</p>
-              </div>
-            </div>
-            <div class="mp-img-inputs">
-              <label class="admin-label" style="margin-top:0">Paste Image URL</label>
-              <input class="admin-input" id="mp-imgurl" placeholder="https://… any public image link"
-                oninput="AdminPanel.previewImgUrl(this.value)"/>
-              <p class="mp-img-hint">Supports: any public URL — your hosting, Imgur, Google Drive (direct), Supabase Storage</p>
-              <div class="mp-img-divider"><span>or upload a file</span></div>
-              <label class="mp-file-btn">
-                📎 Choose Image File
-                <input type="file" accept="image/*" id="mp-image" onchange="AdminPanel.handleFileUpload(this)" style="display:none"/>
-              </label>
-              <p class="mp-img-hint" id="mp-file-name"></p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn-admin-ghost" onclick="AdminPanel.closeProductModal()">Cancel</button>
-        <button class="btn-admin-primary" id="mpSaveBtn" onclick="AdminPanel.saveProduct()">Save Changes</button>
+    <div class="feed-body" id="feedBody">
+      <div class="empty-state">
+        <div class="icon">◈</div>
+        <p>Waiting for visitors...</p>
       </div>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div class="admin-toast" id="adminToast"></div>
+  <!-- Bottom panels -->
+  <div class="bottom-grid">
+    <div class="panel">
+      <div class="panel-title">Page Popularity</div>
+      <div id="pageBars">
+        <div class="empty-state" style="padding:30px 0;">
+          <div class="icon" style="font-size:28px;">▭</div>
+          <p>No page data yet</p>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Activity Log</div>
+      <div class="activity-log" id="activityLog">
+        <div class="empty-state" style="padding:30px 0;">
+          <div class="icon" style="font-size:28px;">◯</div>
+          <p>No activity yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <script src="../js/supabase-client.js"></script>
-  <script src="../js/data.js"></script>
-  <script src="../js/sections/products.js"></script>
-  <script src="admin.js"></script>
+</main>
+
+<script>
+/* ══════════════════════════════════
+   Storage helpers
+══════════════════════════════════ */
+const STORAGE_KEY = 'buecon_visitors';
+const PAGE_KEY    = 'buecon_page_hits';
+
+function getVisitors() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
+}
+function saveVisitors(v) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(v));
+}
+function getPageHits() {
+  try { return JSON.parse(localStorage.getItem(PAGE_KEY)) || {}; } catch { return {}; }
+}
+function savePageHits(h) {
+  localStorage.setItem(PAGE_KEY, JSON.stringify(h));
+}
+
+/* ══════════════════════════════════
+   Clock
+══════════════════════════════════ */
+function updateClock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString('en-IN', { hour12: false });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ══════════════════════════════════
+   Avatar colors
+══════════════════════════════════ */
+const AVATAR_COLORS = [
+  ['#1a2f4a','#7eb8f7'], ['#1a2a1a','#4caf7d'],
+  ['#2e1a1a','#e05555'], ['#2a1f0e','#c5a46d'],
+  ['#1e1a2e','#9b7fe8'], ['#1a2a2a','#4ecdc4'],
+];
+function avatarColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+/* ══════════════════════════════════
+   Time ago
+══════════════════════════════════ */
+function timeAgo(ts) {
+  const diff = Date.now() - ts;
+  const s = Math.floor(diff / 1000);
+  if (s < 60)  return s + 's ago';
+  const m = Math.floor(s / 60);
+  if (m < 60)  return m + 'm ago';
+  const hr = Math.floor(m / 60);
+  if (hr < 24) return hr + 'h ago';
+  return Math.floor(hr / 24) + 'd ago';
+}
+
+function statusClass(ts) {
+  const diff = Date.now() - ts;
+  if (diff < 5 * 60 * 1000)  return 'active';
+  if (diff < 30 * 60 * 1000) return 'recent';
+  return 'old';
+}
+
+/* ══════════════════════════════════
+   Render feed
+══════════════════════════════════ */
+function renderFeed(highlightFirst = false) {
+  const visitors = getVisitors().slice().reverse(); // newest first
+  const body = document.getElementById('feedBody');
+
+  if (!visitors.length) {
+    body.innerHTML = `<div class="empty-state"><div class="icon">◈</div><p>Waiting for visitors...</p></div>`;
+    return;
+  }
+
+  body.innerHTML = visitors.map((v, i) => {
+    const [bg, fg] = avatarColor(v.name || 'U');
+    const initials = (v.name || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+    const cls = i === 0 && highlightFirst ? 'feed-row new-entry' : 'feed-row';
+    const isMobile = v.device === 'Mobile';
+    const sc = statusClass(v.timestamp);
+
+    return `
+      <div class="${cls}" style="animation-delay:${i * 0.04}s">
+        <div class="visitor-info">
+          <div class="visitor-avatar" style="background:${bg};color:${fg}">${initials}</div>
+          <div>
+            <div class="visitor-name">${v.name || 'Anonymous'}</div>
+            <div class="visitor-page">${v.page || '/'}</div>
+          </div>
+        </div>
+        <div class="cell highlight">${v.city || '—'}, ${v.country || '—'}</div>
+        <div class="cell">${timeAgo(v.timestamp)}</div>
+        <div class="cell">
+          <span class="device-badge ${isMobile ? 'mobile' : 'desktop'}">
+            ${isMobile ? '📱' : '🖥'} ${v.device || 'Desktop'}
+          </span>
+        </div>
+        <div class="cell">
+          <span class="status-dot ${sc}"></span>
+          ${sc === 'active' ? 'Active' : sc === 'recent' ? 'Recent' : 'Earlier'}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════
+   Render page bars
+══════════════════════════════════ */
+function renderPageBars() {
+  const hits = getPageHits();
+  const el = document.getElementById('pageBars');
+  const entries = Object.entries(hits).sort((a, b) => b[1] - a[1]);
+  if (!entries.length) {
+    el.innerHTML = `<div class="empty-state" style="padding:30px 0;"><div class="icon" style="font-size:28px;">▭</div><p>No page data yet</p></div>`;
+    return;
+  }
+  const max = entries[0][1];
+  el.innerHTML = entries.slice(0, 6).map(([page, count]) => `
+    <div class="page-bar-item">
+      <div class="page-bar-label">
+        <span class="page-bar-name">${page}</span>
+        <span class="page-bar-count">${count} visits</span>
+      </div>
+      <div class="page-bar-track">
+        <div class="page-bar-fill" style="width:${(count/max*100).toFixed(1)}%"></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════════════════════════
+   Render activity log
+══════════════════════════════════ */
+function renderActivityLog() {
+  const visitors = getVisitors().slice(-8).reverse();
+  const el = document.getElementById('activityLog');
+  if (!visitors.length) {
+    el.innerHTML = `<div class="empty-state" style="padding:30px 0;"><div class="icon" style="font-size:28px;">◯</div><p>No activity yet</p></div>`;
+    return;
+  }
+  const icons = { 'index.html':'🏠', 'products.html':'◈', 'contact.html':'✉', 'about.html':'◯', 'reviews.html':'⭐', 'default':'◈' };
+  el.innerHTML = visitors.map((v, i) => {
+    const pageKey = v.page ? v.page.replace('/', '') || 'index.html' : 'index.html';
+    const icon = icons[pageKey] || icons.default;
+    return `
+      <div class="activity-item" style="animation-delay:${i*0.06}s">
+        <div class="activity-icon">${icon}</div>
+        <div>
+          <div class="activity-text"><strong>${v.name || 'Anonymous'}</strong> visited <strong>${v.page || '/'}</strong> from ${v.city || 'Unknown'}</div>
+          <div class="activity-time">${timeAgo(v.timestamp)} · ${v.device || 'Desktop'}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════
+   Render stats
+══════════════════════════════════ */
+function renderStats() {
+  const visitors = getVisitors();
+  const hits = getPageHits();
+
+  document.getElementById('stat-total').textContent = visitors.length;
+
+  const today = new Date().toDateString();
+  const todayCount = visitors.filter(v => new Date(v.timestamp).toDateString() === today).length;
+  document.getElementById('stat-today').textContent = todayCount;
+  document.getElementById('stat-today-date').textContent = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+
+  const pageEntries = Object.entries(hits).sort((a,b) => b[1]-a[1]);
+  if (pageEntries.length) {
+    document.getElementById('stat-top-page').textContent = pageEntries[0][0];
+    document.getElementById('stat-top-page-count').textContent = pageEntries[0][1] + ' visits';
+  }
+
+  const mobiles = visitors.filter(v => v.device === 'Mobile').length;
+  const desktops = visitors.length - mobiles;
+  if (visitors.length) {
+    const topDevice = mobiles > desktops ? 'Mobile' : 'Desktop';
+    const pct = Math.round(Math.max(mobiles, desktops) / visitors.length * 100);
+    document.getElementById('stat-device').textContent = topDevice;
+    document.getElementById('stat-device-pct').textContent = pct + '% of visitors';
+  }
+}
+
+/* ══════════════════════════════════
+   Clear all data
+══════════════════════════════════ */
+function clearData() {
+  if (!confirm('Clear ALL visitor data? This cannot be undone.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(PAGE_KEY);
+  renderAll();
+}
+
+/* ══════════════════════════════════
+   Render everything
+══════════════════════════════════ */
+function renderAll(highlightFirst = false) {
+  renderFeed(highlightFirst);
+  renderPageBars();
+  renderActivityLog();
+  renderStats();
+}
+
+/* ══════════════════════════════════
+   Poll for new visitors every 5s
+══════════════════════════════════ */
+let lastCount = getVisitors().length;
+setInterval(() => {
+  const current = getVisitors().length;
+  if (current !== lastCount) {
+    lastCount = current;
+    renderAll(true);
+  }
+  // refresh time-agos
+  renderFeed(false);
+}, 5000);
+
+// Initial render
+renderAll();
+</script>
 </body>
 </html>
