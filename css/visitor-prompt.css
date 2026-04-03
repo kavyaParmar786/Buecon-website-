@@ -1,0 +1,200 @@
+/* ═══════════════════════════════════════════
+   BUECON — Visitor Name Prompt
+   Include this ONCE in every HTML page:
+   <link rel="stylesheet" href="css/visitor-prompt.css"/>
+   And add the modal HTML + script below navbar.
+   ═══════════════════════════════════════════ */
+
+/* ── Overlay ── */
+#visitor-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 9, 15, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+#visitor-prompt-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Modal card ── */
+.vp-card {
+  background: linear-gradient(145deg, #0d1220, #111827);
+  border: 1px solid rgba(197, 164, 109, 0.2);
+  border-radius: 20px;
+  padding: 48px 44px;
+  width: 100%;
+  max-width: 440px;
+  margin: 20px;
+  position: relative;
+  overflow: hidden;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(197,164,109,0.08);
+}
+
+#visitor-prompt-overlay.visible .vp-card {
+  transform: translateY(0) scale(1);
+}
+
+/* Gold top line */
+.vp-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #c5a46d, transparent);
+}
+
+/* Decorative background glyph */
+.vp-card::after {
+  content: 'B';
+  position: absolute;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 180px;
+  font-weight: 900;
+  color: rgba(197, 164, 109, 0.03);
+  right: -20px;
+  bottom: -30px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.vp-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(197, 164, 109, 0.08);
+  border: 1px solid rgba(197, 164, 109, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 24px;
+}
+
+.vp-label {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #c5a46d;
+  margin-bottom: 8px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.vp-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #f0ece4;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+.vp-title em {
+  font-style: italic;
+  color: #c5a46d;
+}
+
+.vp-sub {
+  font-size: 13px;
+  color: rgba(240, 236, 228, 0.45);
+  line-height: 1.65;
+  margin-bottom: 28px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.vp-input-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.vp-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(197, 164, 109, 0.2);
+  border-radius: 12px;
+  padding: 15px 20px;
+  color: #f0ece4;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.vp-input:focus {
+  border-color: rgba(197, 164, 109, 0.5);
+  background: rgba(197, 164, 109, 0.04);
+  box-shadow: 0 0 0 3px rgba(197, 164, 109, 0.08);
+}
+
+.vp-input::placeholder {
+  color: rgba(240, 236, 228, 0.2);
+}
+
+.vp-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #b48c3c, #d4a853);
+  color: #0a0c0f;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-bottom: 12px;
+}
+
+.vp-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.vp-btn:active { transform: translateY(0); }
+
+.vp-skip {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(240, 236, 228, 0.25);
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: color 0.2s;
+  background: none;
+  border: none;
+  width: 100%;
+  padding: 4px;
+}
+
+.vp-skip:hover { color: rgba(240, 236, 228, 0.5); }
+
+/* ── Privacy note ── */
+.vp-privacy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(197, 164, 109, 0.08);
+  font-size: 11px;
+  color: rgba(240, 236, 228, 0.2);
+  font-family: 'Poppins', sans-serif;
+}
+
+.vp-privacy-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(76, 175, 125, 0.6);
+  flex-shrink: 0;
+}
