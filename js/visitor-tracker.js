@@ -1,18 +1,31 @@
 /* ═══════════════════════════════════════════
-   BUECON — Visitor Tracker (Supabase Global)
-   Asks visitor's name on first visit via modal.
+   BUECON — Visitor Tracker
+   Saves visitor name + page data to Supabase.
+   localStorage is ONLY used to remember the
+   visitor across pages — Supabase gets every visit.
    ═══════════════════════════════════════════ */
 
 (function () {
+  'use strict';
 
+  /* ── Supabase config (same as supabase-client.js) ── */
+  const SB_URL  = 'https://qjpomdhpvheudpduywjj.supabase.co';
+  const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqcG9tZGhwdmhldWRwZHV5d2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MzQ5MDcsImV4cCI6MjA5MDUxMDkwN30.NnPn9Rywzm7kRmh-cwgo80knDq7j6EeD873QGroYa78';
+  const HEADERS = {
+    'apikey':        SB_ANON,
+    'Authorization': 'Bearer ' + SB_ANON,
+    'Content-Type':  'application/json',
+    'Prefer':        'return=minimal',
+  };
+
+  /* ── Helpers ── */
   function getDevice() {
     return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'Mobile' : 'Desktop';
   }
 
   function getPageName() {
-    const path = window.location.pathname;
-    const file = path.split('/').pop() || 'index.html';
-    const map = {
+    const file = window.location.pathname.split('/').pop() || 'index.html';
+    return {
       'index.html': 'Home', '': 'Home',
       'products.html': 'Products',
       'about.html': 'About',
@@ -20,8 +33,7 @@
       'why.html': 'Why Us',
       'mission.html': 'Mission',
       'reviews.html': 'Reviews',
-    };
-    return map[file] || file;
+    }[file] || file;
   }
 
   function getVisitorId() {
@@ -33,18 +45,18 @@
     return id;
   }
 
-  function getVisitorName() {
+  function getSavedName() {
     return localStorage.getItem('buecon_visitor_name') || null;
   }
 
-  function saveVisitorName(name) {
+  function saveName(name) {
     localStorage.setItem('buecon_visitor_name', name);
   }
 
   function getLocation() {
     try {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const cityMap = {
+      const map = {
         'Asia/Kolkata':        { city: 'India',       country: 'IN' },
         'Asia/Calcutta':       { city: 'Kolkata',     country: 'IN' },
         'Asia/Mumbai':         { city: 'Mumbai',      country: 'IN' },
@@ -60,73 +72,46 @@
         'Asia/Tokyo':          { city: 'Tokyo',       country: 'JP' },
         'Australia/Sydney':    { city: 'Sydney',      country: 'AU' },
       };
-      return cityMap[tz] || { city: tz.split('/')[1]?.replace('_', ' ') || 'Unknown', country: '—' };
+      return map[tz] || { city: tz.split('/').pop()?.replace('_', ' ') || 'Unknown', country: '—' };
     } catch {
       return { city: 'Unknown', country: '—' };
     }
   }
 
-  async function incrementPageHit(page) {
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/page_hits`, {
-        method: 'POST',
-        headers: { ...SB.headers, 'Prefer': 'resolution=ignore-duplicates,return=minimal' },
-        body: JSON.stringify({ page, count: 1 }),
-      });
-      const getRes = await fetch(
-        `${SUPABASE_URL}/rest/v1/page_hits?page=eq.${encodeURIComponent(page)}`,
-        { headers: SB.headers }
-      );
-      const rows = await getRes.json();
-      if (rows && rows.length > 0) {
-        await fetch(`${SUPABASE_URL}/rest/v1/page_hits?page=eq.${encodeURIComponent(page)}`, {
-          method: 'PATCH',
-          headers: { ...SB.headers, 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ count: rows[0].count + 1 }),
-        });
-      }
-    } catch (e) {
-      console.warn('BUECON tracker: page hit failed', e.message);
-    }
-  }
-
+  /* ── Supabase: record this visit ── */
   async function recordVisit(name) {
-    const page = getPageName();
-    const loc  = getLocation();
-    const id   = getVisitorId();
-
-    const visitor = {
-      id:        id + '_' + Date.now(),
-      name:      name,
-      page:      page,
-      city:      loc.city,
-      country:   loc.country,
-      device:    getDevice(),
-      timestamp: Date.now(),
+    const loc = getLocation();
+    const row = {
+      visitor_id: getVisitorId(),
+      name:       name,
+      page:       getPageName(),
+      city:       loc.city,
+      country:    loc.country,
+      device:     getDevice(),
+      visited_at: new Date().toISOString(),
     };
 
     try {
-      await SB.insert('visitors', visitor);
-      await incrementPageHit(page);
+      const res = await fetch(`${SB_URL}/rest/v1/visitors`, {
+        method:  'POST',
+        headers: HEADERS,
+        body:    JSON.stringify(row),
+      });
+      if (!res.ok) {
+        const err = await res.text();
+        console.warn('BUECON tracker: insert failed —', res.status, err);
+      } else {
+        console.log('BUECON tracker: visit recorded ✓', row.name, '@', row.page);
+      }
     } catch (e) {
-      console.warn('BUECON tracker: save failed', e.message);
+      console.warn('BUECON tracker: network error —', e.message);
     }
   }
 
-  /* ── Show name prompt modal ── */
-  function showNamePrompt(onComplete) {
-    console.log('BUECON: Creating visitor prompt modal');
-    
-    // Hide loader first
-    const loader = document.getElementById('loader');
-    if (loader) {
-      loader.classList.add('hidden');
-      console.log('BUECON: Loader hidden');
-    }
-
+  /* ── Modal ── */
+  function showModal(onComplete) {
     const overlay = document.createElement('div');
     overlay.id = 'visitor-prompt-overlay';
-    overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:rgba(7,9,15,0.9);';
     overlay.innerHTML = `
       <div class="vp-card">
         <div class="vp-icon">✦</div>
@@ -134,7 +119,7 @@
         <h2 class="vp-title">Hello, <em>Stranger</em></h2>
         <p class="vp-sub">Before you explore our collections, we'd love to know who you are. Just your name — nothing else.</p>
         <div class="vp-input-wrap">
-          <input class="vp-input" id="vp-name-input" type="text" placeholder="Your name..." maxlength="40" autocomplete="name"/>
+          <input class="vp-input" id="vp-name-input" type="text" placeholder="Your name…" maxlength="40" autocomplete="name"/>
         </div>
         <button class="vp-btn" id="vp-submit">Enter →</button>
         <button class="vp-skip" id="vp-skip">Continue anonymously</button>
@@ -143,89 +128,56 @@
           Your name is only used to personalise your visit. We don't collect any other data.
         </div>
       </div>`;
-    
-    document.body.appendChild(overlay);
-    document.body.classList.add('visitor-prompt-active');
-    console.log('BUECON: Modal added to DOM');
 
-    // Force visibility
-    setTimeout(() => {
-      overlay.classList.add('visible');
-      overlay.style.opacity = '1';
-      console.log('BUECON: Modal should be visible now');
-    }, 100);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+
+    /* Animate in */
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => overlay.classList.add('visible'));
+    });
 
     function dismiss(name) {
-      console.log('BUECON: Dismissing modal with name:', name);
       overlay.classList.remove('visible');
-      document.body.classList.remove('visitor-prompt-active');
-      setTimeout(() => { 
-        if (overlay.parentNode) {
-          overlay.remove(); 
-          console.log('BUECON: Modal removed from DOM');
-        }
-      }, 400);
-      onComplete(name);
+      document.body.style.overflow = '';
+      setTimeout(() => overlay.remove(), 450);
+      onComplete(name || 'Anonymous');
     }
 
-    const submitBtn = document.getElementById('vp-submit');
-    const skipBtn = document.getElementById('vp-skip');
-    const nameInput = document.getElementById('vp-name-input');
-
-    if (submitBtn) {
-      submitBtn.addEventListener('click', () => {
-        const val = nameInput.value.trim();
-        dismiss(val || 'Anonymous');
-      });
-    }
-
-    if (nameInput) {
-      nameInput.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-          const val = nameInput.value.trim();
-          dismiss(val || 'Anonymous');
-        }
-      });
-    }
-
-    if (skipBtn) {
-      skipBtn.addEventListener('click', () => dismiss('Anonymous'));
-    }
-
-    setTimeout(() => {
-      if (nameInput) nameInput.focus();
-    }, 450);
-  }
-
-  /* ── Main init ── */
-  function init() {
-    console.log('BUECON: Initializing visitor tracker');
-    const savedName = getVisitorName();
-    console.log('BUECON: Saved name:', savedName);
-    
-    if (savedName) {
-      console.log('BUECON: User already has name, recording visit');
-      recordVisit(savedName);
-    } else {
-      console.log('BUECON: No saved name, showing prompt');
-      showNamePrompt((name) => {
-        const finalName = name || 'Anonymous';
-        console.log('BUECON: Saving name:', finalName);
-        saveVisitorName(finalName);
-        recordVisit(finalName);
-      });
-    }
-  }
-
-  // Wait for everything to load, then wait for loader animation
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('BUECON: DOM loaded, waiting 2 seconds for loader');
-      setTimeout(init, 2000);
+    document.getElementById('vp-submit').addEventListener('click', () => {
+      dismiss(document.getElementById('vp-name-input').value.trim());
     });
+
+    document.getElementById('vp-name-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') dismiss(e.target.value.trim());
+    });
+
+    document.getElementById('vp-skip').addEventListener('click', () => dismiss('Anonymous'));
+
+    setTimeout(() => document.getElementById('vp-name-input')?.focus(), 300);
+  }
+
+  /* ── Boot ── */
+  function boot() {
+    const saved = getSavedName();
+
+    if (saved) {
+      /* Returning visitor — just log the page visit silently */
+      recordVisit(saved);
+    } else {
+      /* First visit — show modal */
+      showModal(name => {
+        saveName(name);
+        recordVisit(name);
+      });
+    }
+  }
+
+  /* Wait for DOM + small delay so loader animation has played */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(boot, 1800));
   } else {
-    console.log('BUECON: DOM already loaded, waiting 2 seconds for loader');
-    setTimeout(init, 2000);
+    setTimeout(boot, 1800);
   }
 
 })();
