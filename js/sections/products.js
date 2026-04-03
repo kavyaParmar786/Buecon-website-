@@ -154,7 +154,7 @@ const PRODUCTS_DEFAULTS = {
           id: 'grab-4',
           name: 'L-Shape Grab Bar',
           desc: 'L-shaped combination grab bar for corner installation. Provides dual-direction support for toilet and shower areas. Chrome-plated stainless with concealed screws.',
-          image: 'public/images/l-shaper-grab-bar.png'
+          image: 'public/images/L-shaper-grab-bar.png'
         },
         {
           id: 'grab-5',
