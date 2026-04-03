@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/cursor.css"/>
   <link rel="stylesheet" href="css/navbar.css"/>
   <link rel="stylesheet" href="css/products.css"/>
-  <link rel="stylesheet" href="css/focus-mode.css"/>
+  <link rel="stylesheet" href="css/product-modal.css"/>
   <link rel="stylesheet" href="css/footer.css"/>
   <style>
     body { padding-top: 100px; background: var(--navy-deep); min-height: 100vh; }
@@ -26,6 +26,9 @@
     .breadcrumb { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; font-size: 0.75rem; color: var(--silver-dim); }
     .breadcrumb a { color: var(--gold); text-decoration: none; }
     .nav-links a[href="products.html"], .nav-links a[href="products"] { color: var(--gold) !important; }
+
+    /* Stop inactive tab images from loading */
+    .subcategory-panel:not(.active) img { display: none; }
   </style>
 </head>
 <body>
@@ -44,6 +47,7 @@
       <span></span><span></span><span></span>
     </button>
   </nav>
+
   <div class="mobile-menu" id="mobileMenu">
     <ul>
       <li><a href="about.html" class="mobile-link">About</a></li>
@@ -66,43 +70,17 @@
 
   <div id="products-content"></div>
 
-  <!-- Focus mode overlay -->
-  <div id="focus-overlay" class="focus-overlay">
-    <button id="focus-close" class="focus-close" aria-label="Close">✕</button>
-    <div class="focus-canvas-wrap"><canvas id="focus-canvas"></canvas></div>
-    <div class="focus-panel glass-panel">
-      <p class="focus-series"></p>
-      <h2 class="focus-name"></h2>
-      <p class="focus-desc"></p>
-      <ul class="focus-features"></ul>
-      <div class="focus-actions">
-        <a href="contact.html" class="btn-primary">Inquire Now</a>
-        <span class="focus-badge">✨ Recommended for You</span>
-      </div>
-    </div>
-  </div>
-
   <footer id="footer"><div id="footer-content"></div></footer>
 
-  <!-- Three.js + GLTFLoader -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/data.js"></script>
   <script src="js/sections/footer.js"></script>
-  <script src="js/product-viewer.js"></script>
   <script src="js/sections/products.js"></script>
-  <script src="js/focus-mode.js"></script>
-  <script src="js/animations.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       await loadBueconData();
       renderProducts();
       renderFooter();
-      Animations.init();
-      if (typeof FocusMode !== 'undefined') FocusMode.init();
     });
   </script>
 </body>
