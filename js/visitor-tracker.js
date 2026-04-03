@@ -1,20 +1,12 @@
 /* ═══════════════════════════════════════════
-   BUECON — Visitor Tracker
-   Drop this script tag into every page:
+   BUECON — Visitor Tracker (Supabase Global)
+   Drop this script tag into every page AFTER
+   supabase-client.js:
+   <script src="js/supabase-client.js"></script>
    <script src="js/visitor-tracker.js"></script>
    ═══════════════════════════════════════════ */
 
 (function () {
-  const STORAGE_KEY = 'buecon_visitors';
-  const PAGE_KEY    = 'buecon_page_hits';
-
-  function getVisitors() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
-  }
-
-  function getPageHits() {
-    try { return JSON.parse(localStorage.getItem(PAGE_KEY)) || {}; } catch { return {}; }
-  }
 
   /* Detect device */
   function getDevice() {
@@ -37,7 +29,7 @@
     return map[file] || file;
   }
 
-  /* Generate or retrieve visitor ID */
+  /* Generate or retrieve session visitor ID */
   function getVisitorId() {
     let id = sessionStorage.getItem('buecon_vid');
     if (!id) {
@@ -47,14 +39,11 @@
     return id;
   }
 
-  /* Try to get a display name from browser hints */
+  /* Generate or retrieve visitor display name */
   function getVisitorName() {
-    // Use stored name if available
     const stored = localStorage.getItem('buecon_visitor_name');
     if (stored) return stored;
-    // Generate a code-style name from visitor ID
-    const id = getVisitorId();
-    const name = 'Visitor #' + id;
+    const name = 'Visitor #' + getVisitorId();
     localStorage.setItem('buecon_visitor_name', name);
     return name;
   }
@@ -64,19 +53,19 @@
     try {
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const cityMap = {
-        'Asia/Kolkata': { city: 'India', country: 'IN' },
-        'Asia/Mumbai': { city: 'Mumbai', country: 'IN' },
-        'Asia/Delhi': { city: 'Delhi', country: 'IN' },
-        'America/New_York': { city: 'New York', country: 'US' },
-        'America/Los_Angeles': { city: 'Los Angeles', country: 'US' },
-        'America/Chicago': { city: 'Chicago', country: 'US' },
-        'Europe/London': { city: 'London', country: 'GB' },
-        'Europe/Paris': { city: 'Paris', country: 'FR' },
-        'Europe/Berlin': { city: 'Berlin', country: 'DE' },
-        'Asia/Dubai': { city: 'Dubai', country: 'AE' },
-        'Asia/Singapore': { city: 'Singapore', country: 'SG' },
-        'Asia/Tokyo': { city: 'Tokyo', country: 'JP' },
-        'Australia/Sydney': { city: 'Sydney', country: 'AU' },
+        'Asia/Kolkata':       { city: 'India',       country: 'IN' },
+        'Asia/Mumbai':        { city: 'Mumbai',       country: 'IN' },
+        'Asia/Delhi':         { city: 'Delhi',        country: 'IN' },
+        'America/New_York':   { city: 'New York',     country: 'US' },
+        'America/Los_Angeles':{ city: 'Los Angeles',  country: 'US' },
+        'America/Chicago':    { city: 'Chicago',      country: 'US' },
+        'Europe/London':      { city: 'London',       country: 'GB' },
+        'Europe/Paris':       { city: 'Paris',        country: 'FR' },
+        'Europe/Berlin':      { city: 'Berlin',       country: 'DE' },
+        'Asia/Dubai':         { city: 'Dubai',        country: 'AE' },
+        'Asia/Singapore':     { city: 'Singapore',    country: 'SG' },
+        'Asia/Tokyo':         { city: 'Tokyo',        country: 'JP' },
+        'Australia/Sydney':   { city: 'Sydney',       country: 'AU' },
       };
       return cityMap[tz] || { city: tz.split('/')[1]?.replace('_', ' ') || 'Unknown', country: '—' };
     } catch {
@@ -84,15 +73,53 @@
     }
   }
 
-  /* Record this visit */
-  function recordVisit() {
-    const page     = getPageName();
-    const loc      = getLocation();
-    const visitors = getVisitors();
+  /* Upsert page hit counter in Supabase */
+  async function incrementPageHit(page) {
+    try {
+      // Try insert first
+      const insertRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/page_hits`,
+        {
+          method: 'POST',
+          headers: {
+            ...SB.headers,
+            'Prefer': 'resolution=ignore-duplicates,return=minimal',
+          },
+          body: JSON.stringify({ page, count: 1 }),
+        }
+      );
 
-    // Add visitor entry
-    visitors.push({
-      id:        getVisitorId(),
+      if (insertRes.status === 409 || insertRes.status === 200 || insertRes.status === 201) {
+        // Row might already exist — increment via RPC or re-fetch + patch
+        const getRes = await fetch(
+          `${SUPABASE_URL}/rest/v1/page_hits?page=eq.${encodeURIComponent(page)}`,
+          { headers: SB.headers }
+        );
+        const rows = await getRes.json();
+        if (rows && rows.length > 0) {
+          await fetch(
+            `${SUPABASE_URL}/rest/v1/page_hits?page=eq.${encodeURIComponent(page)}`,
+            {
+              method: 'PATCH',
+              headers: { ...SB.headers, 'Prefer': 'return=minimal' },
+              body: JSON.stringify({ count: rows[0].count + 1 }),
+            }
+          );
+        }
+      }
+    } catch (e) {
+      console.warn('BUECON tracker: page hit failed', e.message);
+    }
+  }
+
+  /* Save visitor row to Supabase */
+  async function recordVisit() {
+    const page = getPageName();
+    const loc  = getLocation();
+    const id   = getVisitorId();
+
+    const visitor = {
+      id:        id + '_' + Date.now(), // unique per page visit
       name:      getVisitorName(),
       page:      page,
       city:      loc.city,
@@ -100,16 +127,27 @@
       device:    getDevice(),
       timestamp: Date.now(),
       ua:        navigator.userAgent.slice(0, 80),
-    });
+    };
 
-    // Keep last 200 entries
-    if (visitors.length > 200) visitors.splice(0, visitors.length - 200);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(visitors));
+    try {
+      await SB.insert('visitors', visitor);
+      await incrementPageHit(page);
+    } catch (e) {
+      console.warn('BUECON tracker: Supabase save failed, falling back to localStorage', e.message);
 
-    // Increment page hit counter
-    const hits = getPageHits();
-    hits[page] = (hits[page] || 0) + 1;
-    localStorage.setItem(PAGE_KEY, JSON.stringify(hits));
+      // Fallback: localStorage so data isn't lost if Supabase is down
+      try {
+        const STORAGE_KEY = 'buecon_visitors';
+        const PAGE_KEY    = 'buecon_page_hits';
+        const visitors = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        visitors.push(visitor);
+        if (visitors.length > 50) visitors.splice(0, visitors.length - 50);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(visitors));
+        const hits = JSON.parse(localStorage.getItem(PAGE_KEY) || '{}');
+        hits[page] = (hits[page] || 0) + 1;
+        localStorage.setItem(PAGE_KEY, JSON.stringify(hits));
+      } catch (_) {}
+    }
   }
 
   // Run on load
@@ -118,4 +156,5 @@
   } else {
     recordVisit();
   }
+
 })();
