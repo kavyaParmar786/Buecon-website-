@@ -390,20 +390,25 @@ async function fetchPageHits() {
 }
 
 async function deleteAllVisitors() {
-  // Delete all rows — use a filter that matches everything
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/visitors?id=neq.NONE`,
-    { method: 'DELETE', headers: SB.headers }
+    `${SUPABASE_URL}/rest/v1/visitors?timestamp=gt.0`,
+    { method: 'DELETE', headers: { ...SB.headers, 'Prefer': 'return=minimal' } }
   );
-  if (!res.ok) throw new Error('Delete visitors failed: ' + res.status);
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error('Delete visitors failed: ' + res.status + ' — ' + txt);
+  }
 }
 
 async function deleteAllPageHits() {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/page_hits?page=neq.NONE`,
-    { method: 'DELETE', headers: SB.headers }
+    `${SUPABASE_URL}/rest/v1/page_hits?count=gte.0`,
+    { method: 'DELETE', headers: { ...SB.headers, 'Prefer': 'return=minimal' } }
   );
-  if (!res.ok) throw new Error('Delete page_hits failed: ' + res.status);
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error('Delete page_hits failed: ' + res.status + ' — ' + txt);
+  }
 }
 
 /* ══════════════════════════════════
