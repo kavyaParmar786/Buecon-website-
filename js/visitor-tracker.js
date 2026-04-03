@@ -175,10 +175,9 @@
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
+// FORCE IT TO RUN
+window.addEventListener('load', function() {
+  setTimeout(init, 100);
+});
+   
 })();
