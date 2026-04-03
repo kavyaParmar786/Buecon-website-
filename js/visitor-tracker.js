@@ -175,9 +175,9 @@
     }
   }
 
-// FORCE IT TO RUN
-window.addEventListener('load', function() {
-  setTimeout(init, 100);
-});
+  // FORCE IT TO RUN - MOVED INSIDE THE IIFE
+  window.addEventListener('load', function() {
+    setTimeout(init, 1500); // Wait for loader to finish
+  });
    
 })();
