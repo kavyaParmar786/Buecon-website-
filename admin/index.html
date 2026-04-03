@@ -32,7 +32,6 @@
       overflow-x: hidden;
     }
 
-    /* ── Grid background ── */
     body::before {
       content: '';
       position: fixed;
@@ -45,23 +44,15 @@
       z-index: 0;
     }
 
-    /* ── Scanline overlay ── */
     body::after {
       content: '';
       position: fixed;
       inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.06) 2px,
-        rgba(0,0,0,0.06) 4px
-      );
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
       pointer-events: none;
       z-index: 0;
     }
 
-    /* ── Header ── */
     header {
       position: relative;
       z-index: 10;
@@ -74,69 +65,28 @@
       backdrop-filter: blur(12px);
     }
 
-    .logo {
-      font-family: var(--sans);
-      font-weight: 800;
-      font-size: 20px;
-      letter-spacing: 0.2em;
-      color: var(--gold);
-    }
+    .logo { font-family: var(--sans); font-weight: 800; font-size: 20px; letter-spacing: 0.2em; color: var(--gold); }
+    .logo span { color: rgba(197,164,109,0.4); font-weight: 400; font-size: 11px; margin-left: 12px; letter-spacing: 0.3em; }
 
-    .logo span {
-      color: rgba(197,164,109,0.4);
-      font-weight: 400;
-      font-size: 11px;
-      margin-left: 12px;
-      letter-spacing: 0.3em;
-    }
+    .header-right { display: flex; align-items: center; gap: 24px; }
 
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-    }
+    .live-badge { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; color: var(--green); letter-spacing: 0.1em; }
+    .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; box-shadow: 0 0 8px var(--green); }
 
-    .live-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--green);
+    .source-badge {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 10px;
+      padding: 4px 10px; border-radius: 6px;
+      border: 1px solid rgba(197,164,109,0.2);
+      color: var(--gold); background: rgba(197,164,109,0.06);
       letter-spacing: 0.1em;
     }
 
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--green);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-      box-shadow: 0 0 8px var(--green);
-    }
+    .clock { font-family: var(--mono); font-size: 13px; color: var(--dim); }
 
-    .clock {
-      font-family: var(--mono);
-      font-size: 13px;
-      color: var(--dim);
-    }
+    main { position: relative; z-index: 1; padding: 40px; max-width: 1400px; margin: 0 auto; }
 
-    /* ── Main layout ── */
-    main {
-      position: relative;
-      z-index: 1;
-      padding: 40px;
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    /* ── Hero stat strip ── */
-    .stat-strip {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 40px;
-    }
+    .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px; }
 
     .stat-card {
       background: var(--navy-card);
@@ -157,63 +107,17 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-
     .stat-card:hover::before { opacity: 1; }
 
-    .stat-label {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: var(--dim);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
+    .stat-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--dim); text-transform: uppercase; margin-bottom: 12px; }
+    .stat-value { font-size: 36px; font-weight: 800; color: var(--gold); line-height: 1; font-variant-numeric: tabular-nums; }
+    .stat-sub { font-size: 11px; color: var(--dim); margin-top: 6px; }
 
-    .stat-value {
-      font-size: 36px;
-      font-weight: 800;
-      color: var(--gold);
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-    }
+    .section-title { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .section-title h2 { font-size: 13px; font-family: var(--mono); letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--navy-border); }
 
-    .stat-sub {
-      font-size: 11px;
-      color: var(--dim);
-      margin-top: 6px;
-    }
-
-    /* ── Section title ── */
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-
-    .section-title h2 {
-      font-size: 13px;
-      font-family: var(--mono);
-      letter-spacing: 0.2em;
-      color: var(--gold);
-      text-transform: uppercase;
-    }
-
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--navy-border);
-    }
-
-    /* ── Visitor feed ── */
-    .feed-wrap {
-      background: var(--navy-card);
-      border: 1px solid var(--navy-border);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 40px;
-    }
+    .feed-wrap { background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 16px; overflow: hidden; margin-bottom: 40px; }
 
     .feed-header {
       display: grid;
@@ -229,11 +133,7 @@
       text-transform: uppercase;
     }
 
-    .feed-body {
-      max-height: 480px;
-      overflow-y: auto;
-    }
-
+    .feed-body { max-height: 480px; overflow-y: auto; }
     .feed-body::-webkit-scrollbar { width: 4px; }
     .feed-body::-webkit-scrollbar-track { background: transparent; }
     .feed-body::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
@@ -248,229 +148,98 @@
       transition: background 0.2s;
       animation: slideIn 0.4s ease both;
     }
-
     .feed-row:hover { background: rgba(197,164,109,0.04); }
     .feed-row:last-child { border-bottom: none; }
-
-    .feed-row.new-entry {
-      animation: newEntry 0.5s ease both;
-    }
+    .feed-row.new-entry { animation: newEntry 0.5s ease both; }
 
     .visitor-info { display: flex; align-items: center; gap: 12px; }
 
     .visitor-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
-      flex-shrink: 0;
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; flex-shrink: 0;
       border: 1px solid rgba(197,164,109,0.2);
     }
 
-    .visitor-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--white);
-    }
+    .visitor-name { font-size: 13px; font-weight: 600; color: var(--white); }
+    .visitor-page { font-family: var(--mono); font-size: 10px; color: var(--dim); margin-top: 2px; }
 
-    .visitor-page {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--dim);
-      margin-top: 2px;
-    }
-
-    .cell {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--dim);
-    }
-
+    .cell { font-family: var(--mono); font-size: 11px; color: var(--dim); }
     .cell.highlight { color: var(--white); }
 
     .device-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-family: var(--mono);
-      font-size: 10px;
-      border: 1px solid;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 8px; border-radius: 4px;
+      font-family: var(--mono); font-size: 10px; border: 1px solid;
     }
+    .device-badge.mobile { color: #7eb8f7; border-color: rgba(126,184,247,0.2); background: rgba(126,184,247,0.06); }
+    .device-badge.desktop { color: var(--gold); border-color: rgba(197,164,109,0.2); background: rgba(197,164,109,0.06); }
 
-    .device-badge.mobile {
-      color: #7eb8f7;
-      border-color: rgba(126,184,247,0.2);
-      background: rgba(126,184,247,0.06);
-    }
-
-    .device-badge.desktop {
-      color: var(--gold);
-      border-color: rgba(197,164,109,0.2);
-      background: rgba(197,164,109,0.06);
-    }
-
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 6px;
-    }
-
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 6px; }
     .status-dot.active { background: var(--green); box-shadow: 0 0 6px var(--green); }
     .status-dot.recent { background: var(--gold); }
     .status-dot.old { background: #555; }
 
-    /* ── Activity heatmap ── */
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
+    .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 
-    .panel {
-      background: var(--navy-card);
-      border: 1px solid var(--navy-border);
-      border-radius: 16px;
-      padding: 28px;
-    }
+    .panel { background: var(--navy-card); border: 1px solid var(--navy-border); border-radius: 16px; padding: 28px; }
+    .panel-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 20px; }
 
-    .panel-title {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.2em;
-      color: var(--gold);
-      text-transform: uppercase;
-      margin-bottom: 20px;
-    }
-
-    /* Page popularity bars */
-    .page-bar-item {
-      margin-bottom: 14px;
-    }
-
-    .page-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
+    .page-bar-item { margin-bottom: 14px; }
+    .page-bar-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
     .page-bar-name { color: var(--white); font-weight: 600; }
     .page-bar-count { font-family: var(--mono); color: var(--dim); font-size: 11px; }
+    .page-bar-track { height: 4px; background: rgba(197,164,109,0.08); border-radius: 2px; overflow: hidden; }
+    .page-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold), rgba(197,164,109,0.5)); border-radius: 2px; transition: width 1s cubic-bezier(0.16,1,0.3,1); }
 
-    .page-bar-track {
-      height: 4px;
-      background: rgba(197,164,109,0.08);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .page-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--gold), rgba(197,164,109,0.5));
-      border-radius: 2px;
-      transition: width 1s cubic-bezier(0.16,1,0.3,1);
-    }
-
-    /* Recent activity log */
     .activity-log { display: flex; flex-direction: column; gap: 10px; }
 
     .activity-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 8px;
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 14px; border-radius: 8px;
       background: rgba(197,164,109,0.03);
       border: 1px solid rgba(197,164,109,0.06);
       animation: fadeUp 0.4s ease both;
     }
-
     .activity-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      flex-shrink: 0;
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; flex-shrink: 0;
       background: rgba(197,164,109,0.08);
       border: 1px solid rgba(197,164,109,0.15);
     }
-
     .activity-text { font-size: 12px; color: var(--dim); line-height: 1.5; }
     .activity-text strong { color: var(--white); }
     .activity-time { font-family: var(--mono); font-size: 10px; color: rgba(240,236,228,0.25); margin-top: 3px; }
 
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--dim);
-    }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--dim); }
+    .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
+    .empty-state p { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; }
 
-    .empty-state .icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-      opacity: 0.3;
+    /* Loading spinner */
+    .loading-state { text-align: center; padding: 40px 20px; color: var(--dim); }
+    .spinner {
+      width: 32px; height: 32px; border: 2px solid rgba(197,164,109,0.15);
+      border-top-color: var(--gold); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
     }
+    .loading-state p { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; }
 
-    .empty-state p {
-      font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 0.1em;
-    }
-
-    /* Clear btn */
     .clear-btn {
-      background: none;
-      border: 1px solid rgba(224,85,85,0.3);
-      color: var(--red);
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      padding: 6px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-left: auto;
+      background: none; border: 1px solid rgba(224,85,85,0.3);
+      color: var(--red); font-family: var(--mono); font-size: 10px;
+      letter-spacing: 0.1em; padding: 6px 14px; border-radius: 6px;
+      cursor: pointer; transition: all 0.2s; margin-left: auto;
     }
+    .clear-btn:hover { background: rgba(224,85,85,0.1); border-color: var(--red); }
 
-    .clear-btn:hover {
-      background: rgba(224,85,85,0.1);
-      border-color: var(--red);
-    }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes newEntry { 0% { background: rgba(197,164,109,0.12); transform: translateX(-6px); } 100% { background: transparent; transform: translateX(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Animations ── */
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    @keyframes newEntry {
-      0%   { background: rgba(197,164,109,0.12); transform: translateX(-6px); }
-      100% { background: transparent; transform: translateX(0); }
-    }
-
-    /* Stagger stat cards */
     .stat-card:nth-child(1) { animation-delay: 0.05s; }
     .stat-card:nth-child(2) { animation-delay: 0.1s; }
     .stat-card:nth-child(3) { animation-delay: 0.15s; }
@@ -481,10 +250,8 @@
       header { padding: 16px 20px; }
       .stat-strip { grid-template-columns: repeat(2, 1fr); }
       .feed-header, .feed-row { grid-template-columns: 1fr 1fr 1fr; }
-      .feed-header > *:nth-child(4),
-      .feed-header > *:nth-child(5),
-      .feed-row > *:nth-child(4),
-      .feed-row > *:nth-child(5) { display: none; }
+      .feed-header > *:nth-child(4), .feed-header > *:nth-child(5),
+      .feed-row > *:nth-child(4), .feed-row > *:nth-child(5) { display: none; }
       .bottom-grid { grid-template-columns: 1fr; }
     }
   </style>
@@ -495,37 +262,36 @@
   <div class="logo">BUECON <span>COMMAND CENTER</span></div>
   <div class="header-right">
     <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+    <div class="source-badge">☁ SUPABASE GLOBAL</div>
     <div class="clock" id="clock">--:--:--</div>
   </div>
 </header>
 
 <main>
 
-  <!-- Stat strip -->
   <div class="stat-strip">
     <div class="stat-card">
       <div class="stat-label">Total Visitors</div>
-      <div class="stat-value" id="stat-total">0</div>
+      <div class="stat-value" id="stat-total">—</div>
       <div class="stat-sub">All time</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Today</div>
-      <div class="stat-value" id="stat-today">0</div>
+      <div class="stat-value" id="stat-today">—</div>
       <div class="stat-sub" id="stat-today-date">—</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Most Visited Page</div>
       <div class="stat-value" style="font-size:22px;" id="stat-top-page">—</div>
-      <div class="stat-sub" id="stat-top-page-count">no data yet</div>
+      <div class="stat-sub" id="stat-top-page-count">loading...</div>
     </div>
     <div class="stat-card">
       <div class="stat-label">Top Device</div>
       <div class="stat-value" style="font-size:22px;" id="stat-device">—</div>
-      <div class="stat-sub" id="stat-device-pct">no data yet</div>
+      <div class="stat-sub" id="stat-device-pct">loading...</div>
     </div>
   </div>
 
-  <!-- Visitor feed -->
   <div class="section-title">
     <h2>Visitor Feed</h2>
     <button class="clear-btn" onclick="clearData()">CLEAR ALL DATA</button>
@@ -540,31 +306,21 @@
       <div>Status</div>
     </div>
     <div class="feed-body" id="feedBody">
-      <div class="empty-state">
-        <div class="icon">◈</div>
-        <p>Waiting for visitors...</p>
-      </div>
+      <div class="loading-state"><div class="spinner"></div><p>Connecting to Supabase...</p></div>
     </div>
   </div>
 
-  <!-- Bottom panels -->
   <div class="bottom-grid">
     <div class="panel">
       <div class="panel-title">Page Popularity</div>
       <div id="pageBars">
-        <div class="empty-state" style="padding:30px 0;">
-          <div class="icon" style="font-size:28px;">▭</div>
-          <p>No page data yet</p>
-        </div>
+        <div class="loading-state" style="padding:30px 0;"><div class="spinner"></div><p>Loading...</p></div>
       </div>
     </div>
     <div class="panel">
       <div class="panel-title">Activity Log</div>
       <div class="activity-log" id="activityLog">
-        <div class="empty-state" style="padding:30px 0;">
-          <div class="icon" style="font-size:28px;">◯</div>
-          <p>No activity yet</p>
-        </div>
+        <div class="loading-state" style="padding:30px 0;"><div class="spinner"></div><p>Loading...</p></div>
       </div>
     </div>
   </div>
@@ -572,23 +328,82 @@
 </main>
 
 <script>
-/* ══════════════════════════════════
-   Storage helpers
-══════════════════════════════════ */
-const STORAGE_KEY = 'buecon_visitors';
-const PAGE_KEY    = 'buecon_page_hits';
+/* ── Supabase Client (inlined) ── */
+const SUPABASE_URL  = 'https://qjpomdhpvheudpduywjj.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqcG9tZGhwdmhldWRwZHV5d2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MzQ5MDcsImV4cCI6MjA5MDUxMDkwN30.NnPn9Rywzm7kRmh-cwgo80knDq7j6EeD873QGroYa78';
 
-function getVisitors() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; }
+const SB = {
+  headers: {
+    'apikey':        SUPABASE_ANON,
+    'Authorization': `Bearer ${SUPABASE_ANON}`,
+    'Content-Type':  'application/json',
+    'Prefer':        'return=representation',
+  },
+  url(table, query = '') {
+    return `${SUPABASE_URL}/rest/v1/${table}${query}`;
+  },
+  async get(table, query = '') {
+    const res = await fetch(SB.url(table, query), { headers: SB.headers });
+    if (!res.ok) throw new Error(`SB.get ${table}: ${res.status}`);
+    return res.json();
+  },
+  async insert(table, data) {
+    const res = await fetch(SB.url(table), {
+      method: 'POST', headers: SB.headers, body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error(`SB.insert ${table}: ${res.status}`);
+    return res.json();
+  },
+};
+</script>
+<script>
+/* ══════════════════════════════════
+   State
+══════════════════════════════════ */
+let allVisitors = [];
+let pageHits    = {};
+let lastCount   = 0;
+
+/* ══════════════════════════════════
+   Fetch from Supabase
+══════════════════════════════════ */
+async function fetchVisitors() {
+  try {
+    const data = await SB.get('visitors', '?order=timestamp.desc&limit=200');
+    return data || [];
+  } catch (e) {
+    console.error('Admin: fetch visitors failed', e.message);
+    return [];
+  }
 }
-function saveVisitors(v) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(v));
+
+async function fetchPageHits() {
+  try {
+    const data = await SB.get('page_hits', '?order=count.desc');
+    const map = {};
+    (data || []).forEach(row => { map[row.page] = row.count; });
+    return map;
+  } catch (e) {
+    console.error('Admin: fetch page hits failed', e.message);
+    return {};
+  }
 }
-function getPageHits() {
-  try { return JSON.parse(localStorage.getItem(PAGE_KEY)) || {}; } catch { return {}; }
+
+async function deleteAllVisitors() {
+  // Delete all rows — use a filter that matches everything
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/visitors?id=neq.NONE`,
+    { method: 'DELETE', headers: SB.headers }
+  );
+  if (!res.ok) throw new Error('Delete visitors failed: ' + res.status);
 }
-function savePageHits(h) {
-  localStorage.setItem(PAGE_KEY, JSON.stringify(h));
+
+async function deleteAllPageHits() {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/page_hits?page=neq.NONE`,
+    { method: 'DELETE', headers: SB.headers }
+  );
+  if (!res.ok) throw new Error('Delete page_hits failed: ' + res.status);
 }
 
 /* ══════════════════════════════════
@@ -640,7 +455,7 @@ function statusClass(ts) {
    Render feed
 ══════════════════════════════════ */
 function renderFeed(highlightFirst = false) {
-  const visitors = getVisitors().slice().reverse(); // newest first
+  const visitors = allVisitors; // already newest-first from Supabase
   const body = document.getElementById('feedBody');
 
   if (!visitors.length) {
@@ -683,13 +498,14 @@ function renderFeed(highlightFirst = false) {
    Render page bars
 ══════════════════════════════════ */
 function renderPageBars() {
-  const hits = getPageHits();
   const el = document.getElementById('pageBars');
-  const entries = Object.entries(hits).sort((a, b) => b[1] - a[1]);
+  const entries = Object.entries(pageHits).sort((a, b) => b[1] - a[1]);
+
   if (!entries.length) {
     el.innerHTML = `<div class="empty-state" style="padding:30px 0;"><div class="icon" style="font-size:28px;">▭</div><p>No page data yet</p></div>`;
     return;
   }
+
   const max = entries[0][1];
   el.innerHTML = entries.slice(0, 6).map(([page, count]) => `
     <div class="page-bar-item">
@@ -707,16 +523,18 @@ function renderPageBars() {
    Render activity log
 ══════════════════════════════════ */
 function renderActivityLog() {
-  const visitors = getVisitors().slice(-8).reverse();
+  const visitors = allVisitors.slice(0, 8);
   const el = document.getElementById('activityLog');
+
   if (!visitors.length) {
     el.innerHTML = `<div class="empty-state" style="padding:30px 0;"><div class="icon" style="font-size:28px;">◯</div><p>No activity yet</p></div>`;
     return;
   }
-  const icons = { 'index.html':'🏠', 'products.html':'◈', 'contact.html':'✉', 'about.html':'◯', 'reviews.html':'⭐', 'default':'◈' };
+
+  const icons = { 'Home':'🏠', 'Products':'◈', 'Contact':'✉', 'About':'◯', 'Reviews':'⭐', 'Why Us':'✦', 'Mission':'◎' };
+
   el.innerHTML = visitors.map((v, i) => {
-    const pageKey = v.page ? v.page.replace('/', '') || 'index.html' : 'index.html';
-    const icon = icons[pageKey] || icons.default;
+    const icon = icons[v.page] || '◈';
     return `
       <div class="activity-item" style="animation-delay:${i*0.06}s">
         <div class="activity-icon">${icon}</div>
@@ -732,27 +550,25 @@ function renderActivityLog() {
    Render stats
 ══════════════════════════════════ */
 function renderStats() {
-  const visitors = getVisitors();
-  const hits = getPageHits();
-
-  document.getElementById('stat-total').textContent = visitors.length;
+  document.getElementById('stat-total').textContent = allVisitors.length;
 
   const today = new Date().toDateString();
-  const todayCount = visitors.filter(v => new Date(v.timestamp).toDateString() === today).length;
+  const todayCount = allVisitors.filter(v => new Date(v.timestamp).toDateString() === today).length;
   document.getElementById('stat-today').textContent = todayCount;
-  document.getElementById('stat-today-date').textContent = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+  document.getElementById('stat-today-date').textContent =
+    new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short' });
 
-  const pageEntries = Object.entries(hits).sort((a,b) => b[1]-a[1]);
+  const pageEntries = Object.entries(pageHits).sort((a,b) => b[1]-a[1]);
   if (pageEntries.length) {
     document.getElementById('stat-top-page').textContent = pageEntries[0][0];
     document.getElementById('stat-top-page-count').textContent = pageEntries[0][1] + ' visits';
   }
 
-  const mobiles = visitors.filter(v => v.device === 'Mobile').length;
-  const desktops = visitors.length - mobiles;
-  if (visitors.length) {
+  const mobiles = allVisitors.filter(v => v.device === 'Mobile').length;
+  const desktops = allVisitors.length - mobiles;
+  if (allVisitors.length) {
     const topDevice = mobiles > desktops ? 'Mobile' : 'Desktop';
-    const pct = Math.round(Math.max(mobiles, desktops) / visitors.length * 100);
+    const pct = Math.round(Math.max(mobiles, desktops) / allVisitors.length * 100);
     document.getElementById('stat-device').textContent = topDevice;
     document.getElementById('stat-device-pct').textContent = pct + '% of visitors';
   }
@@ -761,11 +577,18 @@ function renderStats() {
 /* ══════════════════════════════════
    Clear all data
 ══════════════════════════════════ */
-function clearData() {
-  if (!confirm('Clear ALL visitor data? This cannot be undone.')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  localStorage.removeItem(PAGE_KEY);
-  renderAll();
+async function clearData() {
+  if (!confirm('Clear ALL visitor data from Supabase? This cannot be undone.')) return;
+  try {
+    await deleteAllVisitors();
+    await deleteAllPageHits();
+    allVisitors = [];
+    pageHits    = {};
+    lastCount   = 0;
+    renderAll();
+  } catch (e) {
+    alert('Error clearing data: ' + e.message);
+  }
 }
 
 /* ══════════════════════════════════
@@ -779,21 +602,30 @@ function renderAll(highlightFirst = false) {
 }
 
 /* ══════════════════════════════════
-   Poll for new visitors every 5s
+   Load + auto-poll every 10s
 ══════════════════════════════════ */
-let lastCount = getVisitors().length;
+async function loadAndRender(highlightFirst = false) {
+  const [visitors, hits] = await Promise.all([fetchVisitors(), fetchPageHits()]);
+  const isNew = visitors.length > lastCount;
+  allVisitors = visitors;
+  pageHits    = hits;
+  lastCount   = visitors.length;
+  renderAll(highlightFirst || isNew);
+}
+
+// Initial load
+loadAndRender();
+
+// Poll Supabase every 10 seconds for new visitors
 setInterval(() => {
-  const current = getVisitors().length;
-  if (current !== lastCount) {
-    lastCount = current;
-    renderAll(true);
-  }
-  // refresh time-agos
+  loadAndRender();
+  // Also refresh time-agos every 5s without re-fetching
+}, 10000);
+
+// Refresh time-agos only every 5s (lightweight)
+setInterval(() => {
   renderFeed(false);
 }, 5000);
-
-// Initial render
-renderAll();
 </script>
 </body>
 </html>
