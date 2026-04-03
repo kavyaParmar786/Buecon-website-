@@ -25,36 +25,36 @@ const WebGLScene = (() => {
   const MODEL_CONFIGS = [
     {
       file:   'public/modals/liquid-dispenser.glb',
-      pos:    [ 2.4, -0.2,  0.2],
-      scale:  1.45,
+      pos:    [ 2.2, -0.2,  1.2],
+      scale:  3.2,
       rot:    [0.05, -0.8, -0.05],
       speed:  0.17, amp: 0.22, offset: 1.8, rotS: 0.0022,
     },
     {
       file:   'public/modals/napkin-holder.glb',
-      pos:    [ 1.6,  1.8, -0.4],
-      scale:  1.25,
+      pos:    [ 1.4,  1.6,  0.6],
+      scale:  2.8,
       rot:    [1.1,  0.4,  0.2],
       speed:  0.24, amp: 0.15, offset: 3.2, rotS: 0.0016,
     },
     {
       file:   'public/modals/robe-hook.glb',
-      pos:    [-0.9,  0.1,  0.5],
-      scale:  1.65,
+      pos:    [-1.0,  0.1,  1.4],
+      scale:  3.6,
       rot:    [0.1, -0.3,  0.05],
       speed:  0.20, amp: 0.18, offset: 0.0, rotS: 0.0018,
     },
     {
       file:   'public/modals/shelf.glb',
-      pos:    [-2.8, -1.4, -0.8],
-      scale:  0.95,
+      pos:    [-2.4, -1.2,  0.4],
+      scale:  2.4,
       rot:    [0.3,  0.6,  0.1],
       speed:  0.29, amp: 0.25, offset: 5.1, rotS: 0.0028,
     },
     {
       file:   'public/modals/towel-rack.glb',
-      pos:    [ 3.2, -2.0, -1.5],
-      scale:  0.90,
+      pos:    [ 2.8, -1.8,  0.2],
+      scale:  2.2,
       rot:    [0.2, -0.4,  0.15],
       speed:  0.23, amp: 0.18, offset: 4.4, rotS: 0.0020,
     },
@@ -98,7 +98,7 @@ const WebGLScene = (() => {
     scene.background = new THREE.Color(0x060F18);
 
     camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 5.5);
+    camera.position.set(0, 0, 3.8);
 
     raycaster = new THREE.Raycaster();
     pointer   = new THREE.Vector2();
@@ -245,7 +245,7 @@ const WebGLScene = (() => {
     camera.position.y += (-mouse.ty *  0.38 - camera.position.y) * 0.04;
     camera.lookAt(0, 0, 0);
 
-    const targetZ = 5.5 + scrollY * 0.0016;
+    const targetZ = 3.8 + scrollY * 0.0016;
     camera.position.z += (targetZ - camera.position.z) * 0.04;
 
     objects.forEach(obj => {
