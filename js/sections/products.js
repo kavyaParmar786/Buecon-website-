@@ -117,29 +117,93 @@ const PRODUCTS_DEFAULTS = {
       description: 'Elegant bathroom shelving that organises your space without compromising on style. Crafted for strength and beauty.',
       hasSubCategories: false,
       products: [
-        { id:'shelf-1', name:'Double Soap dish',   desc:'Stainless Steel soap dish with chrome brackets. Perfect for shower niches.', image:'public/images/shelf-double-soap-dish.png' },
-        { id:'shelf-2', name:'Soap Dish & Tumbler',  desc:'A kind of shelf with a soap dish and a tumbler with it . Mirror-polished edges, concealed mounting.', image:'public/images/shelf-soap-tumbler.png' },
-        { id:'shelf-3', name:'Stainless Hooks',  desc:'Hook Shelf with 4 hook inside it  . Heavy-gauge stainless with anti-rust finish.', image:'public/images/shelf-hook.png' },
-        { id:'shelf-4', name:'Shelf + Napkin Holder',    desc:'Two-tier storage shelf with chrome finish. Space-efficient design for modern bathrooms.', image:'public/images/shelf-glass-napkin.png' },
-        { id:'shelf-5', name:'Shelf Glass Corner',    desc:' shelf with Glass hardware. Warm tone contrast for luxury bathrooms.', image:'public/images/shelf-glass-corner.png' },
-        { id:'shelf-6', name:'Shelf (Ring shaped)', desc:'Built-in recess shelf with stainless tile insert. Seamless in-wall integration.', image:'public/images/shelf-ring.png' },
-        { id:'shelf-7', name:'5 in 1 Shelf', desc:'Steel shelf with polished chrome standoff brackets. Clean modern aesthetic.', image:'public/images/shelf-5-1.png' },
-        { id:'shelf-8', name:'Double Shelf',      desc:'A double shelf with extra space. No drilling required, instant storage.', image:'public/images/shelf-double-shelf.png' },
+        { id:'shelf-1', name:'Double Soap dish',      desc:'Stainless Steel soap dish with chrome brackets. Perfect for shower niches.',                             image:'public/images/shelf-double-soap-dish.png' },
+        { id:'shelf-2', name:'Soap Dish & Tumbler',   desc:'A kind of shelf with a soap dish and a tumbler with it. Mirror-polished edges, concealed mounting.',    image:'public/images/shelf-soap-tumbler.png'      },
+        { id:'shelf-3', name:'Stainless Hooks',       desc:'Hook Shelf with 4 hooks inside it. Heavy-gauge stainless with anti-rust finish.',                       image:'public/images/shelf-hook.png'              },
+        { id:'shelf-4', name:'Shelf + Napkin Holder', desc:'Two-tier storage shelf with chrome finish. Space-efficient design for modern bathrooms.',                image:'public/images/shelf-glass-napkin.png'      },
+        { id:'shelf-5', name:'Shelf Glass Corner',    desc:'Shelf with glass hardware. Warm tone contrast for luxury bathrooms.',                                    image:'public/images/shelf-glass-corner.png'      },
+        { id:'shelf-6', name:'Shelf (Ring shaped)',   desc:'Built-in recess shelf with stainless tile insert. Seamless in-wall integration.',                       image:'public/images/shelf-ring.png'              },
+        { id:'shelf-7', name:'5 in 1 Shelf',          desc:'Steel shelf with polished chrome standoff brackets. Clean modern aesthetic.',                           image:'public/images/shelf-5-1.png'               },
+        { id:'shelf-8', name:'Double Shelf',          desc:'A double shelf with extra space. No drilling required, instant storage.',                                image:'public/images/shelf-double-shelf.png'      },
       ]
     },
     {
-      id: 'handicap', name: 'Handicap Grab Bars', icon: '◎',
+      id: 'handicap', name: 'Handicap & Safety', icon: '◎',
       description: 'Safety and dignity without compromise. Engineered to the highest load standards while maintaining the refined BUECON aesthetic.',
       hasSubCategories: false,
       products: [
-        { id:'grab-1', name:'Straight Grab Bar 12"', desc:'12-inch straight grab bar in chrome-plated stainless. 250kg rated, ANSI/ADA compliant.', image:'' },
-        { id:'grab-2', name:'Straight Grab Bar 18"', desc:'18-inch straight grab bar. Heavy-duty wall flanges with concealed screws.', image:'' },
-        { id:'grab-3', name:'Straight Grab Bar 24"', desc:'24-inch straight grab bar. Textured grip surface for wet environments.', image:'' },
-        { id:'grab-4', name:'Angled Grab Bar 30"',   desc:'30-inch angled grab bar at 45°. Ideal for toilet and bathtub assistance.', image:'' },
-        { id:'grab-5', name:'L-Shape Grab Bar',      desc:'L-shaped combination grab bar for corner installation. Full corner support system.', image:'' },
-        { id:'grab-6', name:'Flip-Up Grab Bar',      desc:'Hinged fold-down grab bar. Folds flat when not in use.', image:'' },
-        { id:'grab-7', name:'Shower Seat + Bar',     desc:'Integrated folding shower seat with grab bar. Space-saving safety solution.', image:'' },
-        { id:'grab-8', name:'Toilet Safety Frame',   desc:'Freestanding toilet safety frame. No drilling required, adjustable height.', image:'' },
+        {
+          id: 'grab-1',
+          name: 'Straight Grab Bar',
+          desc: 'Classic straight grab bar in chrome-plated stainless steel. 250kg rated, ideal for shower and toilet areas. Concealed wall flanges for a clean finish.',
+          image: 'public/images/grab-bar.png'
+        },
+        {
+          id: 'grab-2',
+          name: 'Heavy Duty Grab Bar',
+          desc: 'Reinforced grab bar with extra-thick stainless wall. Built for high-traffic bathrooms and assisted living facilities. Maximum load bearing with premium chrome finish.',
+          image: 'public/images/grab-bar-2.png'
+        },
+        {
+          id: 'grab-3',
+          name: 'Vertical Grab Bar',
+          desc: 'Vertically oriented grab bar for entry and exit assistance. Ideal beside doorways, showers, and bathtubs. Anti-slip textured grip surface for wet environments.',
+          image: 'public/images/vertical-grab-bar.png'
+        },
+        {
+          id: 'grab-4',
+          name: 'L-Shape Grab Bar',
+          desc: 'L-shaped combination grab bar for corner installation. Provides dual-direction support for toilet and shower areas. Chrome-plated stainless with concealed screws.',
+          image: 'public/images/l-shaper-grab-bar.png'
+        },
+        {
+          id: 'grab-5',
+          name: 'Flip-Up Grab Bar',
+          desc: 'Hinged fold-down grab bar that folds flat against the wall when not in use. Perfect for compact bathrooms. Powder-coated finish with stainless steel hinge mechanism.',
+          image: 'public/images/folding-grab-bar.png'
+        },
+        {
+          id: 'grab-6',
+          name: 'Urinal Grab Bar',
+          desc: 'Specially designed grab bar for urinal assistance. Ergonomic angled profile for natural hand placement. Hygienic chrome finish, easy to clean.',
+          image: 'public/images/urinal-grab-bar.png'
+        },
+        {
+          id: 'grab-7',
+          name: 'U-Shape Grab Bar',
+          desc: 'U-shaped grab bar providing bilateral support for users requiring assistance on both sides. Heavy-gauge stainless steel, 300kg rated. Suitable for disabled bathrooms.',
+          image: 'public/images/disable-u-grab-bar.png'
+        },
+        {
+          id: 'grab-8',
+          name: 'Folding Shower Seat',
+          desc: 'Wall-mounted fold-down shower seat with stainless steel frame and durable plastic seat. Folds flat when not in use. Rated for 150kg, ideal for elderly and mobility-impaired users.',
+          image: 'public/images/shower-seat.png'
+        },
+        {
+          id: 'grab-9',
+          name: 'Platform Wastring',
+          desc: 'Stainless steel platform wastring designed for accessibility and hygiene in commercial and residential bathrooms. Robust construction with anti-corrosion coating.',
+          image: 'public/images/platform-wastring.png'
+        },
+        {
+          id: 'grab-10',
+          name: 'Wall Mounted Dustbin',
+          desc: 'Hygienic wall-mounted waste bin for accessible bathrooms. Stainless steel construction with soft-close lid. Easy to empty and clean, keeps floors clear for wheelchair access.',
+          image: 'public/images/wall-mounted-dustbin.png'
+        },
+        {
+          id: 'grab-11',
+          name: 'Double Paper Holder with Stand',
+          desc: 'Freestanding double toilet paper holder with chrome-plated stand. Holds two rolls for convenience in high-use accessible bathrooms. Weighted base for stability.',
+          image: 'public/images/double-paper-holder-with-stand.png'
+        },
+        {
+          id: 'grab-12',
+          name: 'Paper Dispenser',
+          desc: 'Wall-mounted paper dispenser in brushed stainless steel. High-capacity roll housing with one-hand operation — ideal for accessible and commercial bathroom installations.',
+          image: 'public/images/paper-dispenser.png'
+        },
       ]
     }
   ]
