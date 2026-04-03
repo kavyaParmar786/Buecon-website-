@@ -117,14 +117,14 @@ const PRODUCTS_DEFAULTS = {
       description: 'Elegant bathroom shelving that organises your space without compromising on style. Crafted for strength and beauty.',
       hasSubCategories: false,
       products: [
-        { id:'shelf-1', name:'Glass Corner Shelf',   desc:'Tempered glass corner shelf with chrome brass brackets. Perfect for shower niches.', image:'' },
-        { id:'shelf-2', name:'Stainless Shelf 12"',  desc:'12-inch wall shelf in brushed stainless steel. Mirror-polished edges, concealed mounting.', image:'' },
-        { id:'shelf-3', name:'Stainless Shelf 18"',  desc:'18-inch extended shelf. Heavy-gauge stainless with anti-rust finish.', image:'' },
-        { id:'shelf-4', name:'Double Tier Shelf',    desc:'Two-tier storage shelf with chrome finish. Space-efficient design for modern bathrooms.', image:'' },
-        { id:'shelf-5', name:'Wooden Teak Shelf',    desc:'Natural teak wood shelf with stainless hardware. Warm tone contrast for luxury bathrooms.', image:'' },
-        { id:'shelf-6', name:'Recessed Niche Shelf', desc:'Built-in recess shelf with stainless tile insert. Seamless in-wall integration.', image:'' },
-        { id:'shelf-7', name:'Floating Glass Shelf', desc:'Frameless glass shelf with polished chrome standoff brackets. Clean modern aesthetic.', image:'' },
-        { id:'shelf-8', name:'Over-Door Shelf',      desc:'Over-door hanging shelf with adjustable hooks. No drilling required, instant storage.', image:'' },
+        { id:'shelf-1', name:'Double Soap dish',   desc:'Stainless Steel soap dish with chrome brackets. Perfect for shower niches.', image:'public/images/shelf-double-soap-dish' },
+        { id:'shelf-2', name:'Soap Dish & Tumbler',  desc:'A kind of shelf with a soap dish and a tumbler with it . Mirror-polished edges, concealed mounting.', image:'public/images/shelf-soap-tumbler' },
+        { id:'shelf-3', name:'Stainless Hooks',  desc:'Hook Shelf with 4 hook inside it  . Heavy-gauge stainless with anti-rust finish.', image:'public/images/shelf-hook' },
+        { id:'shelf-4', name:'Shelf + Napkin Holder',    desc:'Two-tier storage shelf with chrome finish. Space-efficient design for modern bathrooms.', image:'public/images/shelf-glass-napkin' },
+        { id:'shelf-5', name:'Shelf Glass Corner',    desc:' shelf with Glass hardware. Warm tone contrast for luxury bathrooms.', image:'public/images/shelf-glass-corner' },
+        { id:'shelf-6', name:'Shelf (Ring shaped)', desc:'Built-in recess shelf with stainless tile insert. Seamless in-wall integration.', image:'public/images/shelf-ring' },
+        { id:'shelf-7', name:'5 in 1 Shelf', desc:'Steel shelf with polished chrome standoff brackets. Clean modern aesthetic.', image:'public/images/shelf-5-1' },
+        { id:'shelf-8', name:'Double Shelf',      desc:'A double shelf with extra space. No drilling required, instant storage.', image:'public/images/shelf-double-shelf' },
       ]
     },
     {
