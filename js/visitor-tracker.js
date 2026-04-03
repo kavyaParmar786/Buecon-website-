@@ -115,8 +115,18 @@
 
   /* ── Show name prompt modal ── */
   function showNamePrompt(onComplete) {
+    console.log('BUECON: Creating visitor prompt modal');
+    
+    // Hide loader first
+    const loader = document.getElementById('loader');
+    if (loader) {
+      loader.classList.add('hidden');
+      console.log('BUECON: Loader hidden');
+    }
+
     const overlay = document.createElement('div');
     overlay.id = 'visitor-prompt-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;background:rgba(7,9,15,0.9);';
     overlay.innerHTML = `
       <div class="vp-card">
         <div class="vp-icon">✦</div>
@@ -133,51 +143,89 @@
           Your name is only used to personalise your visit. We don't collect any other data.
         </div>
       </div>`;
+    
     document.body.appendChild(overlay);
+    document.body.classList.add('visitor-prompt-active');
+    console.log('BUECON: Modal added to DOM');
 
-    // Animate in after paint
-    requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('visible')));
+    // Force visibility
+    setTimeout(() => {
+      overlay.classList.add('visible');
+      overlay.style.opacity = '1';
+      console.log('BUECON: Modal should be visible now');
+    }, 100);
 
     function dismiss(name) {
+      console.log('BUECON: Dismissing modal with name:', name);
       overlay.classList.remove('visible');
-      setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 400);
+      document.body.classList.remove('visitor-prompt-active');
+      setTimeout(() => { 
+        if (overlay.parentNode) {
+          overlay.remove(); 
+          console.log('BUECON: Modal removed from DOM');
+        }
+      }, 400);
       onComplete(name);
     }
 
-    document.getElementById('vp-submit').addEventListener('click', () => {
-      const val = document.getElementById('vp-name-input').value.trim();
-      dismiss(val || 'Anonymous');
-    });
+    const submitBtn = document.getElementById('vp-submit');
+    const skipBtn = document.getElementById('vp-skip');
+    const nameInput = document.getElementById('vp-name-input');
 
-    document.getElementById('vp-name-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        const val = document.getElementById('vp-name-input').value.trim();
+    if (submitBtn) {
+      submitBtn.addEventListener('click', () => {
+        const val = nameInput.value.trim();
         dismiss(val || 'Anonymous');
-      }
-    });
+      });
+    }
 
-    document.getElementById('vp-skip').addEventListener('click', () => dismiss('Anonymous'));
+    if (nameInput) {
+      nameInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          const val = nameInput.value.trim();
+          dismiss(val || 'Anonymous');
+        }
+      });
+    }
 
-    setTimeout(() => document.getElementById('vp-name-input')?.focus(), 450);
+    if (skipBtn) {
+      skipBtn.addEventListener('click', () => dismiss('Anonymous'));
+    }
+
+    setTimeout(() => {
+      if (nameInput) nameInput.focus();
+    }, 450);
   }
 
   /* ── Main init ── */
   function init() {
+    console.log('BUECON: Initializing visitor tracker');
     const savedName = getVisitorName();
+    console.log('BUECON: Saved name:', savedName);
+    
     if (savedName) {
+      console.log('BUECON: User already has name, recording visit');
       recordVisit(savedName);
     } else {
+      console.log('BUECON: No saved name, showing prompt');
       showNamePrompt((name) => {
         const finalName = name || 'Anonymous';
+        console.log('BUECON: Saving name:', finalName);
         saveVisitorName(finalName);
         recordVisit(finalName);
       });
     }
   }
 
-  // FORCE IT TO RUN - MOVED INSIDE THE IIFE
-  window.addEventListener('load', function() {
-    setTimeout(init, 1500); // Wait for loader to finish
-  });
-   
+  // Wait for everything to load, then wait for loader animation
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('BUECON: DOM loaded, waiting 2 seconds for loader');
+      setTimeout(init, 2000);
+    });
+  } else {
+    console.log('BUECON: DOM already loaded, waiting 2 seconds for loader');
+    setTimeout(init, 2000);
+  }
+
 })();
