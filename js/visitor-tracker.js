@@ -126,7 +126,6 @@
       country:   loc.country,
       device:    getDevice(),
       timestamp: Date.now(),
-      ua:        navigator.userAgent.slice(0, 80),
     };
 
     try {
