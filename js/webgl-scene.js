@@ -15,7 +15,7 @@ const WebGLScene = (() => {
 
   /* ── Model configs
      pos   : [x, y, z]       — world position
-     scale : number          — uniform scale
+     scale : number          — uniform scale (reduced from original)
      rot   : [x, y, z]       — initial euler rotation
      speed : float speed
      amp   : float amplitude
@@ -25,38 +25,38 @@ const WebGLScene = (() => {
   const MODEL_CONFIGS = [
     {
       file:   'public/modals/liquid-dispenser.glb',
-      pos:    [ 2.2, -0.2,  1.2],
-      scale:  3.2,
+      pos:    [ 2.4, -0.1,  0.0],
+      scale:  1.1,
       rot:    [0.05, -0.8, -0.05],
-      speed:  0.17, amp: 0.22, offset: 1.8, rotS: 0.0022,
+      speed:  0.17, amp: 0.14, offset: 1.8, rotS: 0.0022,
     },
     {
       file:   'public/modals/napkin-holder.glb',
-      pos:    [ 1.4,  1.6,  0.6],
-      scale:  2.8,
+      pos:    [ 1.6,  1.2, -0.4],
+      scale:  0.95,
       rot:    [1.1,  0.4,  0.2],
-      speed:  0.24, amp: 0.15, offset: 3.2, rotS: 0.0016,
+      speed:  0.24, amp: 0.10, offset: 3.2, rotS: 0.0016,
     },
     {
       file:   'public/modals/robe-hook.glb',
-      pos:    [-1.0,  0.1,  1.4],
-      scale:  3.6,
+      pos:    [-1.2,  0.2,  0.2],
+      scale:  1.2,
       rot:    [0.1, -0.3,  0.05],
-      speed:  0.20, amp: 0.18, offset: 0.0, rotS: 0.0018,
+      speed:  0.20, amp: 0.12, offset: 0.0, rotS: 0.0018,
     },
     {
       file:   'public/modals/shelf.glb',
-      pos:    [-2.4, -1.2,  0.4],
-      scale:  2.4,
+      pos:    [-2.6, -1.0, -0.3],
+      scale:  0.85,
       rot:    [0.3,  0.6,  0.1],
-      speed:  0.29, amp: 0.25, offset: 5.1, rotS: 0.0028,
+      speed:  0.29, amp: 0.16, offset: 5.1, rotS: 0.0028,
     },
     {
       file:   'public/modals/towel-rack.glb',
-      pos:    [ 2.8, -1.8,  0.2],
-      scale:  2.2,
+      pos:    [ 3.0, -1.6, -0.5],
+      scale:  0.80,
       rot:    [0.2, -0.4,  0.15],
-      speed:  0.23, amp: 0.18, offset: 4.4, rotS: 0.0020,
+      speed:  0.23, amp: 0.12, offset: 4.4, rotS: 0.0020,
     },
   ];
 
@@ -89,7 +89,7 @@ const WebGLScene = (() => {
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.toneMapping        = THREE.ACESFilmicToneMapping;
+      renderer.toneMapping         = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1.4;
     } catch(e) { return fallback(); }
 
@@ -98,13 +98,13 @@ const WebGLScene = (() => {
     scene.background = new THREE.Color(0x060F18);
 
     camera = new THREE.PerspectiveCamera(48, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 3.8);
+    camera.position.set(0, 0, 6.5); // pulled back from 3.8 → objects appear smaller
 
     raycaster = new THREE.Raycaster();
     pointer   = new THREE.Vector2();
 
     buildLights();
-    loadModels();   // async — objects appear as they load
+    loadModels();
     bindEvents();
     isActive = true;
     animate();
@@ -137,7 +137,6 @@ const WebGLScene = (() => {
 
   /* ── Load all GLB models ── */
   function loadModels() {
-    // GLTFLoader is available from the CDN added to index.html
     if (!window.THREE || !THREE.GLTFLoader) {
       console.warn('BUECON: GLTFLoader not found — falling back to geometry');
       buildFallbackObjects();
@@ -189,17 +188,16 @@ const WebGLScene = (() => {
           objects.push(group);
           console.log(`BUECON: loaded ${cfg.file} ✓`);
         },
-        undefined,  // progress
+        undefined,
         (err) => {
           console.warn(`BUECON: failed to load ${cfg.file}`, err.message || err);
-          // Add a placeholder geometry so the scene doesn't look empty
           buildPlaceholder(cfg, i);
         }
       );
     });
   }
 
-  /* ── Fallback geometry (if GLTFLoader missing or model fails) ── */
+  /* ── Fallback geometry ── */
   function buildFallbackObjects() {
     const mats = [
       new THREE.MeshStandardMaterial({ color: 0xD8E0EA, roughness: 0.05, metalness: 1.0 }),
@@ -232,7 +230,7 @@ const WebGLScene = (() => {
     objects.push(group);
   }
 
-  /* ── Animation loop (unchanged) ── */
+  /* ── Animation loop ── */
   function animate() {
     if (!isActive) return;
     animFrameId = requestAnimationFrame(animate);
@@ -245,7 +243,7 @@ const WebGLScene = (() => {
     camera.position.y += (-mouse.ty *  0.38 - camera.position.y) * 0.04;
     camera.lookAt(0, 0, 0);
 
-    const targetZ = 3.8 + scrollY * 0.0016;
+    const targetZ = 6.5 + scrollY * 0.0016; // base z matches new camera position
     camera.position.z += (targetZ - camera.position.z) * 0.04;
 
     objects.forEach(obj => {
@@ -265,7 +263,7 @@ const WebGLScene = (() => {
     renderer.render(scene, camera);
   }
 
-  /* ── Events (unchanged) ── */
+  /* ── Events ── */
   function bindEvents() {
     window.addEventListener('mousemove', e => {
       mouse.x = (e.clientX / window.innerWidth  - 0.5) * 2;
