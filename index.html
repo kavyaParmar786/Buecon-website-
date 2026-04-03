@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BUECON — Designed to Speak. Built to Last.</title>
 
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-  <!-- Stylesheets -->
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/reset.css" />
   <link rel="stylesheet" href="css/base.css" />
@@ -25,6 +23,120 @@
   <link rel="stylesheet" href="css/footer.css" />
   <link rel="stylesheet" href="css/focus-mode.css" />
   <link rel="stylesheet" href="css/assistant.css" />
+
+  <style>
+    /* ── Nav Card Grid ── */
+    .nav-card-section {
+      padding: 80px 0 100px;
+      background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+      border-top: 1px solid rgba(197,164,109,0.08);
+    }
+
+    .nav-card-section .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    .nav-card-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .nav-card-header h2 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .nav-card-header h2 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .nav-card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .nav-card {
+      display: block;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(197,164,109,0.12);
+      border-radius: 20px;
+      padding: 36px 32px 32px;
+      text-decoration: none;
+      transition: border-color 0.3s, background 0.3s, transform 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(197,164,109,0.06) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: 20px;
+    }
+
+    .nav-card:hover {
+      border-color: rgba(197,164,109,0.35);
+      background: rgba(197,164,109,0.04);
+      transform: translateY(-4px);
+    }
+
+    .nav-card:hover::before { opacity: 1; }
+
+    .nav-card-icon {
+      font-size: 22px;
+      color: var(--gold);
+      margin-bottom: 28px;
+      display: block;
+      opacity: 0.8;
+    }
+
+    .nav-card-title {
+      font-family: var(--font-serif);
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 12px;
+    }
+
+    .nav-card-desc {
+      font-size: 13px;
+      color: var(--silver-dim);
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+
+    .nav-card-arrow {
+      font-size: 18px;
+      color: var(--gold);
+      opacity: 0.7;
+      display: block;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .nav-card:hover .nav-card-arrow {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+
+    @media (max-width: 900px) {
+      .nav-card-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-card-section .container { padding: 0 20px; }
+    }
+
+    @media (max-width: 560px) {
+      .nav-card-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
@@ -41,43 +153,35 @@
 
   <!-- ═══ NAVBAR ═══ -->
   <nav id="navbar">
-    <div class="nav-logo">BUECON</div>
+    <a href="index.html" class="nav-logo">BUECON</a>
     <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#products">Products</a></li>
-      <li><a href="#why">Why Us</a></li>
-      <li><a href="#mission">Mission</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="why.html">Why Us</a></li>
+      <li><a href="mission.html">Mission</a></li>
+      <li><a href="contact.html">Contact</a></li>
     </ul>
-    <a href="#contact" class="nav-cta">Get in Touch</a>
+    <a href="contact.html" class="nav-cta">Get in Touch</a>
     <button class="nav-hamburger" id="hamburger" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </nav>
 
-  <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
     <ul>
-      <li><a href="#about" class="mobile-link">About</a></li>
-      <li><a href="#products" class="mobile-link">Products</a></li>
-      <li><a href="#why" class="mobile-link">Why Us</a></li>
-      <li><a href="#mission" class="mobile-link">Mission</a></li>
-      <li><a href="#contact" class="mobile-link">Contact</a></li>
+      <li><a href="about.html" class="mobile-link">About</a></li>
+      <li><a href="products.html" class="mobile-link">Products</a></li>
+      <li><a href="why.html" class="mobile-link">Why Us</a></li>
+      <li><a href="mission.html" class="mobile-link">Mission</a></li>
+      <li><a href="contact.html" class="mobile-link">Contact</a></li>
     </ul>
   </div>
 
   <!-- ═══ HERO ═══ -->
   <section id="hero">
-    <!-- WebGL Canvas -->
     <canvas id="webgl-canvas"></canvas>
-
-    <!-- Fallback background if WebGL fails -->
     <div class="hero-fallback"></div>
-
-    <!-- Overlay gradient -->
     <div class="hero-overlay"></div>
-
-    <!-- Hero Content -->
     <div class="hero-content">
       <p class="hero-eyebrow reveal-text">Premium Bathroom Hardware</p>
       <h1 class="hero-headline">
@@ -87,41 +191,74 @@
       </h1>
       <p class="hero-sub reveal-text">Hardware that transforms spaces into experiences.<br>Minimal. Refined. Enduring.</p>
       <div class="hero-cta-group">
-        <a href="#products" class="btn-primary magnetic">Explore Collection</a>
-        <a href="#about" class="btn-ghost magnetic">Our Story</a>
+        <a href="products.html" class="btn-primary magnetic">Explore Collection</a>
+        <a href="about.html" class="btn-ghost magnetic">Our Story</a>
       </div>
     </div>
-
-    <!-- Scroll indicator -->
     <div class="scroll-indicator">
       <span>Scroll</span>
       <div class="scroll-line"><span></span></div>
     </div>
   </section>
 
-  <!-- ═══ ABOUT ═══ -->
+  <!-- ═══ ABOUT PREVIEW ═══ -->
   <section id="about">
     <div id="about-content"></div>
   </section>
 
-  <!-- ═══ PRODUCTS ═══ -->
-  <section id="products">
-    <div id="products-content"></div>
-  </section>
+  <!-- ═══ NAV CARD GRID ═══ -->
+  <section class="nav-card-section">
+    <div class="container">
+      <div class="nav-card-header">
+        <span class="section-label">Explore</span>
+        <h2>Everything <em>BUECON</em></h2>
+      </div>
+      <div class="nav-card-grid">
 
-  <!-- ═══ WHY BUECON ═══ -->
-  <section id="why">
-    <div id="why-content"></div>
-  </section>
+        <a class="nav-card" href="about.html">
+          <span class="nav-card-icon">◎</span>
+          <div class="nav-card-title">About Us</div>
+          <div class="nav-card-desc">Our story, our roots in Rajkot, and what drives every piece we make.</div>
+          <span class="nav-card-arrow">→</span>
+        </a>
 
-  <!-- ═══ MISSION & VISION ═══ -->
-  <section id="mission">
-    <div id="mission-content"></div>
-  </section>
+        <a class="nav-card" href="products.html">
+          <span class="nav-card-icon">◈</span>
+          <div class="nav-card-title">Collections</div>
+          <div class="nav-card-desc">Salt, Super, Spirit, Soft, Smart — five series, one standard of excellence.</div>
+          <span class="nav-card-arrow">→</span>
+        </a>
 
-  <!-- ═══ CONTACT ═══ -->
-  <section id="contact">
-    <div id="contact-content"></div>
+        <a class="nav-card" href="why.html">
+          <span class="nav-card-icon">✦</span>
+          <div class="nav-card-title">Why BUECON</div>
+          <div class="nav-card-desc">Premium quality, modern design, built to last — the four pillars.</div>
+          <span class="nav-card-arrow">→</span>
+        </a>
+
+        <a class="nav-card" href="mission.html">
+          <span class="nav-card-icon">◯</span>
+          <div class="nav-card-title">Mission &amp; Vision</div>
+          <div class="nav-card-desc">Elevating everyday spaces into places of quiet luxury.</div>
+          <span class="nav-card-arrow">→</span>
+        </a>
+
+        <a class="nav-card" href="contact.html">
+          <span class="nav-card-icon">✉</span>
+          <div class="nav-card-title">Contact</div>
+          <div class="nav-card-desc">Talk to us about your project. We respond within 24 hours.</div>
+          <span class="nav-card-arrow">→</span>
+        </a>
+
+        <a class="nav-card" href="reviews.html">
+          <span class="nav-card-icon">⭐</span>
+          <div class="nav-card-title">Reviews</div>
+          <div class="nav-card-desc">See what architects, designers and homeowners say about BUECON.</div>
+          <span class="nav-card-arrow">→</span>
+        </a>
+
+      </div>
+    </div>
   </section>
 
   <!-- ═══ FOOTER ═══ -->
@@ -141,7 +278,7 @@
       <p class="focus-desc"></p>
       <ul class="focus-features"></ul>
       <div class="focus-actions">
-        <a href="#contact" class="btn-primary" id="focus-inquire">Inquire Now</a>
+        <a href="contact.html" class="btn-primary" id="focus-inquire">Inquire Now</a>
         <span class="focus-badge">✨ Recommended for You</span>
       </div>
     </div>
@@ -167,33 +304,46 @@
     </div>
   </div>
 
-  <!-- ═══ EXTERNAL LIBRARIES ═══ -->
-  <!-- Supabase client -->
+  <!-- ═══ SCRIPTS ═══ -->
   <script src="js/supabase-client.js"></script>
-
-  <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-  <!-- ═══ SECTION LOADERS ═══ -->
   <script src="js/product-viewer.js"></script>
   <script src="js/sections/about.js"></script>
-  <script src="js/sections/products.js"></script>
-  <script src="js/sections/why.js"></script>
-  <script src="js/sections/mission.js"></script>
-  <script src="js/sections/contact.js"></script>
   <script src="js/sections/footer.js"></script>
 
-  <!-- ═══ CORE SCRIPTS ═══ -->
   <script src="js/data.js"></script>
   <script src="js/webgl-scene.js"></script>
   <script src="js/focus-mode.js"></script>
   <script src="js/animations.js"></script>
   <script src="js/loader.js"></script>
   <script src="js/assistant.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/visitor-tracker.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+      async function boot() {
+        Loader.init();
+        await loadBueconData();
+        renderAbout();
+        renderFooter();
+        if (window.ProductViewer) ProductViewer.init();
+        WebGLScene.init('webgl-canvas');
+        if (typeof FocusMode !== 'undefined') FocusMode.init();
+        Animations.init();
+        if (typeof Assistant !== 'undefined') Assistant.init();
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', boot);
+      } else {
+        boot();
+      }
+    })();
+  </script>
 
 </body>
 </html>
