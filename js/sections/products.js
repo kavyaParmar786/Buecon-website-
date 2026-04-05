@@ -206,7 +206,7 @@ const PRODUCTS_DEFAULTS = {
           image: 'public/images/paper-dispenser.png'
         },
       ]
-    }
+    },
     {
   id: 'drainage',
   name: 'Drainage Systems',
