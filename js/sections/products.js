@@ -218,61 +218,61 @@ const PRODUCTS_DEFAULTS = {
       id: 'drain-1',
       name: 'Square Rose Gold Grating Drain',
       desc: 'Rose gold PVD finish square floor drain with decorative grating pattern. KAVTOR SS-304 stainless steel construction.',
-      image: 'public/images/KBA_70601_RG.png'
+      image: 'public/images/KBA_70601_RG.jpg'
     },
     {
       id: 'drain-2',
       name: 'Square Matt Finish Tile Insert',
       desc: 'Minimalist matt finish tile insert drain with invisible edge design. Perfect for seamless bathroom floors.',
-      image: 'public/images/70701_matt.png'
+      image: 'public/images/70701_matt.jpg'
     },
     {
       id: 'drain-3',
       name: 'Square Rose Gold Linear Drain',
       desc: 'Premium rose gold linear grating drain with parallel slot design. KAVTOR SS-304 grade for long-lasting durability.',
-      image: 'public/images/KBA_70301_RG.png'
+      image: 'public/images/KBA_70301_RG.jpg'
     },
     {
       id: 'drain-4',
       name: 'Square Gold Center Outlet Drain',
       desc: 'Luxurious gold PVD finish with center circular outlet and linear slots. High-flow drainage for heavy water usage.',
-      image: 'public/images/KBA_70501_G.png'
+      image: 'public/images/KBA_70501_G.jpg'
     },
     {
       id: 'drain-5',
       name: 'Square Rose Gold Center Drain',
       desc: 'Rose gold square drain with central circular outlet and geometric slot pattern. Anti-clog deep trap design.',
-      image: 'public/images/KBA_70501_RG.png'
+      image: 'public/images/KBA_70501_RG.jpg'
     },
     {
       id: 'drain-6',
       name: 'Square Black Tile Insert Drain',
       desc: 'Matte black tile insert drain with hidden frame system. Accepts tiles for complete floor integration.',
-      image: 'public/images/70701_black.png'
+      image: 'public/images/70701_black.jpg'
     },
     {
       id: 'drain-7',
       name: 'Linear Matt Shower Channel',
       desc: 'Long linear shower channel drain with matt stainless finish and grid pattern grate. Wall-to-wall installation ready.',
-      image: 'public/images/754_matt.png'
+      image: 'public/images/754_matt.jpg'
     },
     {
       id: 'drain-8',
       name: 'Linear Black Shower Channel',
       desc: 'Sleek matte black linear drain channel with perforated grating. Modern aesthetic with superior water evacuation.',
-      image: 'public/images/754_black.png'
+      image: 'public/images/754_black.jpg'
     },
     {
       id: 'drain-9',
       name: 'Linear Matt Tile Insert Channel',
       desc: 'Stainless steel linear channel with tile insert capability. Invisible drain solution for contemporary bathrooms.',
-      image: 'public/images/751_mat.png'
+      image: 'public/images/751_mat.jpg'
     },
     {
       id: 'drain-10',
       name: 'Linear Black Tile Insert Channel',
       desc: 'Matte black linear tile insert channel drain. Customizable surface with hidden drainage technology.',
-      image: 'public/images/751_black.png'
+      image: 'public/images/751_black.jpg'
     }
   ]
  }
