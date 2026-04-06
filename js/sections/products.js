@@ -127,155 +127,42 @@ const PRODUCTS_DEFAULTS = {
         { id:'shelf-8', name:'Double Shelf',          desc:'A double shelf with extra space. No drilling required, instant storage.',                                image:'public/images/shelf-double-shelf.png'      },
       ]
     },
-   
     {
       id: 'handicap', name: 'Handicap & Safety', icon: '◎',
       description: 'Safety and dignity without compromise. Engineered to the highest load standards while maintaining the refined BUECON aesthetic.',
       hasSubCategories: false,
       products: [
-        {
-          id: 'grab-1',
-          name: 'Straight Grab Bar',
-          desc: 'Classic straight grab bar in chrome-plated stainless steel. 250kg rated, ideal for shower and toilet areas. Concealed wall flanges for a clean finish.',
-          image: 'public/images/grab-bar.png'
-        },
-        {
-          id: 'grab-2',
-          name: 'Heavy Duty Grab Bar',
-          desc: 'Reinforced grab bar with extra-thick stainless wall. Built for high-traffic bathrooms and assisted living facilities. Maximum load bearing with premium chrome finish.',
-          image: 'public/images/grab-bar-2.png'
-        },
-        {
-          id: 'grab-3',
-          name: 'Vertical Grab Bar',
-          desc: 'Vertically oriented grab bar for entry and exit assistance. Ideal beside doorways, showers, and bathtubs. Anti-slip textured grip surface for wet environments.',
-          image: 'public/images/vertical-grab-bar.png'
-        },
-        {
-          id: 'grab-4',
-          name: 'L-Shape Grab Bar',
-          desc: 'L-shaped combination grab bar for corner installation. Provides dual-direction support for toilet and shower areas. Chrome-plated stainless with concealed screws.',
-          image: 'public/images/L-shaper-grab-bar.png'
-        },
-        {
-          id: 'grab-5',
-          name: 'Flip-Up Grab Bar',
-          desc: 'Hinged fold-down grab bar that folds flat against the wall when not in use. Perfect for compact bathrooms. Powder-coated finish with stainless steel hinge mechanism.',
-          image: 'public/images/folding-grab-bar.png'
-        },
-        {
-          id: 'grab-6',
-          name: 'Urinal Grab Bar',
-          desc: 'Specially designed grab bar for urinal assistance. Ergonomic angled profile for natural hand placement. Hygienic chrome finish, easy to clean.',
-          image: 'public/images/urinal-grab-bar.png'
-        },
-        {
-          id: 'grab-7',
-          name: 'U-Shape Grab Bar',
-          desc: 'U-shaped grab bar providing bilateral support for users requiring assistance on both sides. Heavy-gauge stainless steel, 300kg rated. Suitable for disabled bathrooms.',
-          image: 'public/images/disable-u-grab-bar.png'
-        },
-        {
-          id: 'grab-8',
-          name: 'Folding Shower Seat',
-          desc: 'Wall-mounted fold-down shower seat with stainless steel frame and durable plastic seat. Folds flat when not in use. Rated for 150kg, ideal for elderly and mobility-impaired users.',
-          image: 'public/images/shower-seat.png'
-        },
-        {
-          id: 'grab-9',
-          name: 'Platform Wastring',
-          desc: 'Stainless steel platform wastring designed for accessibility and hygiene in commercial and residential bathrooms. Robust construction with anti-corrosion coating.',
-          image: 'public/images/platform-wastring.png'
-        },
-        {
-          id: 'grab-10',
-          name: 'Wall Mounted Dustbin',
-          desc: 'Hygienic wall-mounted waste bin for accessible bathrooms. Stainless steel construction with soft-close lid. Easy to empty and clean, keeps floors clear for wheelchair access.',
-          image: 'public/images/wall-mounted-dustbin.png'
-        },
-        {
-          id: 'grab-11',
-          name: 'Double Paper Holder with Stand',
-          desc: 'Freestanding double toilet paper holder with chrome-plated stand. Holds two rolls for convenience in high-use accessible bathrooms. Weighted base for stability.',
-          image: 'public/images/double-paper-holder-with-stand.png'
-        },
-        {
-          id: 'grab-12',
-          name: 'Paper Dispenser',
-          desc: 'Wall-mounted paper dispenser in brushed stainless steel. High-capacity roll housing with one-hand operation — ideal for accessible and commercial bathroom installations.',
-          image: 'public/images/paper-dispenser.png'
-        },
+        { id:'grab-1',  name:'Straight Grab Bar',              desc:'Classic straight grab bar in chrome-plated stainless steel. 250kg rated, ideal for shower and toilet areas. Concealed wall flanges for a clean finish.',                                                              image:'public/images/grab-bar.png',                        image2:'public/images/grab-bar-2.jpg' },
+        { id:'grab-2',  name:'Heavy Duty Grab Bar',            desc:'Reinforced grab bar with extra-thick stainless wall. Built for high-traffic bathrooms and assisted living facilities. Maximum load bearing with premium chrome finish.',                                              image:'public/images/grab-bar-2.png',                      image2:'' },
+        { id:'grab-3',  name:'Vertical Grab Bar',              desc:'Vertically oriented grab bar for entry and exit assistance. Ideal beside doorways, showers, and bathtubs. Anti-slip textured grip surface for wet environments.',                                                     image:'public/images/vertical-grab-bar.png',               image2:'' },
+        { id:'grab-4',  name:'L-Shape Grab Bar',               desc:'L-shaped combination grab bar for corner installation. Provides dual-direction support for toilet and shower areas. Chrome-plated stainless with concealed screws.',                                                  image:'public/images/L-shaper-grab-bar.png',               image2:'public/images/l-shape-grab-bar-2.jpg' },
+        { id:'grab-5',  name:'Flip-Up Grab Bar',               desc:'Hinged fold-down grab bar that folds flat against the wall when not in use. Perfect for compact bathrooms. Powder-coated finish with stainless steel hinge mechanism.',                                              image:'public/images/folding-grab-bar.png',                image2:'public/images/lift-up-grab-bar-2.jpg' },
+        { id:'grab-6',  name:'Urinal Grab Bar',                desc:'Specially designed grab bar for urinal assistance. Ergonomic angled profile for natural hand placement. Hygienic chrome finish, easy to clean.',                                                                     image:'public/images/urinal-grab-bar.png',                 image2:'public/images/urinal-grab-bar-2.jpg' },
+        { id:'grab-7',  name:'U-Shape Grab Bar',               desc:'U-shaped grab bar providing bilateral support for users requiring assistance on both sides. Heavy-gauge stainless steel, 300kg rated. Suitable for disabled bathrooms.',                                              image:'public/images/disable-u-grab-bar.png',              image2:'public/images/u-shape-grab-bar-2.jpg' },
+        { id:'grab-8',  name:'Folding Shower Seat',            desc:'Wall-mounted fold-down shower seat with stainless steel frame and durable plastic seat. Folds flat when not in use. Rated for 150kg, ideal for elderly and mobility-impaired users.',                               image:'public/images/shower-seat.png',                     image2:'' },
+        { id:'grab-9',  name:'Platform Wastring',              desc:'Stainless steel platform wastring designed for accessibility and hygiene in commercial and residential bathrooms. Robust construction with anti-corrosion coating.',                                                   image:'public/images/platform-wastring.png',               image2:'public/images/platform-wastring-2.jpg' },
+        { id:'grab-10', name:'Wall Mounted Dustbin',           desc:'Hygienic wall-mounted waste bin for accessible bathrooms. Stainless steel construction with soft-close lid. Easy to empty and clean, keeps floors clear for wheelchair access.',                                     image:'public/images/wall-mounted-dustbin.png',            image2:'' },
+        { id:'grab-11', name:'Double Paper Holder with Stand', desc:'Freestanding double toilet paper holder with chrome-plated stand. Holds two rolls for convenience in high-use accessible bathrooms. Weighted base for stability.',                                                   image:'public/images/double-paper-holder-with-stand.png',  image2:'' },
+        { id:'grab-12', name:'Paper Dispenser',                desc:'Wall-mounted paper dispenser in brushed stainless steel. High-capacity roll housing with one-hand operation — ideal for accessible and commercial bathroom installations.',                                           image:'public/images/paper-dispenser.png',                 image2:'' },
       ]
     },
     {
-  id: 'drainage',
-  name: 'Drainage Systems',
-  icon: '💧',
-  description: 'Premium stainless steel floor drains with superior water flow. Engineered for modern bathrooms with anti-odor technology and elegant finishes.',
-  hasSubCategories: false,
-  products: [
-    {
-      id: 'drain-1',
-      name: 'Square Rose Gold Grating Drain',
-      desc: 'Rose gold PVD finish square floor drain with decorative grating pattern. KAVTOR SS-304 stainless steel construction.',
-      image: 'public/images/KBA_70601_RG.jpg'
-    },
-    {
-      id: 'drain-2',
-      name: 'Square Matt Finish Tile Insert',
-      desc: 'Minimalist matt finish tile insert drain with invisible edge design. Perfect for seamless bathroom floors.',
-      image: 'public/images/70701_matt.jpg'
-    },
-    {
-      id: 'drain-3',
-      name: 'Square Rose Gold Linear Drain',
-      desc: 'Premium rose gold linear grating drain with parallel slot design. KAVTOR SS-304 grade for long-lasting durability.',
-      image: 'public/images/KBA_70301_RG.jpg'
-    },
-    {
-      id: 'drain-4',
-      name: 'Square Gold Center Outlet Drain',
-      desc: 'Luxurious gold PVD finish with center circular outlet and linear slots. High-flow drainage for heavy water usage.',
-      image: 'public/images/KBA_70501_G.jpg'
-    },
-    {
-      id: 'drain-5',
-      name: 'Square Rose Gold Center Drain',
-      desc: 'Rose gold square drain with central circular outlet and geometric slot pattern. Anti-clog deep trap design.',
-      image: 'public/images/KBA_70501_RG.jpg'
-    },
-    {
-      id: 'drain-6',
-      name: 'Square Black Tile Insert Drain',
-      desc: 'Matte black tile insert drain with hidden frame system. Accepts tiles for complete floor integration.',
-      image: 'public/images/70701_black.jpg'
-    },
-    {
-      id: 'drain-7',
-      name: 'Linear Matt Shower Channel',
-      desc: 'Long linear shower channel drain with matt stainless finish and grid pattern grate. Wall-to-wall installation ready.',
-      image: 'public/images/754_matt.jpg'
-    },
-    {
-      id: 'drain-8',
-      name: 'Linear Black Shower Channel',
-      desc: 'Sleek matte black linear drain channel with perforated grating. Modern aesthetic with superior water evacuation.',
-      image: 'public/images/754_black.jpg'
-    },
-    {
-      id: 'drain-9',
-      name: 'Linear Matt Tile Insert Channel',
-      desc: 'Stainless steel linear channel with tile insert capability. Invisible drain solution for contemporary bathrooms.',
-      image: 'public/images/751_mat.jpg'
-    },
-    {
-      id: 'drain-10',
-      name: 'Linear Black Tile Insert Channel',
-      desc: 'Matte black linear tile insert channel drain. Customizable surface with hidden drainage technology.',
-      image: 'public/images/751_black.jpg'
+      id: 'drainage', name: 'Drainage Systems', icon: '💧',
+      description: 'Premium stainless steel floor drains with superior water flow. Engineered for modern bathrooms with anti-odor technology and elegant finishes.',
+      hasSubCategories: false,
+      products: [
+        { id:'drain-1',  name:'Square Rose Gold Grating Drain',   desc:'Rose gold PVD finish square floor drain with decorative grating pattern. KAVTOR SS-304 stainless steel construction.',          image:'public/images/KBA_70601_RG.jpg' },
+        { id:'drain-2',  name:'Square Matt Finish Tile Insert',   desc:'Minimalist matt finish tile insert drain with invisible edge design. Perfect for seamless bathroom floors.',                    image:'public/images/70701_matt.jpg' },
+        { id:'drain-3',  name:'Square Rose Gold Linear Drain',    desc:'Premium rose gold linear grating drain with parallel slot design. KAVTOR SS-304 grade for long-lasting durability.',           image:'public/images/KBA_70301_RG.jpg' },
+        { id:'drain-4',  name:'Square Gold Center Outlet Drain',  desc:'Luxurious gold PVD finish with center circular outlet and linear slots. High-flow drainage for heavy water usage.',            image:'public/images/KBA_70501_G.jpg' },
+        { id:'drain-5',  name:'Square Rose Gold Center Drain',    desc:'Rose gold square drain with central circular outlet and geometric slot pattern. Anti-clog deep trap design.',                  image:'public/images/KBA_70501_RG.jpg' },
+        { id:'drain-6',  name:'Square Black Tile Insert Drain',   desc:'Matte black tile insert drain with hidden frame system. Accepts tiles for complete floor integration.',                        image:'public/images/70701_black.jpg' },
+        { id:'drain-7',  name:'Linear Matt Shower Channel',       desc:'Long linear shower channel drain with matt stainless finish and grid pattern grate. Wall-to-wall installation ready.',         image:'public/images/754_matt.jpg' },
+        { id:'drain-8',  name:'Linear Black Shower Channel',      desc:'Sleek matte black linear drain channel with perforated grating. Modern aesthetic with superior water evacuation.',             image:'public/images/754_black.jpg' },
+        { id:'drain-9',  name:'Linear Matt Tile Insert Channel',  desc:'Stainless steel linear channel with tile insert capability. Invisible drain solution for contemporary bathrooms.',             image:'public/images/751_mat.jpg' },
+        { id:'drain-10', name:'Linear Black Tile Insert Channel', desc:'Matte black linear tile insert channel drain. Customizable surface with hidden drainage technology.',                          image:'public/images/751_black.jpg' },
+      ]
     }
-  ]
- }
   ]
 };
 
@@ -356,18 +243,35 @@ function buildSubCategoryTabs(cat) {
 function buildProductGrid(products) {
   return `
     <div class="products-grid-new">
-      ${products.map(p => `
+      ${products.map(p => {
+        const hasSwap = !!(p.image && p.image2);
+        return `
         <div class="product-card-new">
-          <div class="product-card-img${!p.image ? ' no-img' : ''}">
+          <div class="product-card-img${!p.image ? ' no-img' : ''}${hasSwap ? ' has-swap' : ''}"
+            ${hasSwap ? `onmouseenter="swapProductImg(this,'${p.image2}')" onmouseleave="swapProductImg(this,'${p.image}')"` : ''}>
             ${p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy" decoding="async" onerror="this.parentElement.classList.add('no-img');this.style.display='none'"/>` : ''}
             <div class="product-img-placeholder"><span>◈</span><small>Image coming soon</small></div>
+            ${hasSwap ? `<div class="swap-hint">hover for more</div>` : ''}
           </div>
           <div class="product-card-info">
             <h4 class="product-card-name">${p.name}</h4>
             <p class="product-card-desc">${p.desc}</p>
           </div>
-        </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>`;
+}
+
+/* ── Image swap on hover (image area only) ── */
+function swapProductImg(container, newSrc) {
+  const img = container.querySelector('img');
+  if (!img) return;
+  img.style.transition = 'opacity 0.2s ease';
+  img.style.opacity = '0';
+  setTimeout(() => {
+    img.src = newSrc;
+    img.style.opacity = '1';
+  }, 200);
 }
 
 function toggleCategory(id) {
