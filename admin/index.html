@@ -596,5 +596,13 @@ loadAndRender();
 setInterval(loadAndRender, 10000);
 setInterval(() => renderFeed(false), 5000);
 </script>
+<script src="../admin/admin.js"></script>
+<script>
+// Explicitly call fetchCatalogLeads after everything is ready
+(async function() {
+  await fetchCatalogLeads();
+  renderCatalogLeads();
+})();
+</script>
 </body>
 </html>

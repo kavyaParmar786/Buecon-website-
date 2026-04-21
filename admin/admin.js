@@ -410,14 +410,4 @@ function exportCatalogLeads() {
   a.click(); URL.revokeObjectURL(url);
 }
 
-// Hook into admin boot — load leads alongside visitors
-(function patchAdminBoot() {
-  const origInit = document.addEventListener;
-  const origFetch = window.startPolling;
-
-  // Attach after DOM ready
-  document.addEventListener('DOMContentLoaded', async () => {
-    await fetchCatalogLeads();
-    renderCatalogLeads();
-  });
-})();
+// fetchCatalogLeads is called from admin/index.html after DOM load
