@@ -142,9 +142,9 @@ function loadFromLocalStorage() {
 async function loadBueconData() {
   let loadedFromSupabase = false;
 
-  /* ── 1. Try Supabase ── */
+  /* ── 1. Try Firebase ── */
   try {
-    const products = await SB.get('products', '?order=created_at.asc');
+    const products = await SB.get('products');
     if (products && products.length > 0) {
       BUECON.products = products.map(normalizeProduct);
       loadedFromSupabase = true;
@@ -163,7 +163,7 @@ async function loadBueconData() {
       BUECON.contentMap = map;
     }
   } catch (err) {
-    console.warn('BUECON: Supabase unavailable —', err.message);
+    console.warn('BUECON: Firebase unavailable —', err.message);
   }
 
   /* ── 2. Fall back to Admin localStorage if Supabase gave nothing ── */

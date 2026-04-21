@@ -463,7 +463,7 @@
       <!-- Preview -->
       <div class="catalog-preview">
         <div class="preview-cover">
-          <div class="cover-badge">2024 Edition</div>
+          
           <div class="cover-logo-text">BUECON</div>
           <div class="cover-tagline">Premium Bathroom Hardware</div>
           <div class="cover-divider"></div>
@@ -600,7 +600,7 @@
   <footer id="footer"><div id="footer-content"></div></footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-  <script src="js/supabase-client.js"></script>
+  <script src="js/firebase-client.js"></script>
   <script src="js/data.js"></script>
   <script src="js/sections/footer.js"></script>
   <script src="js/visitor-tracker.js"></script>
@@ -661,7 +661,7 @@
       };
 
       try {
-        await SB.insert('catalog_leads', payload);
+        await FS.add('catalog_leads', payload);
       } catch (e) {
         console.warn('Catalog lead save failed:', e.message);
         // Still allow download even if Supabase fails
@@ -670,10 +670,10 @@
       btnTxt.textContent = 'Starting download…';
 
       // ── Trigger actual catalog download ──
-      const CATALOG_URL = 'public/catalog/buecon-catalog-2024.pdf'; // ← update path
+      const CATALOG_URL = 'public/catalog/buecon-catalog.pdf';
       const link = document.createElement('a');
       link.href     = CATALOG_URL;
-      link.download = 'BUECON-Catalog-2024.pdf';
+      link.download = 'BUECON-Catalogue.pdf';
       link.click();
 
       // Show success

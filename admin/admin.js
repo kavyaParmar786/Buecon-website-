@@ -268,11 +268,11 @@ const AdminPanel = (() => {
   }
 
   /* ══════════════ TEST SUPABASE ══════════════ */
-  async function testSupabase() {
+  async function testFirebase() {
     const status = document.getElementById('sb-status');
     if (status) { status.textContent = 'Testing…'; status.style.color = 'var(--silver-dim)'; }
     try {
-      await SB.get('products', '?limit=1');
+      await FS.getAll('products').then(d => d.slice(0,1));
       if (status) { status.textContent = '✓ Connected'; status.style.color = '#4CAF50'; }
       toast('Supabase connected ✓');
     } catch (e) {
@@ -295,7 +295,7 @@ const AdminPanel = (() => {
   }
 
   document.addEventListener('DOMContentLoaded', init);
-  return { showPanel, openProductModal, closeProductModal, saveProduct, deleteProduct, previewImg, handleModel, saveContent, testSupabase };
+  return { showPanel, openProductModal, closeProductModal, saveProduct, deleteProduct, previewImg, handleModel, saveContent, testFirebase };
 })();
 
 /* ═══════════════════════════════════════════
@@ -306,7 +306,7 @@ let allCatalogLeads = [];
 
 async function fetchCatalogLeads() {
   try {
-    const data = await SB.get('catalog_leads', '?order=downloaded_at.desc&limit=500');
+    const data = await FS.query('catalog_leads', { orderBy: 'downloaded_at', limit: 500 });
     allCatalogLeads = data || [];
     document.getElementById('catalog-lead-count').textContent = allCatalogLeads.length;
   } catch (e) {

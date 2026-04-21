@@ -261,7 +261,7 @@
   <div class="logo">BUECON <span>COMMAND CENTER</span></div>
   <div class="header-right">
     <div class="live-badge"><div class="live-dot"></div> LIVE</div>
-    <div class="source-badge">☁ SUPABASE GLOBAL</div>
+    <div class="source-badge">☁ FIREBASE GLOBAL</div>
     <div class="clock" id="clock">--:--:--</div>
   </div>
 </header>
@@ -375,35 +375,23 @@
 
 </main>
 
-<script>
-const SUPABASE_URL  = 'https://qjpomdhpvheudpduywjj.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFqcG9tZGhwdmhldWRwZHV5d2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5MzQ5MDcsImV4cCI6MjA5MDUxMDkwN30.NnPn9Rywzm7kRmh-cwgo80knDq7j6EeD873QGroYa78';
-
-const SB = {
-  headers: {
-    'apikey':        SUPABASE_ANON,
-    'Authorization': `Bearer ${SUPABASE_ANON}`,
-    'Content-Type':  'application/json',
-    'Prefer':        'return=representation',
-  },
-  url(table, query = '') { return `${SUPABASE_URL}/rest/v1/${table}${query}`; },
-  async get(table, query = '') {
-    const res = await fetch(SB.url(table, query), { headers: SB.headers });
-    if (!res.ok) throw new Error(`SB.get ${table}: ${res.status}`);
-    return res.json();
-  },
-};
-</script>
-
+<script src="../js/firebase-client.js"></script>
 <script>
 let allVisitors = [];
 let pageHits    = {};
 let lastCount   = 0;
 
-/* ── Fetch ── */
+/* ── Fetch visitors from Firebase Realtime DB ── */
 async function fetchVisitors() {
   try {
-    return await SB.get('visitors', '?order=visited_at.desc&limit=200') || [];
+    const res = await fetch(`${FB_CONFIG.databaseURL}/visitors.json`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data) return [];
+    return Object.entries(data)
+      .map(([k, v]) => ({ _key: k, ...v }))
+      .sort((a, b) => new Date(b.visited_at) - new Date(a.visited_at))
+      .slice(0, 200);
   } catch(e) {
     console.error('Admin: fetch visitors failed', e.message);
     return [];
@@ -412,9 +400,12 @@ async function fetchVisitors() {
 
 async function fetchPageHits() {
   try {
-    const data = await SB.get('page_hits', '?order=count.desc') || [];
+    const res = await fetch(`${FB_CONFIG.databaseURL}/page_hits.json`);
+    if (!res.ok) return {};
+    const data = await res.json();
+    if (!data) return {};
     const map = {};
-    data.forEach(row => { map[row.page] = row.count; });
+    Object.values(data).forEach(row => { if (row?.page) map[row.page] = row.count || 0; });
     return map;
   } catch(e) {
     console.error('Admin: fetch page hits failed', e.message);
@@ -423,19 +414,11 @@ async function fetchPageHits() {
 }
 
 async function deleteAllVisitors() {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/visitors?id=gte.0`,
-    { method: 'DELETE', headers: { ...SB.headers, 'Prefer': 'return=minimal' } }
-  );
-  if (!res.ok) throw new Error('Delete visitors failed: ' + res.status + ' — ' + await res.text());
+  await RDB.deleteAll('visitors');
 }
 
 async function deleteAllPageHits() {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/page_hits?count=gte.0`,
-    { method: 'DELETE', headers: { ...SB.headers, 'Prefer': 'return=minimal' } }
-  );
-  if (!res.ok) throw new Error('Delete page_hits failed: ' + res.status + ' — ' + await res.text());
+  await RDB.deleteAll('page_hits');
 }
 
 /* ── Clock ── */
