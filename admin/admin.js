@@ -306,7 +306,7 @@ let allCatalogLeads = [];
 
 async function fetchCatalogLeads() {
   try {
-    const data = await FS.query('catalog_leads', { orderBy: 'downloaded_at', limit: 500 });
+    const data = await FS.getAll('catalog_leads');
     allCatalogLeads = data || [];
     document.getElementById('catalog-lead-count').textContent = allCatalogLeads.length;
   } catch (e) {
