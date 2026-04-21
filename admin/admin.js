@@ -294,120 +294,121 @@ const AdminPanel = (() => {
     toastTimer = setTimeout(() => t.classList.remove('show'), 4500);
   }
 
-  document.addEventListener('DOMContentLoaded', init);
-  return { showPanel, openProductModal, closeProductModal, saveProduct, deleteProduct, previewImg, handleModel, saveContent, testFirebase };
-})();
+  /* ══════════════ CATALOG LEADS ══════════════ */
+  let allCatalogLeads = [];
 
-/* ═══════════════════════════════════════════
-   BUECON Admin — Catalog Leads Module
-   ═══════════════════════════════════════════ */
-
-let allCatalogLeads = [];
-
-async function fetchCatalogLeads() {
-  try {
-    const data = await FS.getAll('catalog_leads');
-    allCatalogLeads = data || [];
-    document.getElementById('catalog-lead-count').textContent = allCatalogLeads.length;
-  } catch (e) {
-    console.warn('Catalog leads fetch failed:', e.message);
-    allCatalogLeads = [];
-    document.getElementById('catalog-lead-count').textContent = 'error';
-  }
-}
-
-function renderCatalogLeads() {
-  const body    = document.getElementById('catalogLeadsBody');
-  if (!body) return;
-
-  const query   = (document.getElementById('catalog-search')?.value || '').toLowerCase();
-  const typeFilter = document.getElementById('catalog-filter-type')?.value || '';
-
-  let leads = allCatalogLeads.filter(l => {
-    const matchText = !query ||
-      (l.name  || '').toLowerCase().includes(query) ||
-      (l.email || '').toLowerCase().includes(query) ||
-      (l.city  || '').toLowerCase().includes(query) ||
-      (l.company || '').toLowerCase().includes(query);
-    const matchType = !typeFilter || l.user_type === typeFilter;
-    return matchText && matchType;
-  });
-
-  if (!leads.length) {
-    body.innerHTML = `
-      <div class="empty-state" style="padding:48px;text-align:center;color:rgba(240,236,228,0.3);">
-        <div style="font-size:2rem;margin-bottom:12px;">◈</div>
-        <p>${allCatalogLeads.length === 0 ? 'No catalog requests yet. Run the SQL migration to create the table.' : 'No leads match your filter.'}</p>
-      </div>`;
-    return;
+  async function fetchCatalogLeads() {
+    try {
+      const data = await FS.getAll('catalog_leads');
+      allCatalogLeads = data || [];
+      const el = document.getElementById('catalog-lead-count');
+      if (el) el.textContent = allCatalogLeads.length;
+    } catch (e) {
+      console.warn('Catalog leads fetch failed:', e.message);
+      allCatalogLeads = [];
+      const el = document.getElementById('catalog-lead-count');
+      if (el) el.textContent = 'error';
+    }
   }
 
-  const typeBadgeColor = {
-    Architect:'#c5a46d', Contractor:'#7aadcc', Dealer:'#4caf7d',
-    Retailer:'#a07cd4', Homeowner:'#e0914f', Other:'#7a8a9c'
-  };
+  function renderCatalogLeads() {
+    const body = document.getElementById('catalogLeadsBody');
+    if (!body) return;
 
-  body.innerHTML = leads.map((l, i) => {
-    const date   = l.downloaded_at ? new Date(l.downloaded_at) : null;
-    const dateStr = date
-      ? date.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'2-digit' })
-      : '—';
-    const badgeColor = typeBadgeColor[l.user_type] || '#7a8a9c';
-    const isNew = date && (Date.now() - date.getTime()) < 86400000;
+    const query = (document.getElementById('catalog-search')?.value || '').toLowerCase();
+    const typeFilter = document.getElementById('catalog-filter-type')?.value || '';
 
-    return `
-      <div class="feed-row" style="
-        grid-template-columns:1.8fr 1.8fr 1.2fr 1.2fr 1fr 1fr 1fr;
-        animation: fadeUp 0.4s ease both;
-        animation-delay: ${i * 0.03}s;
-      ">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="
-            width:32px;height:32px;min-width:32px;
-            border-radius:50%;
-            background:rgba(197,164,109,0.1);
-            border:1px solid rgba(197,164,109,0.2);
-            display:flex;align-items:center;justify-content:center;
-            font-family:var(--mono);font-size:11px;color:var(--gold);font-weight:700;
-          ">${(l.name||'?')[0].toUpperCase()}</div>
-          <div>
-            <div style="color:#f0ece4;font-size:13px;font-weight:500;">${l.name || '—'}</div>
-            ${isNew ? '<div style="font-size:9px;color:#4caf7d;letter-spacing:0.1em;">NEW</div>' : ''}
+    let leads = allCatalogLeads.filter(l => {
+      const matchText = !query ||
+        (l.name || '').toLowerCase().includes(query) ||
+        (l.email || '').toLowerCase().includes(query) ||
+        (l.city || '').toLowerCase().includes(query) ||
+        (l.company || '').toLowerCase().includes(query);
+      const matchType = !typeFilter || l.user_type === typeFilter;
+      return matchText && matchType;
+    });
+
+    if (!leads.length) {
+      body.innerHTML = `
+        <div class="empty-state" style="padding:48px;text-align:center;color:rgba(240,236,228,0.3);">
+          <div style="font-size:2rem;margin-bottom:12px;">◈</div>
+          <p>${allCatalogLeads.length === 0 ? 'No catalog requests yet.' : 'No leads match your filter.'}</p>
+        </div>`;
+      return;
+    }
+
+    const typeBadgeColor = {
+      Architect: '#c5a46d', Contractor: '#7aadcc', Dealer: '#4caf7d',
+      Retailer: '#a07cd4', Homeowner: '#e0914f', Other: '#7a8a9c'
+    };
+
+    body.innerHTML = leads.map((l, i) => {
+      const date = l.downloaded_at ? new Date(l.downloaded_at) : null;
+      const dateStr = date
+        ? date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: '2-digit' })
+        : '—';
+      const badgeColor = typeBadgeColor[l.user_type] || '#7a8a9c';
+      const isNew = date && (Date.now() - date.getTime()) < 86400000;
+
+      return `
+        <div class="feed-row" style="
+          grid-template-columns:1.8fr 1.8fr 1.2fr 1.2fr 1fr 1fr 1fr;
+          animation: fadeUp 0.4s ease both;
+          animation-delay: ${i * 0.03}s;
+        ">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="
+              width:32px;height:32px;min-width:32px;
+              border-radius:50%;
+              background:rgba(197,164,109,0.1);
+              border:1px solid rgba(197,164,109,0.2);
+              display:flex;align-items:center;justify-content:center;
+              font-family:var(--mono);font-size:11px;color:var(--gold);font-weight:700;
+            ">${(l.name || '?')[0].toUpperCase()}</div>
+            <div>
+              <div style="color:#f0ece4;font-size:13px;font-weight:500;">${l.name || '—'}</div>
+              ${isNew ? '<div style="font-size:9px;color:#4caf7d;letter-spacing:0.1em;">NEW</div>' : ''}
+            </div>
           </div>
-        </div>
-        <div style="color:rgba(240,236,228,0.7);font-size:12px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${l.email||''}">${l.email || '—'}</div>
-        <div style="color:rgba(240,236,228,0.7);font-size:12px;font-family:var(--mono);">${l.phone || '—'}</div>
-        <div style="color:rgba(240,236,228,0.55);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.company || <span style="opacity:0.3">—</span>}</div>
-        <div style="color:rgba(240,236,228,0.55);font-size:12px;">${l.city || '—'}</div>
-        <div>
-          <span style="
-            display:inline-block;padding:3px 9px;border-radius:20px;
-            font-size:10px;font-family:var(--mono);letter-spacing:0.05em;
-            background:${badgeColor}18;border:1px solid ${badgeColor}44;color:${badgeColor};
-          ">${l.user_type || '—'}</span>
-        </div>
-        <div style="color:rgba(240,236,228,0.4);font-size:11px;font-family:var(--mono);">${dateStr}</div>
-      </div>`;
-  }).join('');
-}
-
-function exportCatalogLeads() {
-  if (!allCatalogLeads.length) {
-    alert('No catalog leads to export.');
-    return;
+          <div style="color:rgba(240,236,228,0.7);font-size:12px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${l.email || ''}">${l.email || '—'}</div>
+          <div style="color:rgba(240,236,228,0.7);font-size:12px;font-family:var(--mono);">${l.phone || '—'}</div>
+          <div style="color:rgba(240,236,228,0.55);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.company || '<span style="opacity:0.3">—</span>'}</div>
+          <div style="color:rgba(240,236,228,0.55);font-size:12px;">${l.city || '—'}</div>
+          <div>
+            <span style="
+              display:inline-block;padding:3px 9px;border-radius:20px;
+              font-size:10px;font-family:var(--mono);letter-spacing:0.05em;
+              background:${badgeColor}18;border:1px solid ${badgeColor}44;color:${badgeColor};
+            ">${l.user_type || '—'}</span>
+          </div>
+          <div style="color:rgba(240,236,228,0.4);font-size:11px;font-family:var(--mono);">${dateStr}</div>
+        </div>`;
+    }).join('');
   }
-  const headers = ['Name','Email','Phone','Company','City','Type','Consent','Downloaded At'];
-  const rows = allCatalogLeads.map(l => [
-    l.name || '', l.email || '', l.phone || '', l.company || '',
-    l.city || '', l.user_type || '', l.consent ? 'Yes' : 'No',
-    l.downloaded_at ? new Date(l.downloaded_at).toLocaleString('en-IN') : ''
-  ]);
-  const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = `buecon-catalog-leads-${new Date().toISOString().slice(0,10)}.csv`;
-  a.click(); URL.revokeObjectURL(url);
-}
 
-// fetchCatalogLeads is called from admin/index.html after DOM load
+  function exportCatalogLeads() {
+    if (!allCatalogLeads.length) {
+      alert('No catalog leads to export.');
+      return;
+    }
+    const headers = ['Name', 'Email', 'Phone', 'Company', 'City', 'Type', 'Consent', 'Downloaded At'];
+    const rows = allCatalogLeads.map(l => [
+      l.name || '', l.email || '', l.phone || '', l.company || '',
+      l.city || '', l.user_type || '', l.consent ? 'Yes' : 'No',
+      l.downloaded_at ? new Date(l.downloaded_at).toLocaleString('en-IN') : ''
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `buecon-catalog-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  return {
+    showPanel, openProductModal, closeProductModal, saveProduct, deleteProduct,
+    previewImg, handleModel, saveContent, testFirebase,
+    fetchCatalogLeads, renderCatalogLeads, exportCatalogLeads
+  };
+})();

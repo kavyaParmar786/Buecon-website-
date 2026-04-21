@@ -331,7 +331,7 @@
     <h2>📥 Catalog Leads</h2>
     <div style="display:flex;gap:12px;align-items:center;">
       <span class="live-badge" style="font-size:11px;"><div class="live-dot"></div> <span id="catalog-lead-count">—</span> leads</span>
-      <button onclick="exportCatalogLeads()" style="background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:var(--mono);font-size:10px;letter-spacing:0.12em;padding:6px 14px;border-radius:6px;cursor:pointer;">⬇ EXPORT CSV</button>
+      <button onclick="AdminPanel.exportCatalogLeads()" style="background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:var(--mono);font-size:10px;letter-spacing:0.12em;padding:6px 14px;border-radius:6px;cursor:pointer;">⬇ EXPORT CSV</button>
     </div>
   </div>
 
@@ -340,11 +340,11 @@
       style="background:var(--navy-card);border:1px solid var(--navy-border);border-radius:8px;
              padding:8px 14px;color:#f0ece4;font-family:var(--mono);font-size:12px;
              outline:none;width:260px;transition:border-color 0.2s;"
-      oninput="renderCatalogLeads()"
+      oninput="AdminPanel.renderCatalogLeads()"
       onfocus="this.style.borderColor='rgba(197,164,109,0.5)'"
       onblur="this.style.borderColor=''"
     />
-    <select id="catalog-filter-type" onchange="renderCatalogLeads()"
+    <select id="catalog-filter-type" onchange="AdminPanel.renderCatalogLeads()"
       style="background:var(--navy-card);border:1px solid var(--navy-border);border-radius:8px;
              padding:8px 14px;color:#f0ece4;font-family:var(--mono);font-size:11px;
              outline:none;cursor:pointer;">
@@ -375,7 +375,7 @@
 
 </main>
 
-<script src="/js/firebase-client.js"></script>
+<script src="../js/firebase-client.js"></script>
 <script>
 let allVisitors = [];
 let pageHits    = {};
@@ -596,12 +596,12 @@ loadAndRender();
 setInterval(loadAndRender, 10000);
 setInterval(() => renderFeed(false), 5000);
 </script>
-<script src="/admin/admin.js"></script>
+<script src="./admin.js"></script>
 <script>
 // Explicitly call fetchCatalogLeads after everything is ready
 (async function() {
-  await fetchCatalogLeads();
-  renderCatalogLeads();
+  await AdminPanel.fetchCatalogLeads();
+  AdminPanel.renderCatalogLeads();
 })();
 </script>
 </body>
