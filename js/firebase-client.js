@@ -204,7 +204,7 @@ const SB = {
       // Convert RTDB {page, count} records to array for admin
       return rows.map(r => ({ page: r.page || r._key, count: r.count || 1 }));
     });
-    if (table === 'catalog_leads') return FS.query('catalog_leads', { orderBy: 'downloaded_at', limit: 500 });
+    if (table === 'catalog_leads') return FS.getAll('catalog_leads');
     if (table === 'reviews')       return FS.query('reviews', { orderBy: 'created_at' });
 
     /* products, content: ordered */
