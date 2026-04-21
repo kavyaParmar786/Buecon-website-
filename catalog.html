@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Get Catalog — BUECON</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/variables.css"/>
+  <link rel="stylesheet" href="css/reset.css"/>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/footer.css"/>
+  <link rel="stylesheet" href="css/visitor-prompt.css"/>
+  <style>
+    /* ── Page Shell ── */
+    body {
+      padding-top: 100px;
+      background: var(--navy-deep);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Ambient BG ── */
+    .catalog-bg {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 20%, rgba(197,164,109,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(197,164,109,0.04) 0%, transparent 60%),
+        linear-gradient(180deg, var(--navy-deep) 0%, #060d18 100%);
+    }
+    .catalog-bg::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(197,164,109,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(197,164,109,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ── Hero ── */
+    .catalog-hero {
+      position: relative; z-index: 1;
+      padding: 80px 0 60px;
+      text-align: center;
+      border-bottom: 1px solid rgba(197,164,109,0.08);
+    }
+    .catalog-hero .section-label {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-size: 0.7rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 16px;
+      padding: 6px 16px;
+      border: 1px solid rgba(197,164,109,0.25);
+      border-radius: var(--radius-full);
+      background: rgba(197,164,109,0.06);
+    }
+    .catalog-hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 5vw, 4.2rem);
+      font-weight: 600; color: var(--white); line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .catalog-hero h1 em { font-style: italic; color: var(--gold); }
+    .catalog-hero p {
+      font-family: var(--font-sans);
+      font-size: 1rem; color: var(--silver-dim);
+      max-width: 520px; margin: 0 auto;
+      line-height: 1.7;
+    }
+    .breadcrumb {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-top: 20px;
+      font-size: 0.72rem; color: var(--silver-dim); letter-spacing: 0.1em;
+    }
+    .breadcrumb a { color: var(--gold); text-decoration: none; }
+
+    /* ── Main Layout ── */
+    .catalog-section {
+      position: relative; z-index: 1;
+      padding: 80px 0 120px;
+    }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      gap: 64px;
+      align-items: start;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* ── Preview Panel ── */
+    .catalog-preview {
+      position: sticky;
+      top: 120px;
+    }
+    .preview-cover {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0d1a28 0%, #111d2e 50%, #0a1520 100%);
+      border: 1px solid rgba(197,164,109,0.2);
+      box-shadow:
+        0 32px 80px rgba(0,0,0,0.5),
+        0 0 0 1px rgba(197,164,109,0.06),
+        inset 0 1px 0 rgba(197,164,109,0.1);
+      aspect-ratio: 3/4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      text-align: center;
+    }
+    .preview-cover::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(197,164,109,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cover-logo-text {
+      font-family: var(--font-logo);
+      font-size: 2.8rem; font-weight: 900;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-shadow: 0 0 40px rgba(197,164,109,0.3);
+      margin-bottom: 8px;
+    }
+    .cover-tagline {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--silver-dim);
+      margin-bottom: 40px;
+    }
+    .cover-divider {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 32px;
+    }
+    .cover-icons {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 20px; width: 100%;
+      margin-bottom: 40px;
+    }
+    .cover-icon-item {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+    }
+    .cover-icon-box {
+      width: 56px; height: 56px;
+      border: 1px solid rgba(197,164,109,0.2);
+      border-radius: 12px;
+      background: rgba(197,164,109,0.04);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .cover-icon-label {
+      font-size: 0.6rem; font-family: var(--font-sans);
+      letter-spacing: 0.1em; color: var(--silver-dim);
+      text-transform: uppercase;
+    }
+    .cover-year {
+      font-family: var(--font-sans);
+      font-size: 0.7rem; letter-spacing: 0.25em;
+      color: rgba(197,164,109,0.4); text-transform: uppercase;
+    }
+    .cover-badge {
+      position: absolute; top: 20px; right: 20px;
+      background: var(--gold);
+      color: var(--navy-deep);
+      font-family: var(--font-sans);
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: var(--radius-full);
+    }
+
+    .preview-meta {
+      margin-top: 20px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .meta-chip {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .meta-chip-val {
+      font-family: var(--font-sans);
+      font-size: 1.1rem; font-weight: 600;
+      color: var(--gold);
+    }
+    .meta-chip-label {
+      font-size: 0.62rem; color: var(--silver-dim);
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* ── Form Panel ── */
+    .catalog-form-wrap {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 48px 44px;
+      backdrop-filter: var(--glass-blur);
+      position: relative;
+      overflow: hidden;
+    }
+    .catalog-form-wrap::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.5;
+    }
+    .form-heading {
+      font-family: var(--font-serif);
+      font-size: 1.7rem; font-weight: 600;
+      color: var(--white); margin-bottom: 6px;
+    }
+    .form-heading em { font-style: italic; color: var(--gold); }
+    .form-subheading {
+      font-family: var(--font-sans);
+      font-size: 0.85rem; color: var(--silver-dim);
+      margin-bottom: 36px; line-height: 1.6;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-label {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--silver-dim);
+      margin-bottom: 8px;
+    }
+    .form-label .req { color: var(--gold); }
+
+    .form-input, .form-select {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(197,164,109,0.2);
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      color: var(--white);
+      transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+      outline: none;
+      appearance: none;
+    }
+    .form-input::placeholder { color: rgba(255,255,255,0.2); }
+    .form-input:focus, .form-select:focus {
+      border-color: rgba(197,164,109,0.55);
+      background: rgba(197,164,109,0.04);
+      box-shadow: 0 0 0 3px rgba(197,164,109,0.08);
+    }
+    .form-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C5A46D' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+    .form-select option { background: #0d1a28; color: var(--white); }
+
+    .form-consent {
+      display: flex; gap: 12px; align-items: flex-start;
+      margin-bottom: 28px;
+    }
+    .form-consent input[type="checkbox"] {
+      width: 18px; height: 18px; min-width: 18px;
+      accent-color: var(--gold);
+      cursor: pointer;
+      margin-top: 2px;
+    }
+    .form-consent label {
+      font-family: var(--font-sans);
+      font-size: 0.78rem; color: var(--silver-dim);
+      line-height: 1.6; cursor: pointer;
+    }
+    .form-consent label a { color: var(--gold); text-decoration: none; }
+
+    .btn-download {
+      width: 100%;
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      color: var(--navy-deep);
+      font-family: var(--font-sans);
+      font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      border: none; border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 8px 32px rgba(197,164,109,0.25);
+      position: relative; overflow: hidden;
+    }
+    .btn-download::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    }
+    .btn-download:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 40px rgba(197,164,109,0.35);
+    }
+    .btn-download:active:not(:disabled) { transform: translateY(0); }
+    .btn-download:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-download .btn-icon { font-size: 1.1rem; }
+
+    /* ── Trust strip ── */
+    .trust-strip {
+      display: flex; align-items: center; justify-content: center;
+      gap: 20px; margin-top: 18px;
+      flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--font-sans); font-size: 0.72rem;
+      color: var(--silver-dim); letter-spacing: 0.05em;
+    }
+    .trust-icon { color: var(--gold); font-size: 0.85rem; }
+
+    /* ── Error state ── */
+    .field-error {
+      font-family: var(--font-sans); font-size: 0.72rem;
+      color: #e05555; margin-top: 6px;
+      display: none;
+    }
+    .form-group.has-error .form-input,
+    .form-group.has-error .form-select {
+      border-color: #e05555;
+    }
+    .form-group.has-error .field-error { display: block; }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none;
+      flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      position: absolute; inset: 0;
+      background: rgba(6,15,24,0.95);
+      border-radius: 24px;
+      z-index: 10;
+      padding: 48px;
+      backdrop-filter: blur(12px);
+    }
+    .success-overlay.show { display: flex; }
+    .success-ring {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin-bottom: 24px;
+      box-shadow: 0 0 40px rgba(197,164,109,0.3);
+      animation: ringPulse 2s ease infinite;
+    }
+    @keyframes ringPulse {
+      0%,100% { box-shadow: 0 0 40px rgba(197,164,109,0.3); }
+      50%      { box-shadow: 0 0 60px rgba(197,164,109,0.5); }
+    }
+    .success-title {
+      font-family: var(--font-serif); font-size: 1.8rem;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .success-title em { font-style: italic; color: var(--gold); }
+    .success-desc {
+      font-family: var(--font-sans); font-size: 0.88rem;
+      color: var(--silver-dim); line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .btn-again {
+      padding: 10px 24px;
+      border: 1px solid rgba(197,164,109,0.3);
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--gold); font-family: var(--font-sans);
+      font-size: 0.8rem; letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-again:hover { background: rgba(197,164,109,0.08); border-color: var(--gold); }
+
+    /* ── Active nav ── */
+    .nav-links a[href="catalog.html"] { color: var(--gold) !important; }
+    .nav-links a[href="catalog.html"]::after { width: 100% !important; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .catalog-grid {
+        grid-template-columns: 1fr;
+        padding: 0 24px;
+      }
+      .catalog-preview {
+        position: static;
+        max-width: 360px;
+        margin: 0 auto;
+      }
+      .catalog-form-wrap { padding: 32px 24px; }
+    }
+    @media (max-width: 560px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="catalog-bg"></div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="public/images/logo-final.png" alt="BUECON" height="28" style="display:block;"/>
+    </a>
+    <ul class="nav-links">
+      <li><a href="about.html">About</a></li>
+      <li><a href="mission.html">Mission</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="catalog.html">Get Catalog</a></li>
+    </ul>
+    <a href="contact.html" class="nav-cta">Get in Touch</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="about.html" class="mobile-link">About</a></li>
+      <li><a href="mission.html" class="mobile-link">Mission</a></li>
+      <li><a href="reviews.html" class="mobile-link">Reviews</a></li>
+      <li><a href="catalog.html" class="mobile-link">Get Catalog</a></li>
+      <li><a href="contact.html" class="mobile-link">Contact</a></li>
+    </ul>
+  </div>
+
+  <!-- HERO -->
+  <div class="catalog-hero">
+    <div class="container">
+      <span class="section-label">Product Catalog</span>
+      <h1>Download Our <em>2024 Catalog</em></h1>
+      <p>Explore BUECON's full range of premium bathroom hardware — complete specs, finishes, and collections in one beautifully crafted document.</p>
+      <div class="breadcrumb">
+        <a href="index.html">Home</a>
+        <span>›</span>
+        <span>Get Catalog</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <section class="catalog-section">
+    <div class="catalog-grid">
+
+      <!-- Preview -->
+      <div class="catalog-preview">
+        <div class="preview-cover">
+          <div class="cover-badge">2024 Edition</div>
+          <div class="cover-logo-text">BUECON</div>
+          <div class="cover-tagline">Premium Bathroom Hardware</div>
+          <div class="cover-divider"></div>
+          <div class="cover-icons">
+            <div class="cover-icon-item">
+              <div class="cover-icon-box">🚿</div>
+              <div class="cover-icon-label">Bars</div>
+            </div>
+            <div class="cover-icon-item">
+              <div class="cover-icon-box">🪞</div>
+              <div class="cover-icon-label">Shelves</div>
+            </div>
+            <div class="cover-icon-item">
+              <div class="cover-icon-box">🛁</div>
+              <div class="cover-icon-label">Grab Bars</div>
+            </div>
+            <div class="cover-icon-item">
+              <div class="cover-icon-box">🧴</div>
+              <div class="cover-icon-label">Dispensers</div>
+            </div>
+            <div class="cover-icon-item">
+              <div class="cover-icon-box">🧻</div>
+              <div class="cover-icon-label">Holders</div>
+            </div>
+            <div class="cover-icon-item">
+              <div class="cover-icon-box">🪝</div>
+              <div class="cover-icon-label">Hooks</div>
+            </div>
+          </div>
+          <div class="cover-year">Since 2016 · Rajkot, India</div>
+        </div>
+
+        <div class="preview-meta">
+          <div class="meta-chip">
+            <div class="meta-chip-val">50+</div>
+            <div class="meta-chip-label">Products</div>
+          </div>
+          <div class="meta-chip">
+            <div class="meta-chip-val">4</div>
+            <div class="meta-chip-label">Collections</div>
+          </div>
+          <div class="meta-chip">
+            <div class="meta-chip-val">PDF</div>
+            <div class="meta-chip-label">Format</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="catalog-form-wrap" id="formWrap">
+
+        <!-- Success overlay -->
+        <div class="success-overlay" id="successOverlay">
+          <div class="success-ring">✓</div>
+          <div class="success-title">Your <em>Catalog</em> is Ready</div>
+          <div class="success-desc" id="successDesc">
+            Thank you! Your catalog download has started automatically.<br/>
+            We'll also reach out if you have any questions.
+          </div>
+          <button class="btn-again" onclick="resetForm()">← Download Again</button>
+        </div>
+
+        <div class="form-heading">Get Your <em>Free</em> Copy</div>
+        <div class="form-subheading">Fill in your details below and the catalog will download instantly.</div>
+
+        <div id="catalogForm">
+          <div class="form-row">
+            <div class="form-group" id="grp-name">
+              <label class="form-label">Full Name <span class="req">*</span></label>
+              <input type="text" class="form-input" id="f-name" placeholder="Your full name" autocomplete="name"/>
+              <div class="field-error" id="err-name">Please enter your name.</div>
+            </div>
+            <div class="form-group" id="grp-phone">
+              <label class="form-label">Phone Number <span class="req">*</span></label>
+              <input type="tel" class="form-input" id="f-phone" placeholder="+91 9999 999 999" autocomplete="tel"/>
+              <div class="field-error" id="err-phone">Enter a valid phone number.</div>
+            </div>
+          </div>
+
+          <div class="form-group" id="grp-email">
+            <label class="form-label">Email Address <span class="req">*</span></label>
+            <input type="email" class="form-input" id="f-email" placeholder="you@company.com" autocomplete="email"/>
+            <div class="field-error" id="err-email">Please enter a valid email.</div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" id="grp-company">
+              <label class="form-label">Company / Business</label>
+              <input type="text" class="form-input" id="f-company" placeholder="Company name (optional)" autocomplete="organization"/>
+            </div>
+            <div class="form-group" id="grp-city">
+              <label class="form-label">City</label>
+              <input type="text" class="form-input" id="f-city" placeholder="Your city"/>
+            </div>
+          </div>
+
+          <div class="form-group" id="grp-type">
+            <label class="form-label">I am a <span class="req">*</span></label>
+            <select class="form-select" id="f-type">
+              <option value="" disabled selected>Select your profile</option>
+              <option value="Architect">Architect / Interior Designer</option>
+              <option value="Contractor">Builder / Contractor</option>
+              <option value="Dealer">Dealer / Distributor</option>
+              <option value="Retailer">Retailer</option>
+              <option value="Homeowner">Homeowner</option>
+              <option value="Other">Other</option>
+            </select>
+            <div class="field-error" id="err-type">Please select your profile.</div>
+          </div>
+
+          <div class="form-consent">
+            <input type="checkbox" id="f-consent" checked/>
+            <label for="f-consent">
+              I agree to receive product updates and communications from BUECON. Your data is safe with us and will never be shared with third parties. <a href="index.html">Privacy Policy</a>
+            </label>
+          </div>
+
+          <button class="btn-download" id="downloadBtn" onclick="handleCatalogDownload()">
+            <span class="btn-icon">⬇</span>
+            <span id="btnText">Download Catalog — Free</span>
+          </button>
+
+          <div class="trust-strip">
+            <div class="trust-item"><span class="trust-icon">🔒</span> Secure & Private</div>
+            <div class="trust-item"><span class="trust-icon">⚡</span> Instant Download</div>
+            <div class="trust-item"><span class="trust-icon">✦</span> No Spam</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer id="footer"><div id="footer-content"></div></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/sections/footer.js"></script>
+  <script src="js/visitor-tracker.js"></script>
+
+  <script>
+    /* ── Navbar mobile toggle ── */
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger?.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+
+    /* ── Navbar scroll shrink ── */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar?.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    /* ── Validation helpers ── */
+    function setError(grpId, errId, show) {
+      document.getElementById(grpId)?.classList.toggle('has-error', show);
+    }
+    function validate() {
+      let ok = true;
+      const name  = document.getElementById('f-name').value.trim();
+      const phone = document.getElementById('f-phone').value.trim();
+      const email = document.getElementById('f-email').value.trim();
+      const type  = document.getElementById('f-type').value;
+
+      setError('grp-name',  'err-name',  !name);
+      setError('grp-phone', 'err-phone', !phone || phone.length < 7);
+      setError('grp-email', 'err-email', !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+      setError('grp-type',  'err-type',  !type);
+
+      if (!name || phone.length < 7 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !type) ok = false;
+      return ok;
+    }
+
+    /* ── Main submit handler ── */
+    async function handleCatalogDownload() {
+      if (!validate()) return;
+
+      const btn    = document.getElementById('downloadBtn');
+      const btnTxt = document.getElementById('btnText');
+      btn.disabled = true;
+      btnTxt.textContent = 'Saving your details…';
+
+      const payload = {
+        name:       document.getElementById('f-name').value.trim(),
+        phone:      document.getElementById('f-phone').value.trim(),
+        email:      document.getElementById('f-email').value.trim(),
+        company:    document.getElementById('f-company').value.trim() || null,
+        city:       document.getElementById('f-city').value.trim()    || null,
+        user_type:  document.getElementById('f-type').value,
+        consent:    document.getElementById('f-consent').checked,
+        downloaded_at: new Date().toISOString(),
+      };
+
+      try {
+        await SB.insert('catalog_leads', payload);
+      } catch (e) {
+        console.warn('Catalog lead save failed:', e.message);
+        // Still allow download even if Supabase fails
+      }
+
+      btnTxt.textContent = 'Starting download…';
+
+      // ── Trigger actual catalog download ──
+      const CATALOG_URL = 'public/catalog/buecon-catalog-2024.pdf'; // ← update path
+      const link = document.createElement('a');
+      link.href     = CATALOG_URL;
+      link.download = 'BUECON-Catalog-2024.pdf';
+      link.click();
+
+      // Show success
+      setTimeout(() => {
+        btn.disabled = false;
+        btnTxt.textContent = 'Download Catalog — Free';
+        document.getElementById('successOverlay').classList.add('show');
+        document.getElementById('successDesc').textContent =
+          `Thank you, ${payload.name.split(' ')[0]}! Your catalog download has started. We'll be in touch if you have any questions.`;
+      }, 900);
+    }
+
+    function resetForm() {
+      document.getElementById('successOverlay').classList.remove('show');
+      document.getElementById('f-name').value    = '';
+      document.getElementById('f-phone').value   = '';
+      document.getElementById('f-email').value   = '';
+      document.getElementById('f-company').value = '';
+      document.getElementById('f-city').value    = '';
+      document.getElementById('f-type').value    = '';
+    }
+
+    /* ── Boot ── */
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadBueconData();
+      renderFooter();
+
+      gsap.from('.catalog-hero', { opacity: 0, y: 30, duration: 0.8, ease: 'power3.out' });
+      gsap.from('.catalog-preview', { opacity: 0, x: -40, duration: 0.9, delay: 0.2, ease: 'power3.out' });
+      gsap.from('.catalog-form-wrap', { opacity: 0, x: 40, duration: 0.9, delay: 0.3, ease: 'power3.out' });
+    });
+  </script>
+</body>
+</html>
