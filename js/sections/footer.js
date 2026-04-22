@@ -19,12 +19,6 @@ function renderFooter() {
             Designed to Speak. Built to Last.<br>
             Premium bathroom hardware, crafted in Rajkot since 2016.
           </p>
-          <div class="footer-social">
-            <a href="#" class="social-link" aria-label="Instagram">✦</a>
-            <a href="#" class="social-link" aria-label="LinkedIn">in</a>
-            <a href="#" class="social-link" aria-label="Pinterest">P</a>
-            <a href="#" class="social-link" aria-label="Houzz">H</a>
-          </div>
         </div>
 
         <!-- Company -->
