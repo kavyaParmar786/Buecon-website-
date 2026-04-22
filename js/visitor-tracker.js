@@ -106,7 +106,7 @@
     document.getElementById('vp-submit').addEventListener('click', () => dismiss(document.getElementById('vp-name-input').value.trim()));
     document.getElementById('vp-name-input').addEventListener('keydown', e => { if (e.key==='Enter') dismiss(e.target.value.trim()); });
     document.getElementById('vp-skip').addEventListener('click', () => dismiss('Anonymous'));
-    setTimeout(() => document.getElementById('vp-name-input')?.focus(), 300);
+    setTimeout(() => document.getElementById('vp-name-input')?.focus({ preventScroll: true }), 300);
   }
 
   function boot() {
