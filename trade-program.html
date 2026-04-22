@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trade Program — BUECON</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/variables.css"/>
+  <link rel="stylesheet" href="css/reset.css"/>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/footer.css"/>
+  <link rel="stylesheet" href="css/visitor-prompt.css"/>
+  <style>
+    body { padding-top: 100px; background: var(--navy-deep); min-height: 100vh; }
+
+    .page-hero {
+      padding: 80px 0 60px; text-align: center;
+      background: linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 100%);
+      border-bottom: 1px solid rgba(197,164,109,0.08);
+    }
+    .page-hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 600; color: var(--white); line-height: 1.1; margin-top: 12px;
+    }
+    .page-hero h1 em { font-style: italic; color: var(--gold); }
+    .page-hero p { color: var(--silver-dim); margin-top: 16px; font-size: var(--fs-md); max-width: 600px; margin-left: auto; margin-right: auto; }
+    .breadcrumb {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-top: 16px;
+      font-size: 0.75rem; color: var(--silver-dim); letter-spacing: 0.1em;
+    }
+    .breadcrumb a { color: var(--gold); text-decoration: none; }
+
+    /* Trade Styles */
+    .trade-section { padding: 80px 0; }
+
+    /* Who It's For */
+    .who-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px; margin-bottom: 80px;
+    }
+    .who-card {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md); padding: 28px 20px; text-align: center;
+      transition: all var(--dur-mid);
+    }
+    .who-card:hover { border-color: var(--glass-border-h); transform: translateY(-4px); }
+    .who-icon { font-size: 2rem; margin-bottom: 12px; }
+    .who-title { color: var(--white); font-weight: 600; font-size: var(--fs-sm); margin-bottom: 6px; }
+    .who-desc { color: var(--silver-dim); font-size: var(--fs-xs); line-height: 1.6; }
+
+    /* Benefits */
+    .benefits-section { margin-bottom: 80px; }
+    .benefits-section h2 { font-family: var(--font-serif); font-size: clamp(1.75rem, 3vw, 2.5rem); color: var(--white); margin-bottom: 40px; }
+    .benefits-section h2 em { font-style: italic; color: var(--gold); }
+    .benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .benefit-card {
+      padding: 32px;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      transition: border-color var(--dur-mid);
+    }
+    .benefit-card:hover { border-color: var(--glass-border-h); }
+    .benefit-icon {
+      width: 48px; height: 48px; margin-bottom: 20px;
+      background: var(--gold-pale); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; color: var(--gold);
+    }
+    .benefit-card h3 { color: var(--white); font-size: var(--fs-md); margin-bottom: 10px; font-weight: 600; }
+    .benefit-card p { color: var(--silver-dim); font-size: var(--fs-sm); line-height: 1.7; }
+
+    /* Pricing Tiers */
+    .tiers-section { margin-bottom: 80px; }
+    .tiers-section h2 { font-family: var(--font-serif); font-size: clamp(1.75rem, 3vw, 2.5rem); color: var(--white); margin-bottom: 40px; }
+    .tiers-section h2 em { font-style: italic; color: var(--gold); }
+    .tiers-table {
+      width: 100%; border-collapse: collapse;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md); overflow: hidden;
+    }
+    .tiers-table th {
+      background: rgba(197,164,109,0.08);
+      color: var(--gold-light); font-size: var(--fs-xs); letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 16px 20px; text-align: left;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .tiers-table td {
+      padding: 16px 20px; color: var(--silver-dim);
+      font-size: var(--fs-sm); border-bottom: 1px solid rgba(197,164,109,0.05);
+    }
+    .tiers-table tr:last-child td { border-bottom: none; }
+    .tiers-table td:first-child { color: var(--white); font-weight: 600; }
+    .tiers-table td .badge {
+      display: inline-block; padding: 3px 10px;
+      background: var(--gold-pale); border: 1px solid var(--gold-dim);
+      border-radius: var(--radius-full); font-size: 0.65rem;
+      color: var(--gold); letter-spacing: 0.08em; margin-left: 8px;
+    }
+
+    /* Application Form */
+    .apply-section { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+    .apply-info h2 { font-family: var(--font-serif); font-size: clamp(1.75rem, 3vw, 2.25rem); color: var(--white); margin-bottom: 20px; }
+    .apply-info h2 em { font-style: italic; color: var(--gold); }
+    .apply-info p { color: var(--silver-dim); line-height: 1.8; margin-bottom: 16px; }
+    .apply-steps { margin-top: 32px; display: flex; flex-direction: column; gap: 16px; }
+    .apply-step { display: flex; gap: 16px; align-items: center; }
+    .apply-step-num {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: var(--gold-pale); border: 1px solid var(--gold-dim);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-serif); font-size: 0.9rem; color: var(--gold);
+    }
+    .apply-step p { color: var(--silver-dim); font-size: var(--fs-sm); margin: 0; }
+
+    .apply-form-wrap {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg); padding: 40px;
+    }
+    .apply-form-wrap h3 { font-family: var(--font-serif); font-size: 1.6rem; color: var(--white); margin-bottom: 28px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .form-group label { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-dim); }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(197,164,109,0.2);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--white); font-family: var(--font-sans); font-size: var(--fs-sm);
+      transition: border-color var(--dur-mid); outline: none;
+    }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: var(--silver-dim); opacity: 0.5; }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--gold); }
+    .form-group select option { background: var(--navy); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-submit {
+      width: 100%; padding: 16px 32px;
+      background: var(--gold); color: var(--navy-deep); border: none;
+      border-radius: var(--radius-sm); font-family: var(--font-sans);
+      font-size: var(--fs-sm); font-weight: 600; letter-spacing: 0.08em;
+      cursor: pointer; transition: background var(--dur-mid), transform var(--dur-fast);
+    }
+    .form-submit:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .form-note { text-align: center; margin-top: 14px; font-size: var(--fs-xs); color: var(--silver-dim); }
+    .success-msg {
+      display: none; text-align: center; padding: 24px;
+      background: rgba(197,164,109,0.1); border: 1px solid var(--gold);
+      border-radius: var(--radius-md); margin-top: 20px;
+      color: var(--gold); font-size: var(--fs-sm);
+    }
+
+    @media (max-width: 1000px) { .benefits-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 900px) { .apply-section { grid-template-columns: 1fr; gap: 40px; } }
+    @media (max-width: 700px) {
+      .benefits-grid { grid-template-columns: 1fr; }
+      .tiers-table th:nth-child(3), .tiers-table td:nth-child(3) { display: none; }
+      .apply-form-wrap { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="public/images/logo-final.png" alt="BUECON" height="28" style="display:block;" />
+    </a>
+    <ul class="nav-links">
+      <li><a href="about.html">About</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="why.html">Why Us</a></li>
+      <li><a href="mission.html">Mission</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="catalog.html" style="color:var(--gold)!important;">Get Catalog</a></li>
+    </ul>
+    <a href="contact.html" class="nav-cta">Get in Touch</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="about.html" class="mobile-link">About</a></li>
+      <li><a href="products.html" class="mobile-link">Products</a></li>
+      <li><a href="why.html" class="mobile-link">Why Us</a></li>
+      <li><a href="mission.html" class="mobile-link">Mission</a></li>
+      <li><a href="contact.html" class="mobile-link">Contact</a></li>
+      <li><a href="reviews.html" class="mobile-link">Reviews</a></li>
+      <li><a href="catalog.html" class="mobile-link" style="color:var(--gold)!important;">Get Catalog</a></li>
+    </ul>
+  </div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="section-label">Support</span>
+      <h1><em>Trade</em> Program</h1>
+      <p>Exclusive benefits for architects, interior designers, contractors, and hospitality procurement teams.</p>
+      <div class="breadcrumb">
+        <a href="index.html">Home</a> <span>›</span> <span>Trade Program</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="trade-section">
+    <div class="container">
+
+      <!-- Who It's For -->
+      <p class="section-label" style="margin-bottom:24px;">Who qualifies</p>
+      <div class="who-grid">
+        <div class="who-card">
+          <div class="who-icon">🏛</div>
+          <div class="who-title">Architects</div>
+          <div class="who-desc">Registered architects specifying for residential and commercial projects.</div>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">🎨</div>
+          <div class="who-title">Interior Designers</div>
+          <div class="who-desc">Design professionals creating spec sheets and procurement lists.</div>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">🔨</div>
+          <div class="who-title">Contractors</div>
+          <div class="who-desc">Licensed builders and fitting contractors handling multi-unit projects.</div>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">🏨</div>
+          <div class="who-title">Hospitality</div>
+          <div class="who-desc">Hotel, resort, and serviced apartment procurement teams.</div>
+        </div>
+        <div class="who-card">
+          <div class="who-icon">🏬</div>
+          <div class="who-title">Distributors</div>
+          <div class="who-desc">Regional distributors and wholesale buyers in the sanitaryware trade.</div>
+        </div>
+      </div>
+
+      <!-- Benefits -->
+      <div class="benefits-section">
+        <h2>What you <em>get</em></h2>
+        <div class="benefits-grid">
+          <div class="benefit-card">
+            <div class="benefit-icon">%</div>
+            <h3>Trade Pricing</h3>
+            <p>Access to exclusive trade discounts across all BUECON product lines. Discounts scale with volume — the more you specify, the better your margin.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">📦</div>
+            <h3>Priority Fulfilment</h3>
+            <p>Trade accounts receive priority processing and dedicated stock allocation on large orders, ensuring your project timelines are never compromised.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">◎</div>
+            <h3>Dedicated Account Manager</h3>
+            <p>A single point of contact who knows your projects, preferences, and business — providing personalised support from spec to delivery.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">✦</div>
+            <h3>Sample Programme</h3>
+            <p>Request physical samples of any BUECON product before committing to a project spec. We ship samples to your studio or site at no charge.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">📐</div>
+            <h3>Spec & BIM Support</h3>
+            <p>Access to high-resolution product images, CAD drawings, and technical spec sheets for all products — ready for your specification documents.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-icon">◈</div>
+            <h3>Extended Payment Terms</h3>
+            <p>Approved trade accounts can access net-30 and net-60 payment terms, supporting cash flow on larger construction and fitout projects.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing Tiers -->
+      <div class="tiers-section">
+        <h2>Trade <em>discount tiers</em></h2>
+        <table class="tiers-table">
+          <thead>
+            <tr>
+              <th>Tier</th>
+              <th>Annual Purchase Volume</th>
+              <th>Typical Profile</th>
+              <th>Discount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Silver <span class="badge">Entry</span></td>
+              <td>Up to ₹5 Lakhs</td>
+              <td>Small studios, independent contractors</td>
+              <td>10% off RRP</td>
+            </tr>
+            <tr>
+              <td>Gold</td>
+              <td>₹5L – ₹25L</td>
+              <td>Mid-size design firms, regional contractors</td>
+              <td>18% off RRP</td>
+            </tr>
+            <tr>
+              <td>Platinum <span class="badge">Popular</span></td>
+              <td>₹25L – ₹1 Crore</td>
+              <td>Large firms, hospitality groups</td>
+              <td>25% off RRP</td>
+            </tr>
+            <tr>
+              <td>Diamond</td>
+              <td>₹1 Crore+</td>
+              <td>Distributors, national chains, developers</td>
+              <td>Custom pricing</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Application Form -->
+      <div class="apply-section">
+        <div class="apply-info">
+          <h2>Apply for the <em>Trade Program</em></h2>
+          <p>Joining the BUECON Trade Program is straightforward. Complete the application and our trade team will review and approve qualified accounts within 2 business days.</p>
+          <p>We welcome applications from across India and select international markets.</p>
+          <div class="apply-steps">
+            <div class="apply-step">
+              <div class="apply-step-num">1</div>
+              <p>Submit your trade application with business details</p>
+            </div>
+            <div class="apply-step">
+              <div class="apply-step-num">2</div>
+              <p>Our trade team reviews and verifies your application</p>
+            </div>
+            <div class="apply-step">
+              <div class="apply-step-num">3</div>
+              <p>Approval confirmation sent within 2 business days</p>
+            </div>
+            <div class="apply-step">
+              <div class="apply-step-num">4</div>
+              <p>Access your exclusive pricing and dedicated account manager</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="apply-form-wrap">
+          <h3>Trade Application</h3>
+          <form id="tradeForm">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input type="text" placeholder="Your name" required />
+            </div>
+            <div class="form-group">
+              <label>Business / Studio Name</label>
+              <input type="text" placeholder="e.g. Studio Mehta Interiors" required />
+            </div>
+            <div class="form-group">
+              <label>Business Type</label>
+              <select required>
+                <option value="">Select your profession</option>
+                <option>Architect</option>
+                <option>Interior Designer</option>
+                <option>General Contractor</option>
+                <option>Plumbing Contractor</option>
+                <option>Hospitality / Developer</option>
+                <option>Distributor / Wholesaler</option>
+                <option>Other Trade Professional</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input type="email" placeholder="you@studio.com" required />
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="tel" placeholder="+91 98765 43210" required />
+            </div>
+            <div class="form-group">
+              <label>City / Location</label>
+              <input type="text" placeholder="e.g. Mumbai, Maharashtra" />
+            </div>
+            <div class="form-group">
+              <label>Estimated Annual Purchase Volume</label>
+              <select>
+                <option value="">Select an estimate</option>
+                <option>Under ₹5 Lakhs</option>
+                <option>₹5L – ₹25L</option>
+                <option>₹25L – ₹1 Crore</option>
+                <option>₹1 Crore+</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tell us about your work</label>
+              <textarea placeholder="Briefly describe your business, typical projects, and what you're looking for from BUECON..."></textarea>
+            </div>
+            <button type="submit" class="form-submit">Submit Application →</button>
+            <p class="form-note">Applications are typically reviewed within 2 business days.</p>
+          </form>
+          <div class="success-msg" id="tradeSuccess">
+            ✦ Application received! Our trade team will be in touch within 2 business days to complete your account setup.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer id="footer"><div id="footer-content"></div></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="js/firebase-client.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/sections/footer.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/visitor-tracker.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadBueconData();
+      renderFooter();
+      Animations.init();
+
+      document.getElementById('tradeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        this.style.display = 'none';
+        document.getElementById('tradeSuccess').style.display = 'block';
+      });
+    });
+  </script>
+</body>
+</html>

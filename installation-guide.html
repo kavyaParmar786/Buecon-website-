@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Installation Guide — BUECON</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/variables.css"/>
+  <link rel="stylesheet" href="css/reset.css"/>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/footer.css"/>
+  <link rel="stylesheet" href="css/visitor-prompt.css"/>
+  <style>
+    body { padding-top: 100px; background: var(--navy-deep); min-height: 100vh; }
+
+    .page-hero {
+      padding: 80px 0 60px; text-align: center;
+      background: linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 100%);
+      border-bottom: 1px solid rgba(197,164,109,0.08);
+    }
+    .page-hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 600; color: var(--white); line-height: 1.1; margin-top: 12px;
+    }
+    .page-hero h1 em { font-style: italic; color: var(--gold); }
+    .page-hero p { color: var(--silver-dim); margin-top: 16px; font-size: var(--fs-md); max-width: 560px; margin-left: auto; margin-right: auto; }
+    .breadcrumb {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-top: 16px;
+      font-size: 0.75rem; color: var(--silver-dim); letter-spacing: 0.1em;
+    }
+    .breadcrumb a { color: var(--gold); text-decoration: none; }
+
+    /* Guide Styles */
+    .guide-section { padding: 80px 0; }
+
+    .guide-intro { text-align: center; max-width: 700px; margin: 0 auto 64px; }
+    .guide-intro h2 { font-family: var(--font-serif); font-size: clamp(1.75rem, 3vw, 2.5rem); color: var(--white); margin-bottom: 16px; }
+    .guide-intro h2 em { font-style: italic; color: var(--gold); }
+    .guide-intro p { color: var(--silver-dim); line-height: 1.8; }
+
+    /* Tools Needed */
+    .tools-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px; margin-bottom: 64px;
+    }
+    .tool-card {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md); padding: 20px; text-align: center;
+    }
+    .tool-icon { font-size: 1.8rem; margin-bottom: 10px; }
+    .tool-name { font-size: var(--fs-xs); color: var(--silver-dim); letter-spacing: 0.08em; }
+
+    /* Steps */
+    .steps-label {
+      font-size: var(--fs-xs); letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold-dim); margin-bottom: 32px;
+    }
+    .steps-list { display: flex; flex-direction: column; gap: 0; position: relative; }
+    .steps-list::before {
+      content: ''; position: absolute; left: 28px; top: 0; bottom: 0;
+      width: 1px; background: rgba(197,164,109,0.15);
+    }
+    .step-item {
+      display: grid; grid-template-columns: 56px 1fr; gap: 24px;
+      padding: 32px 0;
+      border-bottom: 1px solid rgba(197,164,109,0.06);
+    }
+    .step-item:last-child { border-bottom: none; }
+    .step-num {
+      width: 56px; height: 56px; flex-shrink: 0;
+      border-radius: 50%; background: var(--navy);
+      border: 1px solid var(--glass-border-h);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-serif); font-size: 1.1rem; font-weight: 600;
+      color: var(--gold); position: relative; z-index: 1;
+    }
+    .step-body h3 { color: var(--white); font-size: var(--fs-md); font-weight: 600; margin-bottom: 10px; }
+    .step-body p { color: var(--silver-dim); line-height: 1.8; font-size: var(--fs-sm); }
+    .step-tip {
+      margin-top: 12px; padding: 12px 16px;
+      background: var(--gold-pale); border-left: 2px solid var(--gold);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: var(--fs-xs); color: var(--gold-light);
+    }
+    .step-tip strong { color: var(--gold); }
+
+    /* Series Tabs */
+    .series-section { margin-top: 80px; padding-top: 64px; border-top: 1px solid rgba(197,164,109,0.08); }
+    .series-section h2 { font-family: var(--font-serif); font-size: clamp(1.5rem, 3vw, 2rem); color: var(--white); margin-bottom: 32px; }
+    .series-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+    .series-tab {
+      padding: 8px 20px; border-radius: var(--radius-full);
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      color: var(--silver-dim); font-size: var(--fs-xs);
+      letter-spacing: 0.1em; cursor: pointer;
+      transition: all var(--dur-mid);
+    }
+    .series-tab.active,
+    .series-tab:hover { background: var(--gold-pale); border-color: var(--gold); color: var(--gold); }
+
+    .series-note {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md); padding: 28px;
+      color: var(--silver-dim); font-size: var(--fs-sm); line-height: 1.8;
+    }
+    .series-note h4 { color: var(--white); margin-bottom: 12px; font-weight: 600; }
+
+    /* CTA Banner */
+    .guide-cta {
+      margin-top: 80px; padding: 60px; text-align: center;
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+    }
+    .guide-cta h3 { font-family: var(--font-serif); font-size: 1.8rem; color: var(--white); margin-bottom: 12px; }
+    .guide-cta p { color: var(--silver-dim); margin-bottom: 28px; }
+    .guide-cta a {
+      display: inline-block; padding: 14px 36px;
+      background: var(--gold); color: var(--navy-deep);
+      border-radius: var(--radius-sm); font-weight: 600; font-size: var(--fs-sm);
+      text-decoration: none; transition: background var(--dur-mid), transform var(--dur-fast);
+    }
+    .guide-cta a:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+    @media (max-width: 600px) {
+      .step-item { grid-template-columns: 44px 1fr; gap: 16px; }
+      .steps-list::before { left: 22px; }
+      .guide-cta { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="public/images/logo-final.png" alt="BUECON" height="28" style="display:block;" />
+    </a>
+    <ul class="nav-links">
+      <li><a href="about.html">About</a></li>
+      <li><a href="products.html">Products</a></li>
+      <li><a href="why.html">Why Us</a></li>
+      <li><a href="mission.html">Mission</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="reviews.html">Reviews</a></li>
+      <li><a href="catalog.html" style="color:var(--gold)!important;">Get Catalog</a></li>
+    </ul>
+    <a href="contact.html" class="nav-cta">Get in Touch</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="about.html" class="mobile-link">About</a></li>
+      <li><a href="products.html" class="mobile-link">Products</a></li>
+      <li><a href="why.html" class="mobile-link">Why Us</a></li>
+      <li><a href="mission.html" class="mobile-link">Mission</a></li>
+      <li><a href="contact.html" class="mobile-link">Contact</a></li>
+      <li><a href="reviews.html" class="mobile-link">Reviews</a></li>
+      <li><a href="catalog.html" class="mobile-link" style="color:var(--gold)!important;">Get Catalog</a></li>
+    </ul>
+  </div>
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="section-label">Support</span>
+      <h1><em>Installation</em> Guide</h1>
+      <p>Step-by-step instructions to install your BUECON hardware correctly and beautifully.</p>
+      <div class="breadcrumb">
+        <a href="index.html">Home</a> <span>›</span> <span>Installation Guide</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="guide-section">
+    <div class="container">
+
+      <div class="guide-intro">
+        <h2>Designed for <em>easy</em> installation</h2>
+        <p>Every BUECON product is engineered for straightforward installation. Our concealed-fixing system gives your bathroom a clean, seamless look. Follow this universal guide for most of our hardware ranges.</p>
+      </div>
+
+      <!-- Tools -->
+      <p class="steps-label">Tools You'll Need</p>
+      <div class="tools-grid">
+        <div class="tool-card"><div class="tool-icon">🔩</div><div class="tool-name">Power Drill</div></div>
+        <div class="tool-card"><div class="tool-icon">📏</div><div class="tool-name">Spirit Level</div></div>
+        <div class="tool-card"><div class="tool-icon">🖊</div><div class="tool-name">Pencil / Marker</div></div>
+        <div class="tool-card"><div class="tool-icon">🔧</div><div class="tool-name">Hex / Allen Key</div></div>
+        <div class="tool-card"><div class="tool-icon">🔨</div><div class="tool-name">Wall Plugs</div></div>
+        <div class="tool-card"><div class="tool-icon">📐</div><div class="tool-name">Measuring Tape</div></div>
+      </div>
+
+      <!-- Steps -->
+      <p class="steps-label">Step-by-Step Process</p>
+      <div class="steps-list">
+
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Unbox & Verify Contents</h3>
+            <p>Carefully remove all components from the packaging. Verify that all parts listed in the included parts sheet are present — this typically includes the main fixture, concealed mounting plate, wall plugs, screws, and an Allen key. Contact us if anything is missing before proceeding.</p>
+            <div class="step-tip"><strong>Tip:</strong> Keep the packaging until installation is complete in case you need to re-check component details.</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Choose & Mark Mounting Position</h3>
+            <p>Determine the ideal height and position for your fixture. Use standard bathroom ergonomic guidelines: towel bars at 48–52 inches from floor, robe hooks at 65–70 inches, toilet paper holders at 26 inches from floor and 8–12 inches from the toilet. Mark the screw hole positions lightly with a pencil.</p>
+            <div class="step-tip"><strong>Tip:</strong> Always use a spirit level when marking multiple fixing points to ensure perfectly aligned installation.</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Check for Pipes & Wiring</h3>
+            <p>Before drilling, use a pipe and wire detector to verify there are no concealed utilities behind the marked area. This step is critical for safety. If drilling into tiles, use a tile drill bit at slow speed to avoid cracking.</p>
+            <div class="step-tip"><strong>Tip:</strong> Apply masking tape over the drill mark on tiles — this reduces vibration and prevents the bit from slipping.</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>Drill & Insert Wall Plugs</h3>
+            <p>Drill holes at your marked positions to the appropriate depth for your wall plugs (typically 30–40mm). Clean out any dust from the holes. Insert the provided wall plugs by hand, tapping gently with a hammer until flush with the wall surface.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h3>Fix the Concealed Mounting Plate</h3>
+            <p>Align the mounting bracket or back plate over the wall plug holes. Insert the provided screws and tighten firmly with a screwdriver. Do not overtighten — firm is sufficient. Verify the plate is level before final tightening.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <h3>Attach the Fixture</h3>
+            <p>Slide or click the main fixture body onto the mounted bracket according to your model's specific mechanism. Most BUECON fixtures feature a click-lock system. Once engaged, use the provided Allen key to tighten the concealed set screw — this locks the fixture securely in place.</p>
+            <div class="step-tip"><strong>Tip:</strong> Do not apply excessive force. A firm quarter-turn past finger-tight is sufficient to secure most fixtures.</div>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <h3>Final Check & Clean</h3>
+            <p>Test the fixture by applying gentle downward and outward pressure to confirm secure mounting. Wipe down all surfaces with a soft, dry cloth to remove any fingerprints, dust, or installation residue. Your BUECON hardware is now ready for use.</p>
+            <div class="step-tip"><strong>Tip:</strong> Avoid abrasive cleaners during and after installation. A mild soap solution and microfibre cloth keeps BUECON finishes pristine for years.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Series-specific notes -->
+      <div class="series-section">
+        <h2>Series-Specific Notes</h2>
+        <div class="series-tabs">
+          <div class="series-tab active" onclick="showNote(this, 'salt')">SALT</div>
+          <div class="series-tab" onclick="showNote(this, 'soft')">SOFT</div>
+          <div class="series-tab" onclick="showNote(this, 'smart')">SMART</div>
+          <div class="series-tab" onclick="showNote(this, 'super')">SUPER</div>
+          <div class="series-tab" onclick="showNote(this, 'grab')">Grab Bars</div>
+        </div>
+        <div class="series-note" id="seriesNote">
+          <h4>SALT Series — Installation Notes</h4>
+          <p>SALT Series features a satin stainless steel finish that requires extra care during installation. Avoid contact with silicone sealants containing acetic acid — use neutral-cure silicone where sealing is required near the fixture. The SALT Series uses M6 concealed fixings. Torque the set screw to 3–4 Nm maximum. For the SALT towel rack (dual-rail model), ensure both end brackets are installed at identical heights — a 1mm variance is acceptable, beyond that will cause visible misalignment.</p>
+        </div>
+      </div>
+
+      <div class="guide-cta">
+        <h3>Need help with installation?</h3>
+        <p>Our team is happy to answer any installation questions or connect you with a local trade professional.</p>
+        <a href="contact.html">Contact Our Team →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <footer id="footer"><div id="footer-content"></div></footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="js/firebase-client.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/sections/footer.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/visitor-tracker.js"></script>
+  <script>
+    const seriesNotes = {
+      salt: {
+        title: 'SALT Series — Installation Notes',
+        content: 'SALT Series features a satin stainless steel finish that requires extra care during installation. Avoid contact with silicone sealants containing acetic acid — use neutral-cure silicone where sealing is required near the fixture. The SALT Series uses M6 concealed fixings. Torque the set screw to 3–4 Nm maximum.'
+      },
+      soft: {
+        title: 'SOFT Series — Installation Notes',
+        content: 'SOFT Series uses a matte powder-coat finish. During installation, protect surfaces with the supplied protective film until all work is complete. The rounded forms require slightly wider drill spacing — refer to the template included in the box. SOFT fixtures are designed for drywall and tile installations up to 12mm thick.'
+      },
+      smart: {
+        title: 'SMART Series — Installation Notes',
+        content: 'SMART Series features precision-engineered concealed mounting that requires exact positioning. Use the provided paper drilling template (included in every SMART Series box) for perfect hole placement. The SMART mounting system supports up to 25kg load per fixing point when installed into solid masonry with M8 wall plugs.'
+      },
+      super: {
+        title: 'SUPER Series — Installation Notes',
+        content: 'SUPER Series is our heaviest-duty range. All SUPER towel bars require minimum 3 fixing points for bars over 60cm. Use M8 raw plugs for masonry, or toggle bolts for hollow-wall installations. The SUPER Series grab bar variants must be installed into wall studs or with specialist hollow-wall anchors rated to 150kg.'
+      },
+      grab: {
+        title: 'Grab Bars — Installation Notes',
+        content: 'CRITICAL: Grab bars must be installed into wall studs, blocking, or with specialist wall anchors rated for a minimum 113kg (250 lbs) load per fixing. Never install grab bars into tile alone. Each grab bar must support a minimum static load of 250kg. We strongly recommend professional installation for all grab bar products. Refer to IS 875 (Part 3) for structural load requirements in Indian construction.'
+      }
+    };
+
+    function showNote(tab, key) {
+      document.querySelectorAll('.series-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const note = seriesNotes[key];
+      document.getElementById('seriesNote').innerHTML = `<h4>${note.title}</h4><p>${note.content}</p>`;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadBueconData();
+      renderFooter();
+      Animations.init();
+    });
+  </script>
+</body>
+</html>
