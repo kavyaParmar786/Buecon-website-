@@ -63,16 +63,7 @@ function renderContact() {
               </div>
             </a>
 
-            <div class="contact-item">
-              <div class="contact-item-icon">◷</div>
-              <div>
-                <p class="contact-item-label">Working Hours</p>
-                <p class="contact-item-value">${contact.hours || 'Mon – Sat, 9:00 AM – 6:00 PM IST'}</p>
-              </div>
-            </div>
 
-            <a href="https://maps.google.com/?q=Rajkot,Gujarat,India" target="_blank" rel="noopener"
-              class="btn-ghost" style="margin-top:8px;width:fit-content;">View on Map →</a>
 
           </div>
 
