@@ -27,17 +27,6 @@ function renderFooter() {
           </div>
         </div>
 
-        <!-- Collections -->
-        <div class="footer-col">
-          <p class="footer-col-title">Collections</p>
-          <ul class="footer-links">
-            <li><a href="#products">Salt Series</a></li>
-            <li><a href="#products">Super Series</a></li>
-            <li><a href="#products">Spirit Series</a></li>
-            <li><a href="#products">400 Series</a></li>
-          </ul>
-        </div>
-
         <!-- Company -->
         <div class="footer-col">
           <p class="footer-col-title">Company</p>
