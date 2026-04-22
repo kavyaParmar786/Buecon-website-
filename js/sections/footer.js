@@ -19,6 +19,12 @@ function renderFooter() {
             Designed to Speak. Built to Last.<br>
             Premium bathroom hardware, crafted in Rajkot since 2016.
           </p>
+          <div class="footer-social">
+            <a href="#" class="social-link" aria-label="Instagram">✦</a>
+            <a href="#" class="social-link" aria-label="LinkedIn">in</a>
+            <a href="#" class="social-link" aria-label="Pinterest">P</a>
+            <a href="#" class="social-link" aria-label="Houzz">H</a>
+          </div>
         </div>
 
         <!-- Company -->
@@ -36,10 +42,10 @@ function renderFooter() {
         <div class="footer-col">
           <p class="footer-col-title">Support</p>
           <ul class="footer-links">
-            <li><a href="#contact">Get a Quote</a></li>
-            <li><a href="#contact">Installation Guide</a></li>
-            <li><a href="#contact">Warranty</a></li>
-            <li><a href="#contact">Trade Program</a></li>
+            <li><a href="get-a-quote.html">Get a Quote</a></li>
+            <li><a href="installation-guide.html">Installation Guide</a></li>
+            <li><a href="warranty.html">Warranty</a></li>
+            <li><a href="trade-program.html">Trade Program</a></li>
           </ul>
         </div>
 
